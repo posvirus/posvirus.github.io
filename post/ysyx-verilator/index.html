@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+浅析Verilator的wrapper文件写法 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：浅析Verilator的wrapper文件写法">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-verilator/" >
+
+
+
+
+<link href="/css/style.min.7024c1556976f6f1d9597254a652a2a9e5d76cdcedd13b379120155e92c9391c.css" rel="stylesheet">
+
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>浅析Verilator的wrapper文件写法</h1>
+    
+    	<p>YSYX学习笔记：浅析Verilator的wrapper文件写法</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/verilator/">#Verilator</a><span></span>
+    <a href="/tags/c&#43;&#43;/">#C&#43;&#43;</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-07-22">July 22, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>1 minute</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, July 22rd, 2025</strong></p>
+<p>在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并<code>eval()</code>，而在传统RTL代码编写的Testbench中，仿真步长通常是通过``timescale`声明的，EDA会识别并自动设置仿真步长。</p>
+<p>这种原理上的差异会造成Verilator与传统EDA在仿真时存在两方面的区别：</p>
+<ul>
+<li>**性能上的差异：**Verilator的仿真原理其实可概括为“当用户需要时，才对某个时间点采样与<code>eval()</code>”，而传统EDA的仿真原理则可简单理解为“定步长对每个时间点都进行采样与<code>eval()</code>“。因此，Verilator相对而言可以较敏捷地完成仿真，因为在仿真过程中，其实并没有对所有时间点均进行采样与<code>eval()</code>。</li>
+<li>**波形质量上的差异：**传统EDA的定步长仿真使得其仿真获得的波形具有相当高的可信度，基本可以与实测波形等同。但Verilator的波形质量高度依赖于wrapper文件的写法，一个低质量或写法错误的wrapper文件完全有可能生成与实际情况完全不同的波形，举一个简单的例子，假设我们一直仅对模块进行激励而不调用<code>eval()</code>，那么波形不会有任何有效信息，更具体一些，如果我们改变某个端口的激励值而未及时进行<code>eval()</code>，可能导致某个信号值在波形中被错误地延迟一个或多个时钟周期。</li>
+</ul>
+<p>因此，有必要探究有效的wrapper文件写法，因为当我们需要通过波形对模块进行debug时，我们自然不希望最后发现是wrapper文件的写法导致生成不符合预期的波形。</p>
+<p>首先，我们需要明确，在wrapper文件中，其主要实现了两类操作，第一是<strong>实现激励信号的变化并重新对被测模块进行<code>eval()</code></strong>，第二则是<strong>实现波形中时间的推移</strong>，为此，我们给出一个模式化的wrapper文件写法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#define Vtop Vysyx_25070184_top </span><span style="color:#75715e">// nickname
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#define CLK_NAME clk </span><span style="color:#75715e">// clock name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#define CLK_HALF_PERIOD 5 </span><span style="color:#75715e">// clock period / 2
+</span></span></span></code></pre></div><p>在文件开头，我们实现了几个宏定义，将被测顶层模块名统一为<code>top</code>，将时钟名称统一为<code>CLK_NAME</code>，并定义仿真时的半时钟周期长度<code>CLK_HALF_PERIOD</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#define EDGE_TRG_EVENT(top, event) do { top-&gt;CLK_NAME = !top-&gt;CLK_NAME; top-&gt;eval(); event; top-&gt;eval(); } while (0)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define EDGE_TRG(top) EDGE_TRG_EVENT(top, )
+</span></span></span></code></pre></div><p>其次，我们实现了另外两个宏定义，用于实现激励信号的变化，<code>EDGE_TRG_EVENT</code>宏用于实现一个被时钟边沿驱动的事件<code>event</code>，其主要会进行如下两个操作：</p>
+<ul>
+<li>翻转当前时钟取值，进行<code>eval()</code>。</li>
+<li>执行事件<code>event</code>，再次进行<code>eval()</code>。</li>
+</ul>
+<p>这个宏定义其实相当于传统RTL实现的Testbench中的<code>@(posedge/negedge clk) event;</code>。</p>
+<p>另外一个宏定义<code>EDGE_TRG</code>则相当于仅对时钟进行翻转并<code>eval()</code>，而不存在其他事件的执行。</p>
+<p>最后，我们定义另外一个函数<code>half_cycle()</code>实现波形时间的推移：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">half_cycle</span>(Vtop<span style="color:#f92672">*</span> top, VerilatedContext<span style="color:#f92672">*</span> contextp, VerilatedFstC <span style="color:#f92672">*</span>tfp) {
+</span></span><span style="display:flex;"><span>  top<span style="color:#f92672">-&gt;</span>eval();
+</span></span><span style="display:flex;"><span>  contextp<span style="color:#f92672">-&gt;</span>timeInc(CLK_HALF_PERIOD);
+</span></span><span style="display:flex;"><span>  tfp<span style="color:#f92672">-&gt;</span>dump(contextp<span style="color:#f92672">-&gt;</span>time());
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>该函数会在波形中产生半时钟周期的时间推移，因为在狭义的同步时序电路中，半时钟周期相当于一个最小的时间步长，在这一时间间隔内不应当有任何信号存在变化。</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

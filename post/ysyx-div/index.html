@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+关于div等RV32M指令无法编译的问题 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：关于div等RV32M指令无法编译的问题">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-div/" >
+
+
+
+
+<link href="/css/style.min.7024c1556976f6f1d9597254a652a2a9e5d76cdcedd13b379120155e92c9391c.css" rel="stylesheet">
+
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>关于div等RV32M指令无法编译的问题</h1>
+    
+    	<p>YSYX学习笔记：关于div等RV32M指令无法编译的问题</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/riscv/">#RISCV</a><span></span>
+    <a href="/tags/cpu/">#CPU</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-07-22">July 22, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>4 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, July 22rd, 2025</strong></p>
+<p>在使用<code>-march=rv32im_zicsr</code>对测试程序进行编译时，会发现测试对应的除法与取余操作（有符号/无符号）不能被正确编译至<code>div</code>等RV32M扩展指令，原以为是指令集架构选择错误，后续发现是因为当除数是常量时，（如<code>a / 10</code>），编译器可能用更高效的移位/乘法序列替代除法指令或取余指令，为防止该优化，可以在变量声明前加入<code>volatile</code>关键字，指示该变量随时可变，从而限制其优化。</p>
+<p>以下给出一个可以正确编译出RV32M扩展指令的测试程序：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;trap.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define N 10
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> signed_arr[N] <span style="color:#f92672">=</span> {<span style="color:#f92672">-</span><span style="color:#ae81ff">128</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">486</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">312</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">211</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">154</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">11113</span>, <span style="color:#ae81ff">26785</span>, <span style="color:#ae81ff">3232</span>, <span style="color:#ae81ff">488976</span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> unsigned_arr[N] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1112</span>, <span style="color:#ae81ff">25678</span>, <span style="color:#ae81ff">33425</span>, <span style="color:#ae81ff">43455</span>, <span style="color:#ae81ff">543421</span>, <span style="color:#ae81ff">634567</span>, <span style="color:#ae81ff">778789</span>, <span style="color:#ae81ff">845653</span>, <span style="color:#ae81ff">92442</span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> N; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>N; j <span style="color:#f92672">&lt;=</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (j <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> quotient, remainder;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            quotient <span style="color:#f92672">=</span> signed_arr[i] <span style="color:#f92672">/</span> j;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            remainder <span style="color:#f92672">=</span> signed_arr[i] <span style="color:#f92672">%</span> j;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">check</span>(signed_arr[i] <span style="color:#f92672">==</span> j <span style="color:#f92672">*</span> quotient <span style="color:#f92672">+</span> remainder);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (signed_arr[i] <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">check</span>(remainder <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> remainder <span style="color:#f92672">&lt;</span> (j <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">?</span> j : <span style="color:#f92672">-</span>j));
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">check</span>(remainder <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> remainder <span style="color:#f92672">&gt;</span> (j <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">?</span> <span style="color:#f92672">-</span>j : j));
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> N; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">unsigned</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;=</span> N; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">unsigned</span> quotient, remainder;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            quotient <span style="color:#f92672">=</span> unsigned_arr[i] <span style="color:#f92672">/</span> j;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            remainder <span style="color:#f92672">=</span> unsigned_arr[i] <span style="color:#f92672">%</span> j;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">check</span>(unsigned_arr[i] <span style="color:#f92672">==</span> j <span style="color:#f92672">*</span> quotient <span style="color:#f92672">+</span> remainder);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">check</span>(remainder <span style="color:#f92672">&lt;</span> j);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// overflow test
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> dividend <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">31</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> divisor <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> quotient <span style="color:#f92672">=</span> dividend <span style="color:#f92672">/</span> divisor;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> remainder <span style="color:#f92672">=</span> dividend <span style="color:#f92672">%</span> divisor;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(quotient <span style="color:#f92672">==</span> dividend);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(remainder <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>对应编译结果如下：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">80000000 &lt;_start&gt;:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 &lt;_end&gt;
+8000000c:	1e0000ef          	jal	ra,800001ec &lt;_trm_init&gt;
+
+80000010 &lt;check&gt;:
+80000010:	00050463          	beqz	a0,80000018 &lt;check+0x8&gt;
+80000014:	00008067          	ret
+80000018:	ff010113          	addi	sp,sp,-16
+8000001c:	00100513          	li	a0,1
+80000020:	00112623          	sw	ra,12(sp)
+80000024:	1bc000ef          	jal	ra,800001e0 &lt;halt&gt;
+
+80000028 &lt;main&gt;:
+80000028:	fd010113          	addi	sp,sp,-48
+8000002c:	02912223          	sw	s1,36(sp)
+80000030:	03212023          	sw	s2,32(sp)
+80000034:	01312e23          	sw	s3,28(sp)
+80000038:	01412c23          	sw	s4,24(sp)
+8000003c:	02112623          	sw	ra,44(sp)
+80000040:	02812423          	sw	s0,40(sp)
+80000044:	01512a23          	sw	s5,20(sp)
+80000048:	00000917          	auipc	s2,0x0
+8000004c:	20490913          	addi	s2,s2,516 # 8000024c &lt;signed_arr&gt;
+80000050:	00000a17          	auipc	s4,0x0
+80000054:	224a0a13          	addi	s4,s4,548 # 80000274 &lt;unsigned_arr&gt;
+80000058:	ff600993          	li	s3,-10
+8000005c:	00a00493          	li	s1,10
+80000060:	01312023          	sw	s3,0(sp)
+80000064:	00012783          	lw	a5,0(sp)
+80000068:	06f4c663          	blt	s1,a5,800000d4 &lt;main+0xac&gt;
+8000006c:	00012783          	lw	a5,0(sp)
+80000070:	04078863          	beqz	a5,800000c0 &lt;main+0x98&gt;
+80000074:	00092a83          	lw	s5,0(s2)
+80000078:	00012503          	lw	a0,0(sp)
+8000007c:	00012403          	lw	s0,0(sp)
+80000080:	00012783          	lw	a5,0(sp)
+80000084:	02aac533          	div	a0,s5,a0
+80000088:	028ae433          	rem	s0,s5,s0
+8000008c:	02f50533          	mul	a0,a0,a5
+80000090:	00850533          	add	a0,a0,s0
+80000094:	41550533          	sub	a0,a0,s5
+80000098:	00153513          	seqz	a0,a0
+8000009c:	f75ff0ef          	jal	ra,80000010 &lt;check&gt;
+800000a0:	00000513          	li	a0,0
+800000a4:	120ac063          	bltz	s5,800001c4 &lt;main+0x19c&gt;
+800000a8:	00044a63          	bltz	s0,800000bc &lt;main+0x94&gt;
+800000ac:	00012783          	lw	a5,0(sp)
+800000b0:	00012503          	lw	a0,0(sp)
+800000b4:	10f05463          	blez	a5,800001bc &lt;main+0x194&gt;
+800000b8:	00a42533          	slt	a0,s0,a0
+800000bc:	f55ff0ef          	jal	ra,80000010 &lt;check&gt;
+800000c0:	00012783          	lw	a5,0(sp)
+800000c4:	00178793          	addi	a5,a5,1
+800000c8:	00f12023          	sw	a5,0(sp)
+800000cc:	00012783          	lw	a5,0(sp)
+800000d0:	f8f4dee3          	bge	s1,a5,8000006c &lt;main+0x44&gt;
+800000d4:	00490913          	addi	s2,s2,4
+800000d8:	f94914e3          	bne	s2,s4,80000060 &lt;main+0x38&gt;
+800000dc:	00000917          	auipc	s2,0x0
+800000e0:	19890913          	addi	s2,s2,408 # 80000274 &lt;unsigned_arr&gt;
+800000e4:	00000a17          	auipc	s4,0x0
+800000e8:	1b8a0a13          	addi	s4,s4,440 # 8000029c &lt;_bss_start&gt;
+800000ec:	00100993          	li	s3,1
+800000f0:	00a00493          	li	s1,10
+800000f4:	01312223          	sw	s3,4(sp)
+800000f8:	00412783          	lw	a5,4(sp)
+800000fc:	04f4e863          	bltu	s1,a5,8000014c &lt;main+0x124&gt;
+80000100:	00092a83          	lw	s5,0(s2)
+80000104:	00412503          	lw	a0,4(sp)
+80000108:	00412403          	lw	s0,4(sp)
+8000010c:	00412783          	lw	a5,4(sp)
+80000110:	02aad533          	divu	a0,s5,a0
+80000114:	028af433          	remu	s0,s5,s0
+80000118:	02f50533          	mul	a0,a0,a5
+8000011c:	00850533          	add	a0,a0,s0
+80000120:	41550533          	sub	a0,a0,s5
+80000124:	00153513          	seqz	a0,a0
+80000128:	ee9ff0ef          	jal	ra,80000010 &lt;check&gt;
+8000012c:	00412503          	lw	a0,4(sp)
+80000130:	00a43533          	sltu	a0,s0,a0
+80000134:	eddff0ef          	jal	ra,80000010 &lt;check&gt;
+80000138:	00412783          	lw	a5,4(sp)
+8000013c:	00178793          	addi	a5,a5,1
+80000140:	00f12223          	sw	a5,4(sp)
+80000144:	00412783          	lw	a5,4(sp)
+80000148:	faf4fee3          	bgeu	s1,a5,80000104 &lt;main+0xdc&gt;
+8000014c:	00490913          	addi	s2,s2,4
+80000150:	fb4912e3          	bne	s2,s4,800000f4 &lt;main+0xcc&gt;
+80000154:	800007b7          	lui	a5,0x80000
+80000158:	00f12423          	sw	a5,8(sp)
+8000015c:	fff00793          	li	a5,-1
+80000160:	00f12623          	sw	a5,12(sp)
+80000164:	00812503          	lw	a0,8(sp)
+80000168:	00c12783          	lw	a5,12(sp)
+8000016c:	00812403          	lw	s0,8(sp)
+80000170:	00c12703          	lw	a4,12(sp)
+80000174:	02f54533          	div	a0,a0,a5
+80000178:	00812783          	lw	a5,8(sp)
+8000017c:	02e46433          	rem	s0,s0,a4
+80000180:	40f50533          	sub	a0,a0,a5
+80000184:	00153513          	seqz	a0,a0
+80000188:	e89ff0ef          	jal	ra,80000010 &lt;check&gt;
+8000018c:	00143513          	seqz	a0,s0
+80000190:	e81ff0ef          	jal	ra,80000010 &lt;check&gt;
+80000194:	02c12083          	lw	ra,44(sp)
+80000198:	02812403          	lw	s0,40(sp)
+8000019c:	02412483          	lw	s1,36(sp)
+800001a0:	02012903          	lw	s2,32(sp)
+800001a4:	01c12983          	lw	s3,28(sp)
+800001a8:	01812a03          	lw	s4,24(sp)
+800001ac:	01412a83          	lw	s5,20(sp)
+800001b0:	00000513          	li	a0,0
+800001b4:	03010113          	addi	sp,sp,48
+800001b8:	00008067          	ret
+800001bc:	40a00533          	neg	a0,a0
+800001c0:	ef9ff06f          	j	800000b8 &lt;main+0x90&gt;
+800001c4:	ee804ce3          	bgtz	s0,800000bc &lt;main+0x94&gt;
+800001c8:	00012783          	lw	a5,0(sp)
+800001cc:	00012503          	lw	a0,0(sp)
+800001d0:	00f05463          	blez	a5,800001d8 &lt;main+0x1b0&gt;
+800001d4:	40a00533          	neg	a0,a0
+800001d8:	00852533          	slt	a0,a0,s0
+800001dc:	ee1ff06f          	j	800000bc &lt;main+0x94&gt;
+
+800001e0 &lt;halt&gt;:
+800001e0:	00050513          	mv	a0,a0
+800001e4:	00100073          	ebreak
+800001e8:	0000006f          	j	800001e8 &lt;halt+0x8&gt;
+
+800001ec &lt;_trm_init&gt;:
+800001ec:	ff010113          	addi	sp,sp,-16
+800001f0:	00000517          	auipc	a0,0x0
+800001f4:	01c50513          	addi	a0,a0,28 # 8000020c &lt;_etext&gt;
+800001f8:	00112623          	sw	ra,12(sp)
+800001fc:	e2dff0ef          	jal	ra,80000028 &lt;main&gt;
+80000200:	00050513          	mv	a0,a0
+80000204:	00100073          	ebreak
+80000208:	0000006f          	j	80000208 &lt;_trm_init+0x1c&gt;
+</code></pre>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

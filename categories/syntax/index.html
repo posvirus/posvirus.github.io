@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <title>
+Syntax | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="http://localhost:1313/categories/syntax/" >
+  <link href="http://localhost:1313/categories/syntax/index.xml" rel="alternate" type="application/rss+xml" title="" >
+  <link href="http://localhost:1313/categories/syntax/index.xml" rel="feed" type="application/rss+xml" title="" >
+
+
+
+
+<link href="/css/style.min.7024c1556976f6f1d9597254a652a2a9e5d76cdcedd13b379120155e92c9391c.css" rel="stylesheet">
+
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="http://localhost:1313/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="http://localhost:1313/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+
+<div>
+    <div class="listHeader">
+        <h1>Syntax</h1>
+    </div>
+
+    
+
+    <div>
+        
+
+        <a class="postListLink" href="http://localhost:1313/post/ysyx-exec_once/">
+            
+            <div class="postListItem" role="listitem">
+                <div class="postHeader">
+                    <span class="postTitle">exec_once()函数执行逻辑</span>
+                    
+                    <time class="postDate" datetime="2025-07-22">July 22, 2025</time>
+                </div>
+                <div class="postExcerpt">
+                    <p><p>首先，<code>exec_once()</code>会接收<code>Decode</code>结构体指针<code> s</code>，以及当前的PC值<code>pc</code>，<code>pc</code>比较好理解，它通常是通过<code>CPU_state</code>结构体<code>cpu</code>中的<code>pc</code>成员传递的，RV32 ISA的<code>CPU_state</code>结构体定义在<code>isa-def.h</code>中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">word_t</span> gpr[<span style="color:#a6e22e">MUXDEF</span>(CONFIG_RVE, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>)];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">vaddr_t</span> pc;
+</span></span><span style="display:flex;"><span>} <span style="color:#a6e22e">MUXDEF</span>(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
+</span></span></code></pre></div><p>包含一个寄存器堆与PC寄存器，可以这样说，<code>CPU_state</code>结构体定义了处理器核的状态。</p>
+<p><code>Decode</code>结构体被定义在<code>decode.h</code>中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> Decode {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">vaddr_t</span> pc;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">vaddr_t</span> snpc; <span style="color:#75715e">// static next pc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">vaddr_t</span> dnpc; <span style="color:#75715e">// dynamic next pc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ISADecodeInfo isa;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">IFDEF</span>(CONFIG_ITRACE, <span style="color:#66d9ef">char</span> logbuf[<span style="color:#ae81ff">128</span>]);
+</span></span><span style="display:flex;"><span>} Decode;
+</span></span></code></pre></div><p>其定义了当前PC值，以及该指令执行后的下一PC值（这里暂时不说明静态/动态有什么区别），其次，它还定义了一个<code>ISADecodeInfo</code>结构体成员<code>isa</code>，其定义在<code>isa-def.h</code>中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> inst;
+</span></span><span style="display:flex;"><span>} <span style="color:#a6e22e">MUXDEF</span>(CONFIG_RV64, riscv64_ISADecodeInfo, riscv32_ISADecodeInfo);
+</span></span></code></pre></div><p>不难看出，这其实就是当前的指令。</p>
+<p><code>exec_once()</code>接收这两个参数后，会首先将CPU的当前PC值<code>pc</code>传递至<code>s</code>中，并将<code>s</code>中的当前PC值与下一静态PC值均设为CPU的当前PC值<code>pc</code>。</p>
+<p>随后，<code>exec_once()</code>会调用<code>isa_exec_once()</code>函数，并将<code>s</code>传递进入该函数，该函数执行完成后，代表当前指令执行完成，随后<code>exec_once()</code>会将<code>s</code>中的下一动态PC值<code>dnpc</code>置为CPU的当前PC值<code>pc</code>，代表执行完成。</p>
+<p>因此，完成指令执行的核心函数是<code>isa_exec_once()</code>，它被定义在<code>inst.c</code>中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">isa_exec_once</span>(Decode <span style="color:#f92672">*</span>s) {
+</span></span><span style="display:flex;"><span>  s<span style="color:#f92672">-&gt;</span>isa.inst <span style="color:#f92672">=</span> <span style="color:#a6e22e">inst_fetch</span>(<span style="color:#f92672">&amp;</span>s<span style="color:#f92672">-&gt;</span>snpc, <span style="color:#ae81ff">4</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">decode_exec</span>(s);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>其使用<code>inst_fetch()</code>获取当前指令（IF），并使用<code>decode_exec()</code>进行指令译码（ID）与执行（EX）。</p>
+<p><code>inst_fetch()</code>定义在<code>ifetch.h</code>中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">uint32_t</span> <span style="color:#a6e22e">inst_fetch</span>(<span style="color:#66d9ef">vaddr_t</span> <span style="color:#f92672">*</span>pc, <span style="color:#66d9ef">int</span> len) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint32_t</span> inst <span style="color:#f92672">=</span> <span style="color:#a6e22e">vaddr_ifetch</span>(<span style="color:#f92672">*</span>pc, len);
+</span></span><span style="display:flex;"><span>  (<span style="color:#f92672">*</span>pc) <span style="color:#f92672">+=</span> len;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> inst;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>它实际上首先读取了当前PC值对应的指令（并返回），并将<code>s</code>的下一静态PC值加4。其中<code>vaddr_ifetch()</code>定义在<code>vaddr.c</code>中，它目前就是一条简单的读取内存的指令。</p>
+<blockquote>
+<p>这里，我们就可以理解下一静态PC值与下一动态PC值的区别，下一静态PC值是指在物理存储上，存储于当前指令后的下一条指令的地址，在以字节编址的32位CPU上，成立<code>snpc = pc + 4</code>，下一动态PC值则是在当前指令真正执行完成后，对应的下一PC值，由于跳转指令的存在，其与下一静态PC值并不一定一致。</p></p>
+                </div>
+            </div>
+        </a>
+
+
+        
+    </div>
+</div>
+
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
