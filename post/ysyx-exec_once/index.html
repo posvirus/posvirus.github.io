@@ -96,7 +96,7 @@ exec_once()函数执行逻辑 | Posvirus&#39; Blog
     </section>
     
     <div>
-        <p><strong>Created by posvirus, July 22rd, 2025</strong></p>
+        <p><strong>Created by posvirus, July 22nd, 2025</strong></p>
 <p>首先，<code>exec_once()</code>会接收<code>Decode</code>结构体指针<code> s</code>，以及当前的PC值<code>pc</code>，<code>pc</code>比较好理解，它通常是通过<code>CPU_state</code>结构体<code>cpu</code>中的<code>pc</code>成员传递的，RV32 ISA的<code>CPU_state</code>结构体定义在<code>isa-def.h</code>中：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">word_t</span> gpr[<span style="color:#a6e22e">MUXDEF</span>(CONFIG_RVE, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>)];
@@ -131,8 +131,7 @@ exec_once()函数执行逻辑 | Posvirus&#39; Blog
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> inst;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>它实际上首先读取了当前PC值对应的指令（并返回），并将<code>s</code>的下一静态PC值加4。其中<code>vaddr_ifetch()</code>定义在<code>vaddr.c</code>中，它目前就是一条简单的读取内存的指令。</p>
-<blockquote>
-<p>这里，我们就可以理解下一静态PC值与下一动态PC值的区别，下一静态PC值是指在物理存储上，存储于当前指令后的下一条指令的地址，在以字节编址的32位CPU上，成立<code>snpc = pc + 4</code>，下一动态PC值则是在当前指令真正执行完成后，对应的下一PC值，由于跳转指令的存在，其与下一静态PC值并不一定一致。</p></blockquote>
+<p><em>这里，我们就可以理解下一静态PC值与下一动态PC值的区别，下一静态PC值是指在物理存储上，存储于当前指令后的下一条指令的地址，在以字节编址的32位CPU上，成立<code>snpc = pc + 4</code>，下一动态PC值则是在当前指令真正执行完成后，对应的下一PC值，由于跳转指令的存在，其与下一静态PC值并不一定一致。</em></p>
 <p><code>decode_exec()</code>中有较多的宏定义，此处我们修改NEMU的Makefile，使其可以通过：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>make raw
 </span></span></code></pre></div><p>输出NEMU各文件对应的预处理文件，在<code>inst.i</code>中，即可获得对应宏展开的结果。</p>

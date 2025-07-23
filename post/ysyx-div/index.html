@@ -95,7 +95,7 @@
     </section>
     
     <div>
-        <p><strong>Created by posvirus, July 22rd, 2025</strong></p>
+        <p><strong>Created by posvirus, July 22nd, 2025</strong></p>
 <p>在使用<code>-march=rv32im_zicsr</code>对测试程序进行编译时，会发现测试对应的除法与取余操作（有符号/无符号）不能被正确编译至<code>div</code>等RV32M扩展指令，原以为是指令集架构选择错误，后续发现是因为当除数是常量时，（如<code>a / 10</code>），编译器可能用更高效的移位/乘法序列替代除法指令或取余指令，为防止该优化，可以在变量声明前加入<code>volatile</code>关键字，指示该变量随时可变，从而限制其优化。</p>
 <p>以下给出一个可以正确编译出RV32M扩展指令的测试程序：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;trap.h&#34;</span><span style="color:#75715e">

@@ -96,7 +96,7 @@
     </section>
     
     <div>
-        <p><strong>Created by posvirus, July 22rd, 2025</strong></p>
+        <p><strong>Created by posvirus, July 22nd, 2025</strong></p>
 <p>在NPC中使用C++实现存储器时，对NEMU中的存储器写入/读出函数有了一些新的认识，现总结如下：</p>
 <p>此处我们为方便说明，仅考查与物理存储器直接交互的函数，即<code>pmem</code>，NEMU首先在<code>paddr.c</code>中定义了两个<code>static</code>函数，分别为<code>pmem_read()</code>与<code>pmem_write()</code>，用于对<code>pmem</code>进行直接读写。</p>
 <p>同时，因为这两个函数被声明为<code>static</code>，其无法通过其他文件访问/调用，因此<code>paddr.c</code>中还定义了外部访问的接口<code>paddr_read()</code>与<code>paddr_write()</code>，这两个函数会对输入的地址进行有效性检测，随后再通过调用<code>pmem_read()</code>与<code>pmem_write()</code>实现存储器访问。</p>

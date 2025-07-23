@@ -3,7 +3,10 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://posvirus.github.io/</loc>
-    <lastmod>2025-07-22T00:00:00+00:00</lastmod>
+    <lastmod>2025-07-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/about/</loc>
+    <lastmod>2025-07-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/tags/c&#43;&#43;/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
@@ -52,8 +55,5 @@
   </url><url>
     <loc>https://posvirus.github.io/post/ysyx-verilator/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/about/</loc>
-    <lastmod>2019-02-28T00:00:00+00:00</lastmod>
   </url>
 </urlset>

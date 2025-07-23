@@ -95,7 +95,7 @@
     </section>
     
     <div>
-        <p><strong>Created by posvirus, July 22rd, 2025</strong></p>
+        <p><strong>Created by posvirus, July 22nd, 2025</strong></p>
 <p>在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并<code>eval()</code>，而在传统RTL代码编写的Testbench中，仿真步长通常是通过``timescale`声明的，EDA会识别并自动设置仿真步长。</p>
 <p>这种原理上的差异会造成Verilator与传统EDA在仿真时存在两方面的区别：</p>
 <ul>
