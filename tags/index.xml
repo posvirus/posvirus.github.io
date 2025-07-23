@@ -8,8 +8,29 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 23 Jul 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AM</title>
+      <link>https://posvirus.github.io/tags/am/</link>
+      <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/am/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Index</title>
+      <link>https://posvirus.github.io/tags/index/</link>
+      <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/index/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Makefile</title>
+      <link>https://posvirus.github.io/tags/makefile/</link>
+      <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/makefile/</guid>
+      <description></description>
+    </item>
     <item>
       <title>C&#43;&#43;</title>
       <link>https://posvirus.github.io/tags/c&#43;&#43;/</link>
@@ -29,13 +50,6 @@
       <link>https://posvirus.github.io/tags/cpu/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/cpu/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Index</title>
-      <link>https://posvirus.github.io/tags/index/</link>
-      <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/index/</guid>
       <description></description>
     </item>
     <item>

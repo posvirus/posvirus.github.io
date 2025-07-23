@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Index on </title>
-    <link>https://posvirus.github.io/tags/index/</link>
-    <description>Recent content in Index on </description>
+    <title>AM on </title>
+    <link>https://posvirus.github.io/tags/am/</link>
+    <description>Recent content in AM on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Wed, 23 Jul 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/tags/index/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://posvirus.github.io/tags/am/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Posts</title>
-      <link>https://posvirus.github.io/post/</link>
+      <title>AM Makefile解读</title>
+      <link>https://posvirus.github.io/post/ysyx-am-makefile/</link>
       <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/</guid>
-      <description></description>
+      <guid>https://posvirus.github.io/post/ysyx-am-makefile/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

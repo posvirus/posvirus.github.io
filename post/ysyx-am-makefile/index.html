@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+AM Makefile解读 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：AM Makefile解读">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-am-makefile/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>AM Makefile解读</h1>
+    
+    	<p>YSYX学习笔记：AM Makefile解读</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/am/">#AM</a><span></span>
+    <a href="/tags/makefile/">#Makefile</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-07-23">July 23, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>4 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, July 23rd, 2025</strong></p>
+<h3 id="0-提供可读性更强的makefile版本">0. 提供可读性更强的Makefile版本</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">html</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	cat Makefile | sed <span style="color:#e6db74">&#39;s/^\([^#]\)/    \1/g&#39;</span> | markdown_py &gt; Makefile.html
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">.PHONY</span><span style="color:#f92672">:</span> html
+</span></span></code></pre></div><p>首先，该Makefile给出了一个<code>html</code>目标，用于生成可读性更强的Makefile，其具体实现原理是，首先通过<code>cat</code>以输出Makefile的所有内容至标准输出，并通过管道将其传递至<code>sed</code>指令，<code>sed</code>会通过正则表达式匹配所有非注释行，并将所有非注释行的第一个非<code>#</code>字符前加入四个空格。这时，该Makefile的所有注释行在Markdown语法中会被识别为标题；所有非注释行则会被识别为代码块（因为插入了四个空格）<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。</p>
+<p>最后，再调用<code>markdown_py</code>将其转换为HTML格式，并重定向至<code>Makefile.html</code>中。</p>
+<h3 id="1-基本配置与运行检查">1. 基本配置与运行检查</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ifeq</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#66d9ef">$(</span>MAKECMDGOALS<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">,)</span>
+</span></span><span style="display:flex;"><span>  MAKECMDGOALS  <span style="color:#f92672">=</span> image
+</span></span><span style="display:flex;"><span>  .DEFAULT_GOAL <span style="color:#f92672">=</span> image
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">endif</span>
+</span></span></code></pre></div><p>首先，我们会检查Makefile执行的目标，这里通过一个环境变量<code>MAKECMDGOALS</code>引用，当该值为空时，说明我们仅输入了<code>make</code>，此时将<code>MAKECMDGOALS</code>设置为<code>image</code>，代表默认创建一个裸机镜像。同时将另一个环境变量<code>.DEFAULT_GOAL</code>也设置为<code>image</code>，请注意，<code>.DEFAULT_GOALS</code>会真正地将Makefile的执行目标设定为<code>image</code>，而我们此处将<code>MAKECMDGOALS</code>设置为<code>image</code>的目的是为了后续的配置与运行检查。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ifeq</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#66d9ef">$(</span>findstring <span style="color:#66d9ef">$(</span>MAKECMDGOALS<span style="color:#66d9ef">)</span>,clean|clean-all|html<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">,)</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">...</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Checks end here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">endif</span>
+</span></span></code></pre></div><p>其次，我们会使用<code>findstring</code>检查<code>MAKECMDGOALS</code>是否是<code>clean</code>、<code>clean-all</code>、<code>html</code>中的一者，如果是，则该判断为<code>false</code>，我们会跳过该段运行环境检查，这里需要注意的是，<code>ifeq</code>与对应的<code>endif</code>离得很远，需要明确中间的语句均只有在判断为真的时候才执行。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#66d9ef">$(</span>info # Building <span style="color:#66d9ef">$(</span>NAME<span style="color:#66d9ef">)</span>-<span style="color:#66d9ef">$(</span>MAKECMDGOALS<span style="color:#66d9ef">)</span> [<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>]<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>在命令行中输出对应的构建模板，其中<code>MAKECMDGOALS</code>是该Makefile对应的构建目标，<code>NAME</code>是AM其他子目录下的Makefile定义的变量，比如在<code>src</code>下的Makefile对应的<code>NAME</code>为<code>am</code>，而<code>ARCH</code>则为在输入<code>make</code>时指令的架构变量，回忆PA2的前一节，我们在运行<code>cpu-tests</code>时使用过如下形式的<code>make</code>指令进行构建：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>make ARCH<span style="color:#f92672">=</span>$ISA-nemu ALL<span style="color:#f92672">=</span>dummy run
+</span></span></code></pre></div><p>此处我们即指定了<code>ARCH</code>变量对应的值。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ifeq</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#66d9ef">$(</span>wildcard <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span>/am/include/am.h<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">,)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">$(</span>error <span style="color:#66d9ef">$$</span>AM_HOME must be an AbstractMachine repo<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">endif</span>
+</span></span></code></pre></div><p>接着，Makefile会检查环境变量<code>AM_HOME</code>是否设置正确，此处主要使用<code>wildcard</code>查找<code>am.h</code>文件是否存在，如果存在则说明正确。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>ARCHS <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>basename <span style="color:#66d9ef">$(</span>notdir <span style="color:#66d9ef">$(</span>shell ls <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span>/scripts/*.mk<span style="color:#66d9ef">)))</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ifeq</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#66d9ef">$(</span>filter <span style="color:#66d9ef">$(</span>ARCHS<span style="color:#66d9ef">)</span>, <span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">))</span><span style="color:#960050;background-color:#1e0010">,</span> <span style="color:#960050;background-color:#1e0010">)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">$(</span>error Expected <span style="color:#66d9ef">$$</span>ARCH in {<span style="color:#66d9ef">$(</span>ARCHS<span style="color:#66d9ef">)</span>}, Got &#34;<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>&#34;<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">endif</span>
+</span></span></code></pre></div><p>随后，我们会检查通过命令行传输的架构信息<code>ARCH</code>是否在项目中存在对应的Makefile，为此，我们使用<code>ls</code>指令列举<code>scripts</code>子目录下的所有<code>.mk</code>文件，直接运行该指令的输出为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/home/chenwy/ysyx-workbench/abstract-machine/scripts/loongarch32r-nemu.mk  /home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32-nemu.mk
+</span></span><span style="display:flex;"><span>/home/chenwy/ysyx-workbench/abstract-machine/scripts/mips32-nemu.mk        /home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv64-nemu.mk
+</span></span><span style="display:flex;"><span>/home/chenwy/ysyx-workbench/abstract-machine/scripts/native.mk             /home/chenwy/ysyx-workbench/abstract-machine/scripts/spike.mk
+</span></span><span style="display:flex;"><span>/home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32e-nemu.mk      /home/chenwy/ysyx-workbench/abstract-machine/scripts/x86_64-qemu.mk
+</span></span><span style="display:flex;"><span>/home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32e-npc.mk       /home/chenwy/ysyx-workbench/abstract-machine/scripts/x86-nemu.mk
+</span></span><span style="display:flex;"><span>/home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32mini-nemu.mk   /home/chenwy/ysyx-workbench/abstract-machine/scripts/x86-qemu.mk
+</span></span></code></pre></div><p>我们使用<code>notdir</code>函数过滤文件前的文件夹路径，需要指出，<code>notdir</code>是一个Makfile函数而非bash指令。</p>
+<p>接着，我们使用<code>basename</code>指令（这是一条指令）获取这些文件的文件名，并将其赋值给<code>ARCHS</code>，代表AM目前支持的架构集合。进而，我们即可使用<code>filter</code>函数（这同样是一个Makefile函数）判断<code>ARCH</code>对应的架构是否存在于<code>ARCHS</code>中，如不存在则报错。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>ARCH_SPLIT <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>subst -, ,<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>ISA        <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>word 1,<span style="color:#66d9ef">$(</span>ARCH_SPLIT<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>PLATFORM   <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>word 2,<span style="color:#66d9ef">$(</span>ARCH_SPLIT<span style="color:#66d9ef">))</span>
+</span></span></code></pre></div><p>以下，确定架构有效后，我们可以使用<code>subst</code>函数将<code>ARCH</code>连接平台与ISA的连字符<code>-</code>替换为空格，再使用<code>word</code>函数分别提取对应的ISA（如<code>riscv32</code>等）与平台（<code>nemu</code>、<code>qemu</code>与<code>npc</code>等）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ifeq</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#66d9ef">$(</span>flavor SRCS<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">,</span> <span style="color:#960050;background-color:#1e0010">undefined)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">$(</span>error Nothing to build<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">endif</span>
+</span></span></code></pre></div><p>最后，我们使用<code>flavor</code>函数检查<code>SRC</code>，即需要构建的源文件是否被定义，若未定义则同样报错。</p>
+<p>此处需要指出，<code>SRCS</code>与之前的<code>NAME</code>类似，都是通过其他Makefile定义，再包含该Makefile给出的，因此我们事实上无法通过这个Makefile构建某个目标（当然<code>html</code>除外），而应当是其它Makefile调用该Makefile进行构建。</p>
+<p>至此，基本配置与运行检查完毕。</p>
+<h3 id="2-编译目标定义">2. 编译目标定义</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>WORK_DIR  <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>shell pwd<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>DST_DIR   <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>WORK_DIR<span style="color:#66d9ef">)</span>/build/<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">$(</span>shell mkdir -p <span style="color:#66d9ef">$(</span>DST_DIR<span style="color:#66d9ef">))</span>
+</span></span></code></pre></div><p>首先，我们定义工作目录<code>WORK_DIR</code>为当前目录，同时定义编译输出目录<code>DST_DIR</code>为工作目录下<code>build</code>目录中对应的<code>$(ARCH)</code>子目录，并使用<code>mkdir -p</code>创建该目录。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>IMAGE_REL <span style="color:#f92672">=</span> build/<span style="color:#66d9ef">$(</span>NAME<span style="color:#66d9ef">)</span>-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>IMAGE     <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>abspath <span style="color:#66d9ef">$(</span>IMAGE_REL<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>ARCHIVE   <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>WORK_DIR<span style="color:#66d9ef">)</span>/build/<span style="color:#66d9ef">$(</span>NAME<span style="color:#66d9ef">)</span>-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.a
+</span></span></code></pre></div><p>其次，<code>IMAGE_REL</code>定义了最终的可执行文件<code>$(NAME)-$(ARCH)</code>的相对路径，同时使用<code>IMAGE</code>调用<code>abspath</code>函数定义其绝对路径，<code>ARCHIVE</code>则定义了归档文件<code>$(NAME)-$(ARCH).a</code>对应的绝对路径。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>OBJS      <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>addprefix <span style="color:#66d9ef">$(</span>DST_DIR<span style="color:#66d9ef">)</span>/, <span style="color:#66d9ef">$(</span>addsuffix .o, <span style="color:#66d9ef">$(</span>basename <span style="color:#66d9ef">$(</span>SRCS<span style="color:#66d9ef">))))</span>
+</span></span><span style="display:flex;"><span>LIBS     <span style="color:#f92672">:=</span> <span style="color:#66d9ef">$(</span>sort <span style="color:#66d9ef">$(</span>LIBS<span style="color:#66d9ef">)</span> am klib<span style="color:#66d9ef">)</span> <span style="color:#75715e"># lazy evaluation (&#34;=&#34;) causes infinite recursions</span>
+</span></span><span style="display:flex;"><span>LINKAGE   <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>OBJS<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  <span style="color:#66d9ef">$(</span>addsuffix -<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.a, <span style="color:#66d9ef">$(</span>join <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#66d9ef">$(</span>addsuffix /build/, <span style="color:#66d9ef">$(</span>addprefix <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span>/, <span style="color:#66d9ef">$(</span>LIBS<span style="color:#66d9ef">)))</span>, <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#66d9ef">$(</span>LIBS<span style="color:#66d9ef">)</span> <span style="color:#f92672">))</span>
+</span></span></code></pre></div><p>接着，我们定义了编译的输出中间文件文件路径<code>OBJS</code>，该定义首先通过<code>basename</code>指令获取<code>SRCS</code>的文件名，并使用<code>addsuffix</code>函数将文件后缀置为<code>.o</code>，随后使用<code>addprefix</code>将中间文件路径统一指定为输出目录<code>DST_DIR</code>下。</p>
+<p>而我们继续可以定义库文件所在路径<code>LIBS</code>，通过立即赋值<code>:=</code>可以避免该定义被递归展开<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>，同时使用<code>sort</code>避免重复定义，这是因为<code>LIBS</code>可能在其它Makefile中也被定义，因此可能本身就包含<code>am</code>或<code>klib</code>，故此处需要去重处理。</p>
+<p>最后，我们收集所有需要被链接的文件，包括<code>OBJS</code>以及归档文件（如<code>am-$(ARCH).a</code>、<code>klib-$(ARCH).a</code>）。</p>
+<p>这里需要对<code>LINKAGE</code>与<code>ARCHIVE</code>进行一个对比，<code>LINKAGE</code>是我们在生成裸机镜像时需要使用的，所有需要链接的文件，它包含了编译输出的所有中间文件<code>OBJS</code>以及<code>LIBS</code>对应的所有归档文件。而<code>ARCHIVE</code>对应的是一个局部性的概念，是指某一个文件夹调用该Makefile时，生成的归档文件（在该Makefile后续逻辑中我们会知道，生成裸机镜像<code>image</code>与生成归档文件<code>archive</code>是两个相对独立的目标）。因此，在PA2前一节我们运行<code>cpu-tests</code>时，对应的<code>make</code>输出如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#75715e"># Building am-archive [riscv32-nemu]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/trm.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/ioe/ioe.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/ioe/timer.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/ioe/input.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/ioe/gpu.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/ioe/audio.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/ioe/disk.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/platform/nemu/mpe.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">AS</span> <span style="color:#960050;background-color:#1e0010">src/riscv/nemu/start.S</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/riscv/nemu/cte.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">AS</span> <span style="color:#960050;background-color:#1e0010">src/riscv/nemu/trap.S</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/riscv/nemu/vme.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">AR</span> <span style="color:#960050;background-color:#1e0010">-&gt;</span> <span style="color:#960050;background-color:#1e0010">build/am-riscv32-nemu.a</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building klib-archive [riscv32-nemu]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/stdio.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/int64.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/cpp.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/stdlib.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">src/string.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">AR</span> <span style="color:#960050;background-color:#1e0010">-&gt;</span> <span style="color:#960050;background-color:#1e0010">build/klib-riscv32-nemu.a</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">CC</span> <span style="color:#960050;background-color:#1e0010">tests/dummy.c</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Creating image [riscv32-nemu]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">LD</span> <span style="color:#960050;background-color:#1e0010">-&gt;</span> <span style="color:#960050;background-color:#1e0010">build/dummy-riscv32-nemu.elf</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">OBJCOPY</span> <span style="color:#960050;background-color:#1e0010">-&gt;</span> <span style="color:#960050;background-color:#1e0010">build/dummy-riscv32-nemu.bin</span>
+</span></span></code></pre></div><p>我们可以知道，这个<code>make</code>其实包含三个步骤：</p>
+<ul>
+<li><strong>第一步：</strong> 将<code>am</code>目录下的原文件编译，并打包为归档文件<code>am-riscv32-nemu.a</code>（即为<code>ARCHIVE</code>）。</li>
+<li><strong>第二步：</strong> 将<code>klib</code>目录下的原文件编译，并打包为归档文件<code>klib-riscv32-nemu.a</code>（即为<code>ARCHIVE</code>）。</li>
+<li><strong>第三步：</strong> 编译客户程序<code>dummy.c</code>，并将其与之前生成的归档文件一起链接为可执行文件（即为<code>LINKAGE</code>）。</li>
+</ul>
+<h3 id="3-编译选项设置">3. 编译选项设置</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>AS        <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>gcc
+</span></span><span style="display:flex;"><span>CC        <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>gcc
+</span></span><span style="display:flex;"><span>CXX       <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>g++
+</span></span><span style="display:flex;"><span>LD        <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>ld
+</span></span><span style="display:flex;"><span>AR        <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>ar
+</span></span><span style="display:flex;"><span>OBJDUMP   <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>objdump
+</span></span><span style="display:flex;"><span>OBJCOPY   <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>objcopy
+</span></span><span style="display:flex;"><span>READELF   <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>CROSS_COMPILE<span style="color:#66d9ef">)</span>readelf
+</span></span></code></pre></div><p>首先定义交叉编译所需的工具名，这里的<code>CROSS_COMPILE</code>在<code>$(AM_HOME)/scripts/isa</code>中的Makefile被定义。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>INC_PATH <span style="color:#f92672">+=</span> <span style="color:#66d9ef">$(</span>WORK_DIR<span style="color:#66d9ef">)</span>/include <span style="color:#66d9ef">$(</span>addsuffix /include/, <span style="color:#66d9ef">$(</span>addprefix <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span>/, <span style="color:#66d9ef">$(</span>LIBS<span style="color:#66d9ef">)))</span>
+</span></span><span style="display:flex;"><span>INCFLAGS <span style="color:#f92672">+=</span> <span style="color:#66d9ef">$(</span>addprefix -I, <span style="color:#66d9ef">$(</span>INC_PATH<span style="color:#66d9ef">))</span>
+</span></span></code></pre></div><p>随后定义包含的路径，包括当前路径下的<code>include</code>与AM库文件<code>LIBS</code>下的<code>include</code>，并在其前加入<code>-I</code>作为<code>INCFLAGS</code>供编译器使用。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>ARCH_H <span style="color:#f92672">:=</span> arch/<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.h
+</span></span><span style="display:flex;"><span>CFLAGS   <span style="color:#f92672">+=</span> -O2 -MMD -Wall -Werror <span style="color:#66d9ef">$(</span>INCFLAGS<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -D__ISA__<span style="color:#f92672">=</span><span style="color:#ae81ff">\&#34;</span><span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span><span style="color:#ae81ff">\&#34;</span> -D__ISA_<span style="color:#66d9ef">$(</span>shell echo <span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span> | tr a-z A-Z<span style="color:#66d9ef">)</span>__ <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -D__ARCH__<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span> -D__ARCH_<span style="color:#66d9ef">$(</span>shell echo <span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span> | tr a-z A-Z | tr - _<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -D__PLATFORM__<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>PLATFORM<span style="color:#66d9ef">)</span> -D__PLATFORM_<span style="color:#66d9ef">$(</span>shell echo <span style="color:#66d9ef">$(</span>PLATFORM<span style="color:#66d9ef">)</span> | tr a-z A-Z | tr - _<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -DARCH_H<span style="color:#f92672">=</span><span style="color:#ae81ff">\&#34;</span><span style="color:#66d9ef">$(</span>ARCH_H<span style="color:#66d9ef">)</span><span style="color:#ae81ff">\&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>            -Wno-main -U_FORTIFY_SOURCE -fvisibility<span style="color:#f92672">=</span>hidden
+</span></span><span style="display:flex;"><span>CXXFLAGS <span style="color:#f92672">+=</span>  <span style="color:#66d9ef">$(</span>CFLAGS<span style="color:#66d9ef">)</span> -ffreestanding -fno-rtti -fno-exceptions
+</span></span><span style="display:flex;"><span>ASFLAGS  <span style="color:#f92672">+=</span> -MMD <span style="color:#66d9ef">$(</span>INCFLAGS<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>LDFLAGS  <span style="color:#f92672">+=</span> -z noexecstack <span style="color:#66d9ef">$(</span>addprefix -T, <span style="color:#66d9ef">$(</span>LDSCRIPTS<span style="color:#66d9ef">))</span>
+</span></span></code></pre></div><p>这里定义具体的编译/链接选项，此处不作说明。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">-include</span> <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">/scripts/</span><span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">.mk</span>
+</span></span></code></pre></div><p>同时，我们包含<code>ARCH</code>架构的Makefile，对前面的选项进行进一步配置。</p>
+<h3 id="4-目标构建规则">4. 目标构建规则</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#75715e">### Rule (compile): a single `.c` -&gt; `.o` (gcc)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">$(DST_DIR)/%.o</span><span style="color:#f92672">:</span> %.c
+</span></span><span style="display:flex;"><span>	@mkdir -p <span style="color:#66d9ef">$(</span>dir $@<span style="color:#66d9ef">)</span> <span style="color:#f92672">&amp;&amp;</span> echo + CC $&lt;
+</span></span><span style="display:flex;"><span>	@<span style="color:#66d9ef">$(</span>CC<span style="color:#66d9ef">)</span> -std<span style="color:#f92672">=</span>gnu11 <span style="color:#66d9ef">$(</span>CFLAGS<span style="color:#66d9ef">)</span> -c -o $@ <span style="color:#66d9ef">$(</span>realpath $&lt;<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Rule (compile): a single `.cc` -&gt; `.o` (g++)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">$(DST_DIR)/%.o</span><span style="color:#f92672">:</span> %.cc
+</span></span><span style="display:flex;"><span>	@mkdir -p <span style="color:#66d9ef">$(</span>dir $@<span style="color:#66d9ef">)</span> <span style="color:#f92672">&amp;&amp;</span> echo + CXX $&lt;
+</span></span><span style="display:flex;"><span>	@<span style="color:#66d9ef">$(</span>CXX<span style="color:#66d9ef">)</span> -std<span style="color:#f92672">=</span>c++17 <span style="color:#66d9ef">$(</span>CXXFLAGS<span style="color:#66d9ef">)</span> -c -o $@ <span style="color:#66d9ef">$(</span>realpath $&lt;<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Rule (compile): a single `.cpp` -&gt; `.o` (g++)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">$(DST_DIR)/%.o</span><span style="color:#f92672">:</span> %.cpp
+</span></span><span style="display:flex;"><span>	@mkdir -p <span style="color:#66d9ef">$(</span>dir $@<span style="color:#66d9ef">)</span> <span style="color:#f92672">&amp;&amp;</span> echo + CXX $&lt;
+</span></span><span style="display:flex;"><span>	@<span style="color:#66d9ef">$(</span>CXX<span style="color:#66d9ef">)</span> -std<span style="color:#f92672">=</span>c++17 <span style="color:#66d9ef">$(</span>CXXFLAGS<span style="color:#66d9ef">)</span> -c -o $@ <span style="color:#66d9ef">$(</span>realpath $&lt;<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Rule (compile): a single `.S` -&gt; `.o` (gcc, which preprocesses and calls as)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">$(DST_DIR)/%.o</span><span style="color:#f92672">:</span> %.S
+</span></span><span style="display:flex;"><span>	@mkdir -p <span style="color:#66d9ef">$(</span>dir $@<span style="color:#66d9ef">)</span> <span style="color:#f92672">&amp;&amp;</span> echo + AS $&lt;
+</span></span><span style="display:flex;"><span>	@<span style="color:#66d9ef">$(</span>AS<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>ASFLAGS<span style="color:#66d9ef">)</span> -c -o $@ <span style="color:#66d9ef">$(</span>realpath $&lt;<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Rule (recursive make): build a dependent library (am, klib, ...)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">$(LIBS)</span><span style="color:#f92672">:</span> %:
+</span></span><span style="display:flex;"><span>	@<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -s -C <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span>/$* archive
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Rule (link): objects (`*.o`) and libraries (`*.a`) -&gt; `IMAGE.elf`, the final ELF binary to be packed into image (ld)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">$(IMAGE).elf</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">$(</span>LINKAGE<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>LDSCRIPTS<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>	@echo <span style="color:#ae81ff">\#</span> Creating image <span style="color:#f92672">[</span><span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>	@echo + LD <span style="color:#e6db74">&#34;-&gt;&#34;</span> <span style="color:#66d9ef">$(</span>IMAGE_REL<span style="color:#66d9ef">)</span>.elf
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ifneq</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#66d9ef">$(</span>filter <span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>,native<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">,)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#66d9ef">$(</span>CXX<span style="color:#66d9ef">)</span> <span style="color:#960050;background-color:#1e0010">-o</span> <span style="color:#66d9ef">$@</span> <span style="color:#960050;background-color:#1e0010">-Wl,--whole-archive</span> <span style="color:#66d9ef">$(</span>LINKAGE<span style="color:#66d9ef">)</span> <span style="color:#960050;background-color:#1e0010">-Wl,-no-whole-archive</span> <span style="color:#66d9ef">$(</span>LDFLAGS_CXX<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">else</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#960050;background-color:#1e0010">@</span><span style="color:#66d9ef">$(</span>LD<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>LDFLAGS<span style="color:#66d9ef">)</span> <span style="color:#960050;background-color:#1e0010">-o</span> <span style="color:#66d9ef">$@</span> <span style="color:#960050;background-color:#1e0010">--start-group</span> <span style="color:#66d9ef">$(</span>LINKAGE<span style="color:#66d9ef">)</span> <span style="color:#960050;background-color:#1e0010">--end-group</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">endif</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Rule (archive): objects (`*.o`) -&gt; `ARCHIVE.a` (ar)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">$(ARCHIVE)</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">$(</span>OBJS<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>	@echo + AR <span style="color:#e6db74">&#34;-&gt;&#34;</span> <span style="color:#66d9ef">$(</span>shell realpath $@ --relative-to .<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>	@<span style="color:#66d9ef">$(</span>AR<span style="color:#66d9ef">)</span> rcs $@ $^
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">### Rule (`#include` dependencies): paste in `.d` files generated by gcc on `-MMD`
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">-include</span> <span style="color:#66d9ef">$(</span>addprefix <span style="color:#66d9ef">$(</span>DST_DIR<span style="color:#66d9ef">)</span>/, <span style="color:#66d9ef">$(</span>addsuffix .d, <span style="color:#66d9ef">$(</span>basename <span style="color:#66d9ef">$(</span>SRCS<span style="color:#66d9ef">))))</span>
+</span></span></code></pre></div><p>这部分是具体的目标构建规则，不作赘述。</p>
+<h3 id="5-构建顺序定义">5. 构建顺序定义</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">image</span><span style="color:#f92672">:</span> image-dep
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">archive</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">$(</span>ARCHIVE<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">image-dep</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">$(</span>LIBS<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>IMAGE<span style="color:#66d9ef">)</span>.elf
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">.NOTPARALLEL</span><span style="color:#f92672">:</span> image-dep
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">.PHONY</span><span style="color:#f92672">:</span> image image-dep archive run <span style="color:#66d9ef">$(</span>LIBS<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>这部分定义了各个目标的依赖关系，当我们构建裸机镜像<code>image</code>时，需要首先构建<code>$(LIBS)</code>及<code>$(IMAGE).elf</code>，<code>$(IMAGE).elf</code>的构建依赖于<code>LINKAGE</code>，这包含了<code>OBJS</code>与<code>LIBS</code>对应的归档文件两部分，构建<code>$(LIBS)</code>时，我们便会使用<code>make archive</code>创建其对应的归档文件。而<code>OBJS</code>的构建则依赖于目标构建规则中的单文件编译。</p>
+<p>至此，我们大致梳理了AM的Makefile架构及实现原理。</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://zhuanlan.zhihu.com/p/360411198">简书Markdown用法：4个空格标记代码块的说明</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://blog.csdn.net/b876144622/article/details/80372161">Makefile中:=, =, ?=和+=的含义</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
