@@ -96,11 +96,11 @@
     
     <div>
         <p><strong>Created by posvirus, July 22nd, 2025</strong></p>
-<p>在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并<code>eval()</code>，而在传统RTL代码编写的Testbench中，仿真步长通常是通过``timescale`声明的，EDA会识别并自动设置仿真步长。</p>
+<p>在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并<code>eval()</code>，而在传统RTL代码编写的Testbench中，仿真步长通常是通过<code>timescale</code>声明的，EDA会识别并自动设置仿真步长。</p>
 <p>这种原理上的差异会造成Verilator与传统EDA在仿真时存在两方面的区别：</p>
 <ul>
-<li>**性能上的差异：**Verilator的仿真原理其实可概括为“当用户需要时，才对某个时间点采样与<code>eval()</code>”，而传统EDA的仿真原理则可简单理解为“定步长对每个时间点都进行采样与<code>eval()</code>“。因此，Verilator相对而言可以较敏捷地完成仿真，因为在仿真过程中，其实并没有对所有时间点均进行采样与<code>eval()</code>。</li>
-<li>**波形质量上的差异：**传统EDA的定步长仿真使得其仿真获得的波形具有相当高的可信度，基本可以与实测波形等同。但Verilator的波形质量高度依赖于wrapper文件的写法，一个低质量或写法错误的wrapper文件完全有可能生成与实际情况完全不同的波形，举一个简单的例子，假设我们一直仅对模块进行激励而不调用<code>eval()</code>，那么波形不会有任何有效信息，更具体一些，如果我们改变某个端口的激励值而未及时进行<code>eval()</code>，可能导致某个信号值在波形中被错误地延迟一个或多个时钟周期。</li>
+<li><strong>性能上的差异：</strong> Verilator的仿真原理其实可概括为“当用户需要时，才对某个时间点采样与<code>eval()</code>”，而传统EDA的仿真原理则可简单理解为“定步长对每个时间点都进行采样与<code>eval()</code>“。因此，Verilator相对而言可以较敏捷地完成仿真，因为在仿真过程中，其实并没有对所有时间点均进行采样与<code>eval()</code>。</li>
+<li><strong>波形质量上的差异：</strong> 传统EDA的定步长仿真使得其仿真获得的波形具有相当高的可信度，基本可以与实测波形等同。但Verilator的波形质量高度依赖于wrapper文件的写法，一个低质量或写法错误的wrapper文件完全有可能生成与实际情况完全不同的波形，举一个简单的例子，假设我们一直仅对模块进行激励而不调用<code>eval()</code>，那么波形不会有任何有效信息，更具体一些，如果我们改变某个端口的激励值而未及时进行<code>eval()</code>，可能导致某个信号值在波形中被错误地延迟一个或多个时钟周期。</li>
 </ul>
 <p>因此，有必要探究有效的wrapper文件写法，因为当我们需要通过波形对模块进行debug时，我们自然不希望最后发现是wrapper文件的写法导致生成不符合预期的波形。</p>
 <p>首先，我们需要明确，在wrapper文件中，其主要实现了两类操作，第一是<strong>实现激励信号的变化并重新对被测模块进行<code>eval()</code></strong>，第二则是<strong>实现波形中时间的推移</strong>，为此，我们给出一个模式化的wrapper文件写法：</p>
