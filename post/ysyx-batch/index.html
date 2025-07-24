@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+如何让NEMU以批处理模式运行？ | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：如何让NEMU以批处理模式运行？">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-batch/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>如何让NEMU以批处理模式运行？</h1>
+    
+    	<p>YSYX学习笔记：如何让NEMU以批处理模式运行？</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/nemu/">#NEMU</a><span></span>
+    <a href="/tags/makefile/">#Makefile</a><span></span>
+    <a href="/tags/clang/">#Clang</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-07-24">July 24, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>3 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, July 24th, 2025</strong></p>
+<p>首先，通过RTFSC，我们发现NEMU的批处理模式是通过<code>sdb.c</code>中的一个变量<code>is_batch_mode</code>控制的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sdb_mainloop</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (is_batch_mode) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">cmd_c</span>(NULL);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* other logic */</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在sdb的主循环中，当这个变量为<code>true</code>时，会直接通过调用<code>cmd_c()</code>执行用户程序并返回，不再启动sdb。但是这个变量在当前文件声明的默认值为<code>false</code>，如何将其变为<code>true</code>呢？我们很快又会发现<code>sdb_set_batch_mode()</code>这个函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sdb_set_batch_mode</span>() {
+</span></span><span style="display:flex;"><span>  is_batch_mode <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>不难发现，通过调用这个函数就可以让NEMU进入批处理模式！此时我们只需要寻找NEMU在什么位置调用了这个函数，不难发现它的调用位置在<code>monitor.c</code>的<code>parse_args()</code>函数中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">parse_args</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[]) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> option table[] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    {<span style="color:#e6db74">&#34;batch&#34;</span>    , no_argument      , NULL, <span style="color:#e6db74">&#39;b&#39;</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#e6db74">&#34;log&#34;</span>      , required_argument, NULL, <span style="color:#e6db74">&#39;l&#39;</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#e6db74">&#34;diff&#34;</span>     , required_argument, NULL, <span style="color:#e6db74">&#39;d&#39;</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#e6db74">&#34;port&#34;</span>     , required_argument, NULL, <span style="color:#e6db74">&#39;p&#39;</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#e6db74">&#34;help&#34;</span>     , no_argument      , NULL, <span style="color:#e6db74">&#39;h&#39;</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#ae81ff">0</span>          , <span style="color:#ae81ff">0</span>                , NULL,  <span style="color:#ae81ff">0</span> },
+</span></span><span style="display:flex;"><span>  };
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> o;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> ( (o <span style="color:#f92672">=</span> <span style="color:#a6e22e">getopt_long</span>(argc, argv, <span style="color:#e6db74">&#34;-bhl:d:p:&#34;</span>, table, NULL)) <span style="color:#f92672">!=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (o) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;b&#39;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">sdb_set_batch_mode</span>(); <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;p&#39;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">sscanf</span>(optarg, <span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>difftest_port); <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;l&#39;</span><span style="color:#f92672">:</span> log_file <span style="color:#f92672">=</span> optarg; <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;d&#39;</span><span style="color:#f92672">:</span> diff_so_file <span style="color:#f92672">=</span> optarg; <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span> img_file <span style="color:#f92672">=</span> optarg; <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Usage: %s [OPTION...] IMAGE [args]</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>, argv[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">-b,--batch              run with batch mode</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">-l,--log=FILE           output log to FILE</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">-d,--diff=REF_SO        run DiffTest with reference REF_SO</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">-p,--port=PORT          run DiffTest with port PORT</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这段代码是用于解析<code>init_monitor()</code>函数传入的<code>argc</code>与<code>argv</code>参数的，而<code>init_monitor()</code>的<code>argc</code>与<code>argv</code>参数又是通过<code>main()</code>函数传递的，不难发现，当参数中包括<code>-b</code>一项时，就会使得NEMU进入批处理模式。</p>
+<p>那么，我们可以回忆一下，我们是如何运行NEMU的？似乎是通过Makefile构建一个<code>run</code>的目标实现的，因此，我们需要进一步去寻找<code>run</code>对应的构建规则，它在<code>nemu/scripts/native.mk</code>下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>IMG <span style="color:#f92672">?=</span>
+</span></span><span style="display:flex;"><span>NEMU_EXEC <span style="color:#f92672">:=</span> <span style="color:#66d9ef">$(</span>BINARY<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>ARGS<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>IMG<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">run-env</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">$(</span>BINARY<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>DIFF_REF_SO<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">run</span><span style="color:#f92672">:</span> run-env
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>call git_commit, <span style="color:#e6db74">&#34;run NEMU&#34;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>NEMU_EXEC<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>不难发现，当构建<code>run</code>这个目标时，会使用<code>NEMU_EXEC</code>构建NEMU，而参数又是通过<code>ARGS</code>来传递的，那么，当我们运行AM时，是通过什么方式传递<code>ARGS</code>参数的呢？在AM的<code>scripts/platform/nemu.mk</code>中，我们不难发现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>NEMUFLAGS <span style="color:#f92672">+=</span> -l <span style="color:#66d9ef">$(</span>shell dirname <span style="color:#66d9ef">$(</span>IMAGE<span style="color:#66d9ef">)</span>.elf<span style="color:#66d9ef">)</span>/nemu-log.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">/*</span> <span style="color:#960050;background-color:#1e0010">other</span> <span style="color:#960050;background-color:#1e0010">logic</span> <span style="color:#960050;background-color:#1e0010">*/</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">run</span><span style="color:#f92672">:</span> insert-arg
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> ISA<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span> run ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>NEMUFLAGS<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>IMAGE<span style="color:#66d9ef">)</span>.bin
+</span></span></code></pre></div><p>因此，当AM运行NEMU时，会通过命令行直接传递<code>ARGS</code>参数，而对应需要传递的参数由<code>NEMUFLAGS</code>指定，因此，我们最终只需添加：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>NEMUFLAGS <span style="color:#f92672">+=</span> -b
+</span></span></code></pre></div><p>即可实现默认以批处理模式运行NEMU。在<code>cpu-tests</code>路径下重新运行一遍全部测试：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>make ARCH<span style="color:#f92672">=</span>riscv32-nemu run
+</span></span></code></pre></div><p>发现确实在运行NEMU时不会再启用sdb了：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Building recursion-run [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building am-archive [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building klib-archive [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span>+ CC tests/recursion.c
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Creating image [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span>+ LD -&gt; build/recursion-riscv32-nemu.elf
+</span></span><span style="display:flex;"><span>+ OBJCOPY -&gt; build/recursion-riscv32-nemu.bin
+</span></span><span style="display:flex;"><span>mainargs<span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/utils/log.c:30 init_log<span style="color:#f92672">]</span> Log is written to /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/nemu-log.txt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/memory/paddr.c:50 init_mem<span style="color:#f92672">]</span> physical memory area <span style="color:#f92672">[</span>0x80000000, 0x87ffffff<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:61 load_img<span style="color:#f92672">]</span> The image is /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/recursion-riscv32-nemu.bin, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">728</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:28 welcome<span style="color:#f92672">]</span> Trace: ON
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:29 welcome<span style="color:#f92672">]</span> If trace is enabled, a log file will be generated to record the trace. This may lead to a large log file. If it is not necessary, you can disable it in menuconfig
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:32 welcome<span style="color:#f92672">]</span> Build time: 20:17:19, Jul <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">2025</span>
+</span></span><span style="display:flex;"><span>Welcome to riscv32-NEMU!
+</span></span><span style="display:flex;"><span>For help, type <span style="color:#e6db74">&#34;help&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:124 cpu_exec<span style="color:#f92672">]</span> nemu: HIT GOOD TRAP at pc <span style="color:#f92672">=</span> 0x8000026c
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:92 statistic<span style="color:#f92672">]</span> host time spent <span style="color:#f92672">=</span> 4,025 us
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:93 statistic<span style="color:#f92672">]</span> total guest instructions <span style="color:#f92672">=</span> 4,545
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:94 statistic<span style="color:#f92672">]</span> simulation frequency <span style="color:#f92672">=</span> 1,129,192 inst/s
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building div-run [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building am-archive [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Building klib-archive [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span>+ CC tests/div.c
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Creating image [riscv32-nemu]</span>
+</span></span><span style="display:flex;"><span>+ LD -&gt; build/div-riscv32-nemu.elf
+</span></span><span style="display:flex;"><span>+ OBJCOPY -&gt; build/div-riscv32-nemu.bin
+</span></span><span style="display:flex;"><span>mainargs<span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/utils/log.c:30 init_log<span style="color:#f92672">]</span> Log is written to /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/nemu-log.txt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/memory/paddr.c:50 init_mem<span style="color:#f92672">]</span> physical memory area <span style="color:#f92672">[</span>0x80000000, 0x87ffffff<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:61 load_img<span style="color:#f92672">]</span> The image is /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/div-riscv32-nemu.bin, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">404</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:28 welcome<span style="color:#f92672">]</span> Trace: ON
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:29 welcome<span style="color:#f92672">]</span> If trace is enabled, a log file will be generated to record the trace. This may lead to a large log file. If it is not necessary, you can disable it in menuconfig
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/monitor/monitor.c:32 welcome<span style="color:#f92672">]</span> Build time: 20:17:19, Jul <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">2025</span>
+</span></span><span style="display:flex;"><span>Welcome to riscv32-NEMU!
+</span></span><span style="display:flex;"><span>For help, type <span style="color:#e6db74">&#34;help&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:124 cpu_exec<span style="color:#f92672">]</span> nemu: HIT GOOD TRAP at pc <span style="color:#f92672">=</span> 0x80000124
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:92 statistic<span style="color:#f92672">]</span> host time spent <span style="color:#f92672">=</span> <span style="color:#ae81ff">877</span> us
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:93 statistic<span style="color:#f92672">]</span> total guest instructions <span style="color:#f92672">=</span> <span style="color:#ae81ff">868</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>src/cpu/cpu-exec.c:94 statistic<span style="color:#f92672">]</span> simulation frequency <span style="color:#f92672">=</span> 989,737 inst/s
+</span></span></code></pre></div>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
