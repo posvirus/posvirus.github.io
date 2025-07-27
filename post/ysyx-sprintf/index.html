@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+功能更强大的sprintf()函数 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：功能更强大的sprintf()函数">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-sprintf/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>功能更强大的sprintf()函数</h1>
+    
+    	<p>YSYX学习笔记：功能更强大的sprintf()函数</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/clang/">#Clang</a><span></span>
+    <a href="/tags/stdio/">#Stdio</a><span></span>
+    <a href="/tags/am/">#AM</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-07-27">July 27, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>6 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, July 27th, 2025</strong></p>
+<p>在PA2中，笔者被要求实现一个简单的<code>sprintf()</code>函数，其目前仅需实现对<code>%s</code>与<code>%d</code>标识符的支持即可。此处，笔者对其进行了进一步增强，使其可支持更多种标识符，并具有扩展实现更多标识符的能力，其目前可支持的标识符列举如下：</p>
+<table>
+  <thead>
+      <tr>
+          <th>标识符</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>%d</code></td>
+          <td>位宽不限的十进制有符号数</td>
+      </tr>
+      <tr>
+          <td><code>%u</code></td>
+          <td>位宽不限的十进制无符号数</td>
+      </tr>
+      <tr>
+          <td><code>%o</code></td>
+          <td>位宽不限的八进制无符号数</td>
+      </tr>
+      <tr>
+          <td><code>%x</code></td>
+          <td>位宽不限的十六进制无符号数（字母小写）</td>
+      </tr>
+      <tr>
+          <td><code>%X</code></td>
+          <td>位宽不限的十六进制无符号数（字母小写）</td>
+      </tr>
+      <tr>
+          <td><code>%lu</code></td>
+          <td>位宽不限的无符号整型</td>
+      </tr>
+      <tr>
+          <td><code>%llu</code></td>
+          <td>位宽不限的无符号长整型</td>
+      </tr>
+      <tr>
+          <td><code>%s</code></td>
+          <td>字符串</td>
+      </tr>
+      <tr>
+          <td><code>%c</code></td>
+          <td>单个字符</td>
+      </tr>
+      <tr>
+          <td><code>%p</code></td>
+          <td>指针地址</td>
+      </tr>
+      <tr>
+          <td><code>%%</code></td>
+          <td>字符<code>%</code></td>
+      </tr>
+  </tbody>
+</table>
+<p>此处，为保证<code>sprintf()</code>函数具有识别更多标识符的扩展性，在编写<code>sprint()</code>函数时采用了模块化设计，其设计原理类似于NEMU表达式求值中对表达式中token的提取，以下是具体实现：</p>
+<p><code>sprintf()</code>函数分三个阶段，第一阶段是对含标识符字符串的解析，第二阶段是对标识符对应参数的转换，第三阶段则是目标字符串的生成。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* sprintf arguments */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">enum</span> {
+</span></span><span style="display:flex;"><span>  SP_CHAR, SP_UDEC, SP_UUSG, SP_UOCT,
+</span></span><span style="display:flex;"><span>  SP_Uhex, SP_UHEX, SP_ULOU, SP_ULLU, 
+</span></span><span style="display:flex;"><span>  SP_USTR, SP_USCH, SP_UPTR,
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* sprintf tokens */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> sp_token {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> type;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> str[<span style="color:#ae81ff">256</span>];
+</span></span><span style="display:flex;"><span>} SP_Token;
+</span></span></code></pre></div><p>在第一阶段，我们首先定义了若干枚举变量，用于代表各种标识符类型（以及普通单字符），其次，我们定义结构体<code>SP_Token</code>，该结构体用于存储对含标识符字符串的解析结果，每个结构体代表从含标识符字符串解析出的一个token，包含该token的类型<code>type</code>（属于枚举变量中的一者）与<code>token</code>对应转换后的字符串<code>str</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> SP_Token sp_tokens[SP_NR_MAX] <span style="color:#a6e22e">__attribute__</span>((used)) <span style="color:#f92672">=</span> {};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> nr_sp_token <span style="color:#a6e22e">__attribute__</span>((used)) <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span></code></pre></div><p>同时，我们在<code>stdio.c</code>中定义全局静态<code>SP_Token</code>数组<code>sp_tokens</code>，用于存储每次对含标识符字符串的解析结果，同时定义<code>nr_sp_token</code>指示当前解析结果的token数量。</p>
+<p>以下，我们定义静态函数<code>sp_make_token()</code>完成对含标识符字符串的解析：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">sp_make_token</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>fmt) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> position <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  nr_sp_token <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> (fmt[position] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;\0&#39;</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/* Try all types one by one */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;%&#39;</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// basic char
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_CHAR;
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>      sp_tokens[nr_sp_token].str[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> fmt[position];
+</span></span><span style="display:flex;"><span>      sp_tokens[nr_sp_token].str[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>      nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>      position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;      
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %d, unlimited length decimal
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;d&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_UDEC;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %u, unlimited length unsign
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;u&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_UUSG;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %o, unlimited length octal
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;o&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_UOCT;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %x, unlimited length hexadecimal (lower)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;x&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_Uhex;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %X, unlimited length hexadecimal (upper)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;X&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_UHEX;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span>(fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;l&#39;</span>) {
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// %lu, unlimited length uint32_t
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;u&#39;</span>) {
+</span></span><span style="display:flex;"><span>          sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_ULOU;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>          position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;l&#39;</span>) {
+</span></span><span style="display:flex;"><span>          position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// %llu, unlimited length uint64_t
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;u&#39;</span>) {
+</span></span><span style="display:flex;"><span>            sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_ULLU;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>            position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>          }
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">return</span> false;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> false;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %s, unlimited length string
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;s&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_USTR;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %c, single char
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;c&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_USCH;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %p, value of a pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;p&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_UPTR;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// %%, char &#39;%&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (fmt[position] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;%&#39;</span>) {
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_CHAR;
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].str[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> fmt[position];
+</span></span><span style="display:flex;"><span>        sp_tokens[nr_sp_token].str[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>      
+</span></span><span style="display:flex;"><span>        nr_sp_token <span style="color:#f92672">=</span> nr_sp_token <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        position <span style="color:#f92672">=</span> position <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;      
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> false;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// EOL token (to make sure)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  sp_tokens[nr_sp_token].type <span style="color:#f92672">=</span> SP_CHAR;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  sp_tokens[nr_sp_token].str[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> fmt[position];
+</span></span><span style="display:flex;"><span>  sp_tokens[nr_sp_token].str[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> true;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>此处的解析逻辑与表达式求值中的token解析逻辑类似，只是此处我们实现的是基本的库函数，因此无法使用正则表达式进行快速匹配，需要逐字符进行判断。在该函数中，我们会将含标识符字符串顺序转换为token数组，同时指明各token类型<code>type</code>。对普通字符，我们在该函数中还会指明其token在标识符转换后的字符串<code>str</code>（因其无需转换，但是需要在普通字符后追加<code>'\0'</code>）。</p>
+<p>完成token解析逻辑后，我们可在<code>sprintf()</code>函数中调用该函数，并进行第二、三阶段的实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sprintf</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>out, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>fmt, ...) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// detect invalid behavior
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">sp_make_token</span>(fmt)) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;    
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// va-args initialization
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  va_list args;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">va_start</span>(args, fmt);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// args-to-string convert
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> nr_sp_token; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (sp_tokens[i].type) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_CHAR:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// directly skip
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_UDEC:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str-to-dec convert
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2sig</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">int</span>), sp_tokens[i].str, <span style="color:#ae81ff">10</span>, false);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_UUSG:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str-to-unsign convert
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2u</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>), sp_tokens[i].str);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_UOCT:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str-to-oct convert
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2sig</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">int</span>), sp_tokens[i].str, <span style="color:#ae81ff">8</span>, false);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_Uhex:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str-to-hex convert (lower)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2sig</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">int</span>), sp_tokens[i].str, <span style="color:#ae81ff">16</span>, false);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_UHEX:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str-to-hex convert (upper)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2sig</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">int</span>), sp_tokens[i].str, <span style="color:#ae81ff">16</span>, true);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_ULOU:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str-to-long-unsign convert
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2lu</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">size_t</span>), sp_tokens[i].str);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_ULLU:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str-to-long-long-unsign convert
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2llu</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span>), sp_tokens[i].str);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_USTR:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// str copy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">strcpy</span>(sp_tokens[i].str, <span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>));
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_USCH:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// char copy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      sp_tokens[i].str[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span>) <span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">int</span>);
+</span></span><span style="display:flex;"><span>      sp_tokens[i].str[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> SP_UPTR:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// pointer value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">str2ptr</span>(<span style="color:#a6e22e">va_arg</span>(args, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>), sp_tokens[i].str);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// do nothing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// end of args extraction
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">va_end</span>(args);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// str-cat to result str
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">strcpy</span>(out, sp_tokens[<span style="color:#ae81ff">0</span>].str);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;</span> nr_sp_token; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">strcat</span>(out, sp_tokens[i].str);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strlen</span>(out);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>首先，我们会进行含标识符字符串的解析，并判断解析结果是否成功，若不成功，则返回一个负值（<code>sprintf()</code>函数的逻辑是，当函数执行成功，会返回打印字符串的长度，反之会返回一个负值）。</p>
+<p>其次，我们使用<code>stdarg.h</code>库中的相关函数，逐个解析标识符对应的参数并转换成字符串，赋值给对应token的<code>str</code>变量。此处需要实现多个数据类型向字符串转换的函数，由于笔者并不希望实现标准库中功能较复杂的转换函数，因此此处的函数均自由命名，并被声明为静态函数防止外部调用。</p>
+<p>我们可以简单以指针向字符串的转换函数为例进行说明：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">str2ptr</span>(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>num, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>re) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// avoid illegal input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">assert</span>(re <span style="color:#f92672">!=</span> NULL);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> re;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> num_buf[<span style="color:#ae81ff">32</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>}; <span style="color:#75715e">// number buffer (fixed width)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> ptr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">size_t</span> unum <span style="color:#f92672">=</span> (<span style="color:#66d9ef">size_t</span>) num;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">size_t</span> udiv;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// NULL pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (num <span style="color:#f92672">==</span> NULL) {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;(&#39;</span>; pre<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;n&#39;</span>; pre<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;i&#39;</span>; pre<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;l&#39;</span>; pre<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;)&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> re;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;0&#39;</span>; pre<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;x&#39;</span>; pre<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// loop for conversion
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">while</span> (unum <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    udiv <span style="color:#f92672">=</span> unum <span style="color:#f92672">%</span> <span style="color:#ae81ff">16</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (udiv <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">10</span>) {
+</span></span><span style="display:flex;"><span>      num_buf[ptr<span style="color:#f92672">++</span>] <span style="color:#f92672">=</span> udiv <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;0&#39;</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      num_buf[ptr<span style="color:#f92672">++</span>] <span style="color:#f92672">=</span> udiv <span style="color:#f92672">-</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;a&#39;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    unum <span style="color:#f92672">=</span> unum <span style="color:#f92672">/</span> <span style="color:#ae81ff">16</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// number order inversion
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ptr; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> num_buf[ptr<span style="color:#f92672">-</span>i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]; pre<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// add EOL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">*</span>pre <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> re;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>该函数接收指针<code>num</code>，并将字符串转换结果赋值给<code>re</code>，为此，首先我们需要判断指针<code>num</code>是否为<code>NULL</code>，如是，则按标准形式直接返回字符串<code>(nil)</code>；其次，我们将指针<code>num</code>强制类型转换为<code>uint32_t</code>类型变量<code>unum</code>（因为目前实现的处理器是32位地址）；最后，我们仅需将<code>unum</code>转换为字符串即可，这在实现上是简单的。同时需注意，指针地址为<code>0x...</code>的形式，以十六进制（小写）打印，在实现时需要额外增加逻辑。</p>
+<p>在第三阶段，我们仅需通过循环，使用<code>strcat()</code>函数将所有的token对应的字符串进行拼接即可（当然，对第一个token，我们需要使用<code>strcpy()</code>）。</p>
+<p>另外，我们额外编写了用于测试<code>sprintf()</code>函数的客户程序，其在native与NEMU下均可通过测试：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;trap.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span> buf[<span style="color:#ae81ff">128</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// basic string
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;%s&#34;</span>, <span style="color:#e6db74">&#34;Hello world!&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Hello world!&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// decimal format
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;%d + %d = %d&#34;</span>, <span style="color:#ae81ff">117</span>, <span style="color:#ae81ff">12806</span>, <span style="color:#ae81ff">12923</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;117 + 12806 = 12923&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;%d + %d = %d&#34;</span>, <span style="color:#ae81ff">117</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">12806</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">12689</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;117 + -12806 = -12689&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;0x%x in hex is %d&#34;</span>, <span style="color:#ae81ff">255</span>, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;0xff in hex is 255&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// unsigned
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;%u&#34;</span>, <span style="color:#ae81ff">4294967295U</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;4294967295&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// octal
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Octal: %o&#34;</span>, <span style="color:#ae81ff">63</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Octal: 77&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// hexadecimal (case specify)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Hex lower: %x&#34;</span>, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Hex lower: ff&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Hex upper: %X&#34;</span>, <span style="color:#ae81ff">0xBCDAABCD</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Hex upper: BCDAABCD&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// unsigned long
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Long: %lu&#34;</span>, <span style="color:#ae81ff">123456789UL</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Long: 123456789&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// unsigned long long
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Long long: %llu&#34;</span>, <span style="color:#ae81ff">1234567890123456ULL</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Long long: 1234567890123456&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// char
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Char: %c&#34;</span>, <span style="color:#e6db74">&#39;A&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Char: A&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>x <span style="color:#f92672">=</span> (<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x0061fe1c</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Pointer: %p&#34;</span>, x);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Pointer: 0x61fe1c&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// NULL pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Null ptr: %p&#34;</span>, NULL);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Null ptr: (nil)&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// mixed format
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Mixed: %d %s %c 0x%x&#34;</span>, <span style="color:#ae81ff">42</span>, <span style="color:#e6db74">&#34;test&#34;</span>, <span style="color:#e6db74">&#39;Z&#39;</span>, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Mixed: 42 test Z 0xff&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// boundary value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Min int: %d, Max uint: %u&#34;</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">2147483647</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4294967295U</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Min int: -2147483648, Max uint: 4294967295&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// special string
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;Newline: %s&#34;</span>, <span style="color:#e6db74">&#34;a</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">b&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;Newline: a</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">b&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// char &#39;%&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sprintf</span>(buf, <span style="color:#e6db74">&#34;100%% guaranteed&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">check</span>(<span style="color:#a6e22e">strcmp</span>(buf, <span style="color:#e6db74">&#34;100% guaranteed&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在测试指针的程序段中，我们对指针进行直接赋值，并通过<code>volatile</code>关键字防止编译器优化。</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

@@ -8,20 +8,34 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Thu, 24 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 27 Jul 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AM</title>
+      <link>https://posvirus.github.io/tags/am/</link>
+      <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/am/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Clang</title>
       <link>https://posvirus.github.io/tags/clang/</link>
-      <pubDate>Thu, 24 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/clang/</guid>
       <description></description>
     </item>
     <item>
       <title>Index</title>
       <link>https://posvirus.github.io/tags/index/</link>
-      <pubDate>Thu, 24 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/index/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Stdio</title>
+      <link>https://posvirus.github.io/tags/stdio/</link>
+      <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/stdio/</guid>
       <description></description>
     </item>
     <item>
@@ -36,13 +50,6 @@
       <link>https://posvirus.github.io/tags/nemu/</link>
       <pubDate>Thu, 24 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/nemu/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>AM</title>
-      <link>https://posvirus.github.io/tags/am/</link>
-      <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/am/</guid>
       <description></description>
     </item>
     <item>
