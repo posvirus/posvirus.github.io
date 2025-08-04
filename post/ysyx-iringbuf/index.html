@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+指令环形缓冲器实现 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：指令环形缓冲器实现">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-iringbuf/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>指令环形缓冲器实现</h1>
+    
+    	<p>YSYX学习笔记：指令环形缓冲器实现</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/clang/">#Clang</a><span></span>
+    <a href="/tags/nemu/">#NEMU</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-08-04">August 4, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>2 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, August 4th, 2025</strong></p>
+<p>指令环形缓冲器（Instruction Ring Buffer, 下文简称IRB）的实现基于一个简化的环形缓冲器结构，具体而言，其可基于一个仅具有循环（覆盖）写入的队列实现，且队列单次写入的数据量均为1（即单个指令对应的反汇编输出）。基于上述分析，我们可定义如下的IRB：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define NR_RB 16
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// instruction register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> ireg {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> logbuf[<span style="color:#ae81ff">128</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> valid;
+</span></span><span style="display:flex;"><span>} IReg;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// instruction ring buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> iringbuffer {
+</span></span><span style="display:flex;"><span>  IReg i_buf[NR_RB];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> end;
+</span></span><span style="display:flex;"><span>} IRingBuffer;
+</span></span></code></pre></div><p>上述代码中，一个固定容量为16的IRB由<code>iringbuffer</code>结构体定义，其中包含存储指令反汇编输出的结构体数组<code>i_buf</code>，以及用于存储当前写入的数组元素索引<code>end</code>，对于存储指令反汇编输出的结构体<code>ireg</code>，其包含定长字符数组<code>logbuf</code>与标记存储内容有效的指示位<code>valid</code>。</p>
+<p>以下，我们可以使用实现监视点的类似方法，直接例化一个全局静态的IRB，使NEMU可通过我们提供的接口对IRB进行操作：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> IRingBuffer iring_buf;
+</span></span></code></pre></div><p>对IRB的操作可分为三种：对IRB的初始化、对IRB的单次写入与IRB的内容输出。为此，我们定义了如下三种方法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// initialize instruction ring buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">IRingBuffer_init</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// write one log into instruction ring buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">IRingBuffer_write</span>(<span style="color:#66d9ef">vaddr_t</span> pc, <span style="color:#66d9ef">vaddr_t</span> snpc, <span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>inst);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// print contents of instruction ring buffer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">IRingBuffer_print</span>();
+</span></span></code></pre></div><p><code>IRingBuffer_init()</code>函数实现如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">IRingBuffer_init</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> NR_RB; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    iring_buf.i_buf[i].valid <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  iring_buf.end <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Log</span>(<span style="color:#e6db74">&#34;Instruction ring buffer initialization success. Buffer storage: %d insts.&#34;</span>, NR_RB);
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>IRB的初始化较为简单，我们仅需将<code>i_buf</code>所有元素的指示位置零，并将索引<code>end</code>指向数组首个元素即可。同时，IRB的初始化可在NEMU monitor的初始化函数<code>init_monitor()</code>中实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* Initialize the instruction ring buffer. */</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">IFDEF</span>(CONFIG_ITRACE, <span style="color:#a6e22e">IRingBuffer_init</span>());
+</span></span></code></pre></div><p><code>IRingBuffer_write()</code>函数的实现如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">IRingBuffer_write</span>(<span style="color:#66d9ef">vaddr_t</span> pc, <span style="color:#66d9ef">vaddr_t</span> snpc, <span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>inst) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// check illegal inst input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (inst <span style="color:#f92672">==</span> NULL) <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>p <span style="color:#f92672">=</span> iring_buf.i_buf[iring_buf.end].logbuf;
+</span></span><span style="display:flex;"><span>  p <span style="color:#f92672">+=</span> <span style="color:#a6e22e">snprintf</span>(p, <span style="color:#66d9ef">sizeof</span>(iring_buf.i_buf[iring_buf.end].logbuf), FMT_WORD <span style="color:#e6db74">&#34;:&#34;</span>, pc);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> i;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> ilen <span style="color:#f92672">=</span> snpc <span style="color:#f92672">-</span> pc;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef CONFIG_ISA_x86
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ilen; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> ilen <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>; i<span style="color:#f92672">--</span>) {
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    p <span style="color:#f92672">+=</span> <span style="color:#a6e22e">snprintf</span>(p, <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34; %02x&#34;</span>, inst[i]);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> ilen_max <span style="color:#f92672">=</span> <span style="color:#a6e22e">MUXDEF</span>(CONFIG_ISA_x86, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">4</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> space_len <span style="color:#f92672">=</span> ilen_max <span style="color:#f92672">-</span> ilen;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (space_len <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) space_len <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  space_len <span style="color:#f92672">=</span> space_len <span style="color:#f92672">*</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">memset</span>(p, <span style="color:#e6db74">&#39; &#39;</span>, space_len);
+</span></span><span style="display:flex;"><span>  p <span style="color:#f92672">+=</span> space_len;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">disassemble</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>str, <span style="color:#66d9ef">int</span> size, <span style="color:#66d9ef">uint64_t</span> pc, <span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>code, <span style="color:#66d9ef">int</span> nbyte);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">disassemble</span>(p, iring_buf.i_buf[iring_buf.end].logbuf <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(iring_buf.i_buf[iring_buf.end].logbuf) <span style="color:#f92672">-</span> p,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">MUXDEF</span>(CONFIG_ISA_x86, snpc, pc), inst, ilen);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  iring_buf.i_buf[iring_buf.end].valid <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// end pointer increment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  iring_buf.end <span style="color:#f92672">=</span> (iring_buf.end <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> NR_RB;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>该函数接收当前取值的PC值<code>pc</code>、下一静态PC值<code>snpc</code>与当前取出的指令<code>inst</code>，并通过<code>exec_once()</code>函数中相同的解码方式将其转换为反汇编输出存储至<code>i_buf</code>中，并将对应指示位置位。随后，将数组索引递增，此处通过模运算使数组索引不发生越界，并实现覆盖写入的功能。</p>
+<p>我们可在<code>isa_exec_once()</code>函数中调用该函数，该函数应当在指令取指后立刻被调用，因为如果当前指令执行出错，我们也需要在NEMU异常退出前存储当前指令的反汇编输出：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">isa_exec_once</span>(Decode <span style="color:#f92672">*</span>s) {
+</span></span><span style="display:flex;"><span>  s<span style="color:#f92672">-&gt;</span>isa.inst <span style="color:#f92672">=</span> <span style="color:#a6e22e">inst_fetch</span>(<span style="color:#f92672">&amp;</span>s<span style="color:#f92672">-&gt;</span>snpc, <span style="color:#ae81ff">4</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef CONFIG_ITRACE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">IRingBuffer_write</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>snpc, (<span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>s<span style="color:#f92672">-&gt;</span>isa.inst);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">decode_exec</span>(s);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>IRingBuffer_print()</code>函数的实现如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">IRingBuffer_print</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> NR_RB; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (iring_buf.i_buf[i].valid <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (((i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> NR_RB) <span style="color:#f92672">==</span> iring_buf.end) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;  --&gt; %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, iring_buf.i_buf[i].logbuf);
+</span></span><span style="display:flex;"><span>      } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;      %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, iring_buf.i_buf[i].logbuf);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>此处，我们分两种情况打印<code>i_buf</code>中的反汇编输出，当<code>((i + 1) % NR_RB) == iring_buf.end</code>为真时，代表当前指令为程序发生异常时执行的指令（因为在写入反汇编输出后会对索引递增，故此处使用<code>i+1</code>），使用<code>--&gt;</code>标识该指令，其余指令均正常打印即可。</p>
+<p>该函数可插入NEMU异常终止的所有程序段中，目前仅插入<code>assert_fail_msg()</code>函数中，后续可通过更多测试继续完善。</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
