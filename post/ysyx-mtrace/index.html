@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+mtrace实现的注意事项 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：mtrace实现的注意事项">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-mtrace/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>mtrace实现的注意事项</h1>
+    
+    	<p>YSYX学习笔记：mtrace实现的注意事项</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/nemu/">#NEMU</a><span></span>
+    <a href="/tags/clang/">#Clang</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-08-07">August 7, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>2 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, August 7th, 2025</strong></p>
+<p>mtrace本身实现非常简单，此处仅列举在实现过程中遇到的若干细节：</p>
+<h3 id="1-mtrace写入nemu-log文件">1. mtrace写入NEMU Log文件</h3>
+<p>对于mtrace这种大规模输出，我们不能仅通过<code>printf()</code>函数将其打印在终端上，而要将其写入NEMU的Log文件中，NEMU提供了一个<code>log_write()</code>函数用于实现这一点，它可将指定字符串写入NEMU的Log文件<code>nemu-log.txt</code>。</p>
+<p>这时我产生了一个疑问，在<code>log_write()</code>函数中并没有指定写入文件的参数，NEMU是如何通过该函数写入指定的Log文件呢？于是，我自然需要去查看<code>log_write()</code>的定义，在<code>utils.h</code>中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define log_write(...) IFDEF(CONFIG_TARGET_NATIVE_ELF, \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  do { \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    extern FILE* log_fp; \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    extern bool log_enable(); \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    if (log_enable() &amp;&amp; log_fp != NULL) { \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">      fprintf(log_fp, __VA_ARGS__); \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">      fflush(log_fp); \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    } \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  } while (0) \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">)
+</span></span></span></code></pre></div><p>据此可见，<code>log_write()</code>函数只是一段宏定义，这里的文件通过<code>log_fp</code>指定，而<code>log_fp</code>受到<code>extern</code>关键字修饰，这说明它的定义来自其他的文件，我们继续搜索<code>log_fp</code>的定义，在<code>log.c</code>中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>FILE <span style="color:#f92672">*</span>log_fp <span style="color:#f92672">=</span> NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">init_log</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>log_file) {
+</span></span><span style="display:flex;"><span>  log_fp <span style="color:#f92672">=</span> stdout;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (log_file <span style="color:#f92672">!=</span> NULL) {
+</span></span><span style="display:flex;"><span>    FILE <span style="color:#f92672">*</span>fp <span style="color:#f92672">=</span> <span style="color:#a6e22e">fopen</span>(log_file, <span style="color:#e6db74">&#34;w&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Assert</span>(fp, <span style="color:#e6db74">&#34;Can not open &#39;%s&#39;&#34;</span>, log_file);
+</span></span><span style="display:flex;"><span>    log_fp <span style="color:#f92672">=</span> fp;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Log</span>(<span style="color:#e6db74">&#34;Log is written to %s&#34;</span>, log_file <span style="color:#f92672">?</span> log_file : <span style="color:#e6db74">&#34;stdout&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>据此可知，<code>log_fp</code>是通过<code>init_log()</code>函数赋值的，当通过<code>init_log()</code>指定NEMU的Log文件<code>log_file</code>，<code>log_fp</code>便会被赋值为指向该文件的指针，而<code>init_log()</code>函数在<code>monitor.c</code>中被调用，NEMU的Log文件是通过命令行参数<code>-l</code>指定的。</p>
+<h3 id="2-mtrace的配置项">2. mtrace的配置项</h3>
+<p>我们仿照itrace的配置项，给出了mtrace的基本配置项：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span>config <span style="color:#66d9ef">MTRACE</span>
+</span></span><span style="display:flex;"><span>  depends on <span style="color:#66d9ef">TRACE</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">TARGET_NATIVE_ELF</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">ENGINE_INTERPRETER</span>
+</span></span><span style="display:flex;"><span>  bool <span style="color:#e6db74">&#34;Enable memory tracer&#34;</span>
+</span></span><span style="display:flex;"><span>  default y
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>config <span style="color:#66d9ef">MTRACE_COND</span>
+</span></span><span style="display:flex;"><span>  depends on <span style="color:#66d9ef">MTRACE</span>
+</span></span><span style="display:flex;"><span>  string <span style="color:#e6db74">&#34;Only trace memory when the condition is true&#34;</span>
+</span></span><span style="display:flex;"><span>  default <span style="color:#e6db74">&#34;true&#34;</span>
+</span></span></code></pre></div><p>有关Kconfig的相关语法，可参考：<a href="https://blog.csdn.net/c_hnie/article/details/109393488">Kconfig 语法分析详解</a>。</p>
+<p>配置完成后，在启动mtrace记录访存行为时，我发现一个奇怪的现象，似乎依据Log文件的输出，每条指令都在访存：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>0x80000da0: <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">15</span> <span style="color:#ae81ff">85</span> <span style="color:#ae81ff">93</span> addi	a1, a1, <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000da4<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span>0x80000da4: <span style="color:#ae81ff">40</span> f7 <span style="color:#ae81ff">07</span> b3 sub	a5, a4, a5
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000da8<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span>0x80000da8: <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">87</span> <span style="color:#ae81ff">97</span> <span style="color:#ae81ff">93</span> slli	a5, a5, 0x18
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000dac<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span>0x80000dac: <span style="color:#ae81ff">41</span> <span style="color:#ae81ff">87</span> d7 <span style="color:#ae81ff">93</span> srai	a5, a5, 0x18
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000db0<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span>0x80000db0: fe <span style="color:#ae81ff">07</span> <span style="color:#ae81ff">80</span> e3 beqz	a5, -0x20
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000d90<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span>0x80000d90: <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">15</span> <span style="color:#ae81ff">05</span> <span style="color:#ae81ff">13</span> addi	a0, a0, <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000d94<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span>0x80000d94: <span style="color:#ae81ff">02</span> <span style="color:#ae81ff">07</span> <span style="color:#ae81ff">04</span> <span style="color:#ae81ff">63</span> beqz	a4, 0x28
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000d98<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x800010a1<span style="color:#f92672">]</span> --&gt; 0x008
+</span></span><span style="display:flex;"><span>0x80000d98: <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">05</span> c7 <span style="color:#ae81ff">83</span> lbu	a5, 0<span style="color:#f92672">(</span>a1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000d9c<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80009fc1<span style="color:#f92672">]</span> --&gt; 0x008
+</span></span><span style="display:flex;"><span>0x80000d9c: <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">05</span> <span style="color:#ae81ff">47</span> <span style="color:#ae81ff">03</span> lbu	a4, 0<span style="color:#f92672">(</span>a0<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>MTRACE-R<span style="color:#f92672">]</span>: <span style="color:#f92672">[</span>0x80000da0<span style="color:#f92672">]</span> --&gt; 0x032
+</span></span><span style="display:flex;"><span>0x80000da0: <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">15</span> <span style="color:#ae81ff">85</span> <span style="color:#ae81ff">93</span> addi	a1, a1, <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><p>一开始我以为是mtrace功能上有bug，后来才恍然大悟，因为每条指令的取指都天然存在一次访存行为！但是，如讲义中所说，有时我可能只会关心某一段内存区间的访问，从而希望mtrace减少输出。因此，我又在Kconfig中增加了如下配置项：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span>config <span style="color:#66d9ef">MTRACE_MIN</span>
+</span></span><span style="display:flex;"><span>  depends on <span style="color:#66d9ef">MTRACE</span>
+</span></span><span style="display:flex;"><span>  hex <span style="color:#e6db74">&#34;Lower bound for memory tracing (unit: number of bytes)&#34;</span>
+</span></span><span style="display:flex;"><span>  default <span style="color:#ae81ff">0x00000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>config <span style="color:#66d9ef">MTRACE_MAX</span>
+</span></span><span style="display:flex;"><span>  depends on <span style="color:#66d9ef">MTRACE</span>
+</span></span><span style="display:flex;"><span>  hex <span style="color:#e6db74">&#34;Upper bound for memory tracing (unit: number of bytes)&#34;</span>
+</span></span><span style="display:flex;"><span>  default <span style="color:#ae81ff">0xffffffff</span>
+</span></span></code></pre></div><p>这两个配置项限制了mtrace的追踪内存区间，其取值采用<code>hex</code>类型，因为我们通常习惯通过十六进制表示内存地址。</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
