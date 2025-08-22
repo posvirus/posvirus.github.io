@@ -1,0 +1,76 @@
+---
+globs: src/api/*.ts,src/api/**/*.ts
+description: API文件注释规范 - 为API函数添加标准化注释
+---
+
+# API 注释规范
+
+当修改 `src/api/` 目录下的API文件时，请确保每个API函数都包含完整的JSDoc注释。
+
+## 注释格式模板
+
+为每个API函数添加以下格式的注释：
+
+```typescript
+/**
+ * 接口名称: [简明的接口名称]
+ * 功能描述: [详细描述此接口的功能和用途]
+ * 入参: [描述输入参数的类型和含义]
+ * 返回参数: [描述返回数据的结构和含义]
+ * URL地址: [实际的API端点路径]
+ * 请求方式: [HTTP方法：GET/POST/PUT/DELETE/PATCH]
+ */
+```
+
+## 示例
+
+### 正确的注释示例：
+
+```typescript
+/**
+ * 接口名称: 用户登录
+ * 功能描述: 验证用户凭据并返回认证token和用户信息
+ * 入参: LoginCredentials { username: string, password: string }
+ * 返回参数: LoginResponse { user: UserInfo, token: string, refreshToken: string }
+ * URL地址: /auth/login
+ * 请求方式: POST
+ */
+login: (credentials: LoginCredentials): Promise<LoginResponse> => {
+  return api.post('/auth/login', credentials)
+}
+
+/**
+ * 接口名称: 获取用户列表
+ * 功能描述: 分页获取系统中的用户列表，支持搜索和角色过滤
+ * 入参: { page?: number, limit?: number, search?: string, role?: string }
+ * 返回参数: { users: UserProfile[], total: number, page: number, limit: number }
+ * URL地址: /users
+ * 请求方式: GET
+ */
+getUsers: (params = {}) => {
+  return api.get('/users', { params })
+}
+```
+
+## 注释要求
+
+1. **接口名称**: 使用中文，简洁明了地概括接口功能
+2. **功能描述**: 详细说明接口的作用、使用场景和注意事项
+3. **入参**: 描述参数的TypeScript类型，包括可选参数的说明
+4. **返回参数**: 描述返回数据的结构，重要字段要单独说明
+5. **URL地址**: 实际的API路径，与代码中的路径保持一致
+6. **请求方式**: HTTP方法（GET、POST、PUT、DELETE、PATCH）
+
+## 特殊情况处理
+
+- **文件上传**: 在入参中说明 `FormData` 或文件类型
+- **权限要求**: 在功能描述中说明需要的权限或角色
+- **分页接口**: 在返回参数中详细说明分页相关字段
+- **错误处理**: 在功能描述中说明可能的错误情况
+
+## 维护提醒
+
+- 当API端点发生变化时，及时更新注释中的URL地址
+- 当参数或返回值结构变化时，同步更新注释
+- 新增API函数时必须添加完整注释
+- 建议在代码review时检查注释的完整性和准确性

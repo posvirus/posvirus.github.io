@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+基于Cursor的Web应用全流程开发文档 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI学习笔记：基于Cursor的Web应用全流程开发文档">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ai-webdev/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>基于Cursor的Web应用全流程开发文档</h1>
+    
+    	<p>AI学习笔记：基于Cursor的Web应用全流程开发文档</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/ai/">#AI</a><span></span>
+    <a href="/tags/cursor/">#Cursor</a><span></span>
+    <a href="/tags/webdev/">#WebDev</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ai/">AI</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-08-22">August 22, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>3 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, Aug 22nd, 2025</strong></p>
+<p><strong>Version: 1.1.0</strong></p>
+<blockquote>
+<p><strong>Update Log:</strong> 修改了后端开发流程，将其直接部署于云端，简化了后端初始化与开发的复杂度，提升流程稳定性。</p></blockquote>
+<p><strong>Version: 1.0.0</strong></p>
+<blockquote>
+<p><strong>Update Log:</strong> 最初版本。</p></blockquote>
+<blockquote>
+<p>本文档为抖音AI创变者计划的参赛文档，Web应用的开发流程追求<strong>敏捷性、简洁性、实用性</strong>，主要用于在短时间内以既定工作流高效生成产品原型，后续也可以该文档为基础，构建更为通用，适配更多场景需求的Web应用开发流程。</p></blockquote>
+<p><strong>参考资料：</strong></p>
+<p><strong><a href="https://r2eid0qxt4.feishu.cn/wiki/B3v9wjAVuili3fkQlgBctan2nuc">‌﻿‍‌‍‬‬⁠‬‬‬⁠‍⁠‌‌‌⁠⁠⁠‌⁠‍‌‬﻿‬Cursor新手看过来，Cursor如何开发前后端分离项目 - 飞书云文档</a></strong></p>
+<p><strong><a href="https://www.bilibili.com/video/BV1W7QZYMEus/?spm_id_from=333.1007.top_right_bar_window_default_collection.content.click&amp;vd_source=e67a4524f025235cdc2ccd3d2fb4b192">一口气学会 小程序｜APP｜网页开发 ｜uniapp教程｜cursor｜devbox_哔哩哔哩 bilibili</a></strong></p>
+<h2 id="0-pc环境配置">0. PC环境配置</h2>
+<p>本章主要以Windows操作系统为例，简要介绍Web应用全流程开发中需要进行的环境配置项，对MacOS与Linux操作系统，可仿照Windows操作系统进行对应的环境配置：</p>
+<h3 id="01-cursor的安装">0.1 Cursor的安装</h3>
+<p>Cursor作为Web应用全流程开发中的核心AI工具，需要进行合理的配置并熟练使用。</p>
+<p>可参考：<a href="https://zhuanlan.zhihu.com/p/16508727483">Cursor安装教程（2025年最新Cursor使用教程） - 知乎</a>，完成Cursor的安装，并学习Cursor的基本操作。或者也可以参考Cursor提供的官方文档：<a href="https://docs.cursor.com/zh/get-started/installation">Cursor – 安装</a>。</p>
+<blockquote>
+<p>由于从零开始的Web应用开发涉及的代码量与逻辑复杂度较高，因此至少应当将Cursor升级至<strong>Cursor Pro</strong>或<strong>Cursor Ultra</strong>，以保证充足的Agent请求、tab补全与OpenAI、Claude、Gemini模型的使用量。</p></blockquote>
+<blockquote>
+<p>Cursor的模型选择往往会影响项目开发的难易程度，因此，在使用Cursor进行开发的过程中，我们尽量手动制定Cursor使用那些新发布的、评分高的、编程功能强大的模型（如<strong>Claude Sonnet 4</strong>），而避免使用Cursor默认的<code>Auto</code>模式。</p></blockquote>
+<blockquote>
+<p>大部分情况下，可以使用Cursor的Agent模式，可以更快捷地实现项目的开发与构建。</p></blockquote>
+<h3 id="02-git的安装">0.2 Git的安装</h3>
+<p>在AI辅助的应用开发中，对项目进行版本控制是十分必要的，因为AI辅助的不确定性，当AI对项目进行错误/不必要的变更时，需要通过版本控制软件对项目进行版本回退/恢复。此处选择业界常用的Git对项目进行版本控制。</p>
+<p>有关Git的安装与基本操作可参考：<a href="https://blog.csdn.net/mukes/article/details/115693833">Git 详细安装教程（详解 Git 安装过程的每一个步骤）_git安装-CSDN博客</a>。</p>
+<h3 id="03-vue3的安装">0.3 Vue3的安装</h3>
+<p>为实现Web应用的开发流程的简洁性，此处我们采用固定的前/后端开发技术栈，我们使用Vue3进行前端开发。</p>
+<p>Vue3的安装可参考：<a href="https://blog.csdn.net/weixin_69553582/article/details/129584587#%E4%B8%80%E3%80%81node.js%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE">Vue3安装配置、开发环境搭建(组件安装卸载)（图文详细）-CSDN博客</a>，操作至验证Vue安装即可，后续开发所需的软件支持包可在开发过程中自行安装。</p>
+<blockquote>
+<p>在安装完相关软件支持包后，Cursor有时会无法识别，这是因为Cursor内部环境变量未更新，此时将Cursor重启即可。</p></blockquote>
+<h3 id="04-java的安装">0.4 Java的安装</h3>
+<p>后端开发通常需要Java提供支持，因此我们需要安装Java，此处选择Java17，因其是长期支持版本，稳定性高。</p>
+<p>Java17的安装可参考：<a href="https://blog.csdn.net/tiehou/article/details/129575138">JDK17在Windows安装以及环境变量配置（超详细的教程）_jdk17安装教程详细-CSDN博客</a>。</p>
+<h2 id="1-web应用项目框架配置">1. Web应用项目框架配置</h2>
+<h3 id="11-web应用项目框架概述">1.1 Web应用项目框架概述</h3>
+<blockquote>
+<p>对一个完整的Web应用项目而言，通常可分为 <strong>前端（Front-End）</strong> 与 <strong>后端（Back-End）</strong> 两个部分：</p>
+<p>前端，也称为 <strong>“客户端开发”</strong>，简单来说，你可以在应用程序或网站的屏幕上看到的所有内容都属于前端。让我们考虑一个现实的例子：你正在访问的网站。内容设计、图像、段落和线条之间的间距，左上角的公司徽标，以及右下角的小通知按钮——所有这一切都是前端。移动应用的前端与网站相同。例如，你在移动或Web应用中看到的内容，按钮、图像是前端的一部分。此外移动屏幕还具有触摸响应功能，因此当应用响应你所做的所有手势时，需要进行缩放放大/缩小、双击、滑动等操作。前端开发人员构建所有的这些。它们创造了你在屏幕上看到的外观和触摸到的体验。</p>
+<p>后端，也称为 <strong>“服务器端开发”</strong>，也就是在系统“后面”所发生的事情。同样，在后端服务器和浏览器或应用程序之间存储网站、应用数据和中间媒介的服务器都属于后端。简单来说，在应用程序或网站的屏幕上看不到的所有东西都是前端的后端。网站的后端需要设置服务器，存储和检索数据，以及将这些服务器与前端进行连接的接口。如果说前端开发人员梗关注网站的外观，后端开发人员则更更关注网站的速度、性能和响应能力，后端通过编码、云 API 和数据库进行集成。</p></blockquote>
+<p>依据对Web应用项目的前/后端划分，基于Cursor的Web应用开发通常有两种项目框架配置：</p>
+<img src="/images/fig1-1.png" alt="fig1-1" style="zoom:40%;" />
+<p>第一种是<strong>将前端项目、后端项目合并</strong>，置于同一个文件夹中，然后使用Cursor统一进行开发，这种开发模式适用于小型项目的敏捷开发，但相对应地，需要开发者对Web应用开发有一定基础知识，能够灵活调用Cursor进行有针对性的修改。由于本文档主要针对零基础开发者的Web应用全流程开发，因此主要选择下文介绍的第二种项目框架。</p>
+<img src="/images/fig1-2.png" alt="fig1-2" style="zoom:40%;" />
+<p>第二种是<strong>将前端项目、后端项目分离</strong>，分别置于两个文件夹中，然后分别使用Cursor独立进行开发，这种开发模式可实现前/后端开发的解耦，并可对前/后端的开发工作流进行独立优化，相对而言通用性强，开发模式固定，便于零基础开发者上手，且可开发相对复杂的应用，为适配参赛需求，本文档中主要以该种项目框架配置为标准进行开发。</p>
+<p>基于第二种方式，我们可以建立一个基本的项目框架，结构如下所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>project-name
+</span></span><span style="display:flex;"><span>├─backend  <span style="color:#75715e"># store back-end project</span>
+</span></span><span style="display:flex;"><span>└─frontend <span style="color:#75715e"># store front-end project</span>
+</span></span></code></pre></div><h3 id="12-web应用项目框架的初始化">1.2 Web应用项目框架的初始化</h3>
+<blockquote>
+<p>在1.1节中，我们只是构建了基本的项目框架，但对一个Web项目而言，需要依据选择的技术栈搭建更为细致的工程框架。此处，我们统一选择<strong>Vue3+Node.js</strong>实现前/后端分离的项目开发，其中Vue3用于前端开发，Node.js用于后端开发。</p></blockquote>
+<p>对于工程框架的创建，我们可以基于Cursor的<strong>rules功能</strong>，通过提示词自动生成项目框架：具体而言，我们可以在前/后端对应的项目路径下打开Cursor，在交互框中输入：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>@Rules
+</span></span></code></pre></div><p>再键入<code>Enter</code>后，选择<code>Add new rule</code>，即可在当前项目下创建一个<strong>规则文件</strong>，通过完善对规则文件的描述，我们即可调用Cursor生成对应的工程框架。</p>
+<h4 id="121-前端项目的初始化">1.2.1 前端项目的初始化</h4>
+<blockquote>
+<p><strong>推荐配置：Claude Sonnet 4，Agent模式</strong></p></blockquote>
+<p>在<code>frontend</code>目录下打开Cursor，创建用于生成Vue3前端项目的规则文件，命名为<code>vue3.mdc</code>，此处，我们提供一个现成的规则文件模板，将其复制进<code>vue3.mdc</code>即可：<a href="/files/vue3.mdc">Vue3规则文件</a>。</p>
+<p>当前，我们的前端项目框架如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>project-name
+</span></span><span style="display:flex;"><span>├─backend       <span style="color:#75715e"># store back-end project</span>
+</span></span><span style="display:flex;"><span>└─frontend      <span style="color:#75715e"># store front-end project</span>
+</span></span><span style="display:flex;"><span>    └─.cursor   <span style="color:#75715e"># store cursor config</span>
+</span></span><span style="display:flex;"><span>       └─rules  <span style="color:#75715e"># store cursor rules</span>
+</span></span></code></pre></div><p>并使用如下提示词生成基于Vue3的前端项目框架：</p>
+<blockquote>
+<p>在当前目录下，根据 @vue3.mdc 手动初始化一个前端项目，使用npm来管理包结构，需要支持本地API测试环境联调，请务必遵循规则文件中的框架进行初始化</p></blockquote>
+<p>请注意保证<code>@vue3.mdc</code>的语法确实索引到了我们所创建的规则文件。</p>
+<p>完成前端项目框架生成后，直接点击<code>Keep All</code>保留所有更改，随后，模型可能会直接给出如何测试当前框架的有效性，如果未给出，也可以在<strong>Ask模式</strong>下使用如下提示词询问Cursor：</p>
+<blockquote>
+<p>请问如何使用当前框架，并验证其有效性？</p></blockquote>
+<p>通常情况下，模型会给出以下两条指令，通过在<code>src</code>目录下打开终端，执行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm install
+</span></span></code></pre></div><p>安装对应的支持包，再通过：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm run dev
+</span></span></code></pre></div><p>测试前端项目。</p>
+<blockquote>
+<p><strong>当测试失败，我应该怎么办：<strong>此时，就会进入喜闻乐见的</strong>debug</strong>环节，一个通用的debug方法是，首先将交互框切换为<strong>Agent模式</strong>，通过选中终端输出的错误，选择<code>Add to Chat</code>将其加入交互框中，再通过提示词要求Cursor修正该错误，以下给出用于debug的通用提示词，该提示词同时也可用于后续开发流程中的debug：</p></blockquote>
+<blockquote>
+<p>请作为资深调试助手分析并修正上述错误。要求明确错误类型（语法/运行时/逻辑）及根源，并提供可直接替换的代码块（保留上下文），同时解释错误机制及修复原理</p></blockquote>
+<p>经上述流程成功初始化的一个项目框架如下：</p>
+<img src="/images/fig1-3.png" alt="fig1-3" style="zoom:67%;" />
+<p>经测试，其可成功运行并生成初始的前端界面：</p>
+<img src="/images/fig1-4.png" alt="fig1-4" style="zoom:67%;" />
+<blockquote>
+<p><strong>当测试成功后，别忘了用Git对项目进行版本控制！之后的每一开发步骤完成后，都要使用Git提交相应的修改！</strong></p></blockquote>
+<h4 id="122-后端项目的初始化">1.2.2 后端项目的初始化</h4>
+<p>经实验证明，在本地通过Cursor从零部署一个后端项目的难度是较大的，而且后续在发布应用时也大概率需要将整个运行环境迁移至云服务器上。因此，这里我们一步到位，直接使用<strong>云操作系统</strong>对后端项目进行生成，我们选用[<strong>Sealos</strong>](<a href="https://sealos.run/?s=%E9%A6%96%E9%A1%B5">Sealos - 企业级智能云操作系统【官网】</a>)实现这一需求。</p>
+<blockquote>
+<p>后端直接在云端开发的另一个优点是：在本地无需安装后端相关的语言、数据库等，工作量少，环境配置简单。且云端开发通常会使用Linux操作系统，它与Cursor生成的命令适配性较好，可以直接通过Agent模式实现后端的接口测试。</p></blockquote>
+<blockquote>
+<p>可以点击上述链接，直接注册Sealos账号。</p></blockquote>
+<img src="/images/fig1-5.png" alt="fig1-5" style="zoom:67%;" />
+<p>打开Sealos后，我们可以点击进入Sealos的<strong>DevBox</strong>界面，选择后端的框架：</p>
+<img src="/images/fig1-6.png" alt="fig1-6" style="zoom:67%;" />
+<p>在DevBox界面，有诸多可以用于后端项目实现的语言，此处我们为尽量精简项目使用的编程语言种类，同样使用<strong>Node.js</strong>实现后端，点击对应的语言即可进入项目创建界面：</p>
+<img src="/images/fig1-7.png" alt="fig1-7" style="zoom:67%;" />
+<p>此处，我们可自行命名该项目的名称（<strong>DevBox名称</strong>），同时选择云资源占用，在网络配置一项中，我们将<strong>容器暴露端口</strong>修改为3000，与前端保持一致，后续如有需要亦可随时修改，完成配置后，点击<strong>创建</strong>即可创建对应的后端项目。</p>
+<img src="/images/fig1-8.png" alt="fig1-8" style="zoom:67%;" />
+<p>在项目面板中，我们可以点击右上方的黑色按键，调用Cursor通过远程SSH连接对项目进行开发，连接成功的界面如下：</p>
+<img src="/images/fig1-9.png" alt="fig1-9" style="zoom:67%;" />
+<blockquote>
+<p>直接调用Cursor进行连接时，有可能需要安装SSH连接的插件，直接点击确认安装即可。旧版本的Cursor在这一步可能出现连接失败的问题，直接对Cursor进行重装更新即可。</p></blockquote>
+<p>随后，完成后端项目框架部署后，我们还需要使用Sealos部署后端数据库，我们可以在个人主页点击进入Sealos的<strong>数据库</strong>界面，点击<strong>创建</strong>，新建一个数据库：</p>
+<img src="/images/fig1-10.png" alt="fig1-10" style="zoom:67%;" />
+<p>这里数据库的<strong>类型</strong>可以自行选择，我在此处选择<strong>MongoDB</strong>实现，后续的配置可以保持不变，也可自行根据需要调整。完成配置后，点击界面右上方的<strong>部署</strong>按键，对数据库进行部署。</p>
+<img src="/images/fig1-11.png" alt="fig1-11" style="zoom:67%;" />
+<p>上方显示了数据库部署完成后的监控界面，此处，我们需要复制数据库<strong>连接信息</strong>中的<strong>Connection</strong>字段，供后续开发使用，这个字段应当是一个链接，形式如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mongodb://root:zqhjdpl6@test-db-mongodb.ns-828djh78.svc:27017
+</span></span></code></pre></div><p>在完成数据库的部署后，我们正式完成了后端项目的初始化，以下就可以着手进行个人Web应用的开发啦！</p>
+<blockquote>
+<p>其实从后端项目初始化的过程我们可以看出，其实前端项目也可以在云端创建，但是由于前端后续可能存在一些本地设计文件的识别，云端上传比较麻烦，因此我们此处选择在本地进行前端项目开发。</p></blockquote>
+<blockquote>
+<p><strong>再次提醒，别忘了用Git对项目进行版本控制！（不过我们这里没有对本地项目做什么更改，也可以不进行控制）</strong></p></blockquote>
+<h2 id="2-web应用前端开发流程">2. Web应用前端开发流程</h2>
+<h3 id="21-web应用前端的需求文档">2.1 Web应用前端的需求文档</h3>
+<p>为使用Cursor完成Web应用前端的开发，一个必需项就是前端界面对应的需求文档，根据前文，前端其实包括用户在应用程序或网站的屏幕上看到的所有内容，因此，我们需要有一个对前端界面的描述性规则，它可以是前端界面的原型图、设计文档或静态的HTML代码，此处，我们选用文档的形式，因其可以较为清晰地描述前端界面的风格及不同界面的依赖关系，同时可以较为方便地被Cursor识别。</p>
+<blockquote>
+<p>注意，Web应用前端的需求文档是前端开发的一个预置需求，简而言之，我们需要这样一份需求文档，但在本流程中我们并不关心其是如何生成的。你可以通过AI读取原型图生成，通过提示词生成，或者直接人工描述等等。</p>
+<p>如果你选择通过提示词生成需求文档，以下是一个简单示例：</p></blockquote>
+<blockquote>
+<p>我现在需要做一个H5商城，产品的功能只有这几个：</p>
+<p>1、用户查看商品列表页面</p>
+<p>2、用户点击加减号进行购物车操作</p>
+<p>3、用户浏览购物车</p>
+<p>根据以上内容，帮我完成一个产品需求文档，需要包含页面设计、UI元素，技术栈。不要包含任何代码</p></blockquote>
+<blockquote>
+<p>如果你的Cursor请求次数有限，需求文档这一步可以不在Cursor的交互框中进行，随意选择一种主流的LLM均可。</p></blockquote>
+<h3 id="22-需求文档的任务拆分">2.2 需求文档的任务拆分</h3>
+<blockquote>
+<p><strong>推荐配置：Claude Sonnet 4，Agent模式</strong></p></blockquote>
+<p>当我们使用Cursor进行开发时，虽然随着模型的更新换代，代码生成的质量会越来越高，但一个不变的准则是：用户描述的任务越详细，任务量越小，返回的代码质量就会越高；反之，Cursor大概率会返回有问题的，或省略了某些功能的代码。因此，我们需要对需求文档进行任务拆分。</p>
+<p>拆分任务的另一个好处是，我们能了解Cursor准备以什么样的方式来完成我们的需求，进而方便对实际开发过程进行调节。</p>
+<p>此处，我们在<code>frontend</code>目录下创建<code>doc</code>目录，并将需求文档（此处命名为<code>demand.md</code>）放入<code>doc</code>目录下，随后，我们可以直接通过Cursor，使用如下提示词进行需求文档的任务拆分：</p>
+<blockquote>
+<p>你是具有丰富开发经验的前端开发工程师，请你阅读 @demand.md 这个产品及UI需求文档，你需要完成这个产品的前端页面开发，[此处可添加对产品的描述] 请你按照你丰富的前端开发经验，拆解出详细的前端开发任务，按照以下格式保存到 doc 目录中。</p>
+<p>- 根据开发顺序创建TASK001这样的任务编号；</p>
+<p>- 每个任务包含名称,任务描述、版本、状态（计划中、测试单元编写中、开发中、完成等）；</p>
+<p>- 每个TASK都有验收标准清单和注意事项（提示用户或将来的AI助手需要注意的详细内容）。</p></blockquote>
+<h3 id="23-cursor任务执行">2.3 Cursor任务执行</h3>
+<blockquote>
+<p><strong>推荐配置：Claude Sonnet 4，Agent模式</strong></p></blockquote>
+<p>完成需求文档拆分后，我们可以将生成的任务文档重命名为<code>tasks.md</code>，并使用如下提示词，要求Cursor逐步执行拆分的前端开发任务：</p>
+<blockquote>
+<p>根据任务清单 @task.md 和需求文档 @demand.md ，开始执行任务，每次只执行一个任务，需要等待我的回复才能继续下一个任务。当你完成任务时，需要在 @tasks.md 更新任务状态。</p></blockquote>
+<blockquote>
+<p>注意，当完成某个任务后，我们可以点击Cursor交互框右上角的<code>+</code>号，新开启一个交互框执行下一个任务，在便于任务管理的同时，防止对话长度过长。</p>
+<p>因为我们的提示词中，当完成一个任务时，会对任务清单中的任务状态进行更新，因此在新开启的交互框中，我们仅需复制上述提示词重新执行即可，Cursor会自动跳过已执行完成的任务。</p></blockquote>
+<blockquote>
+<p>每个子任务执行完成后，务必对其进行测试，保证每个子任务执行的正确性，测试方法与项目初始化一节中相同。</p></blockquote>
+<blockquote>
+<p>如果对某个子任务的执行效果不满意，可以添加自定义的提示词，对任务执行进行修正，直到效果满意后再执行下一个任务。</p></blockquote>
+<h4 id="231-有关api的补充说明">2.3.1 有关API的补充说明</h4>
+<p>由于后续我们需要让前端通过API接口与后端交互，因此我们需要对API接口的规范进行控制，首先，在前端拆分任务时，通常会存在<strong>创建模拟数据（Mock）与API服务</strong>的子任务，我们需要在这个子任务的注意事项中加入如下内容：</p>
+<blockquote>
+<p>所有的模拟接口必须写到api中，方便后面替换成真实的接口，使用mock变量来控制是否开启mock数据，api下接口的规范如下</p>
+<p>/**</p>
+<p>* 接口名称</p>
+<p>* 功能描述</p>
+<p>* 入参</p>
+<p>* 返回参数</p>
+<p>* url地址</p>
+<p>* 请求方式</p>
+<p>**/</p></blockquote>
+<p>同时，为保证后续更新API接口时，需要另外生成规则文件对API接口规范进行约束，我们在交互框中输入：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/Generate Cursor Rules
+</span></span></code></pre></div><p>并使用如下提示词：</p>
+<blockquote>
+<p>请帮我写一个rules，用于匹配 @api 下的api文件，希望当文件发生变化时为api添加注释，格式如下：</p>
+<p>/**</p>
+<p>* 接口名称</p>
+<p>* 功能描述</p>
+<p>* 入参</p>
+<p>* 返回参数</p>
+<p>* url地址</p>
+<p>* 请求方式</p>
+<p>**/</p></blockquote>
+<p>这会生成一个用于限定API接口规范的规则文件，通常而言，规则文件前的文件匹配项至少应包括如下内容，保证其确实可以匹配所有API接口所在的文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>globs: src/api/**/*.ts
+</span></span></code></pre></div><p>以下，我们同样直接给出一个现成的规则文件模板，用于直接导入使用：<a href="/files/api.mdc">API规则文件</a>。</p>
+<h4 id="232-前端界面的debug">2.3.2 前端界面的debug</h4>
+<p>需要指出的一点是，当我们调用Cursor完成每个子任务时，并不是通过<code>npm run dev</code>成功启动项目就证明代码不存在bug，我们还需要在浏览器中对项目功能进行调试：</p>
+<p><img src="/images/fig2-3.png" alt="fig2-3"></p>
+<p>如上图所示，我们可以调用浏览器中的<strong>开发人员工具</strong>，该工具一方面可以测试前端界面在不同设备上的行为，同时也可以在<strong>控制台</strong>中监测各种错误：</p>
+<img src="/images/fig2-4.png" alt="fig2-4" style="zoom:67%;" />
+<p>我们在前端debug时，当然也要通过Cursor消除控制台中的报错。</p>
+<blockquote>
+<p>有时，在完成某个子任务后，由于前端的功能不完全，存在报错是很正常的现象，如果你不确定当前报错是否需要被修正，请使用如下提示词：</p></blockquote>
+<blockquote>
+<p>请首先阅读 @tasks.md ，明确这个问题在当前阶段是否需要修正，如需要，请作为资深调试助手分析并修正上述错误。要求明确错误类型（语法/运行时/逻辑）及根源，并提供可直接替换的代码块（保留上下文），同时解释错误机制及修复原理</p></blockquote>
+<blockquote>
+<p>在测试前端界面时，浏览器缓存可能会导致我们无法访问登录一类的界面，此时可使用如下方法解决：</p>
+<ol>
+<li>
+<p>选择开发者工具中的<code>Application</code> 页签。</p>
+</li>
+<li>
+<p>在 <code>Storage</code> 部分，右键点击需要清除的缓存类型（如 <code>Local Storage</code>），选择 <code>Clear</code>。</p>
+</li>
+</ol></blockquote>
+<blockquote>
+<p>对于一些Cursor多次迭代仍无法实现的功能，我们可以直接让Cursor在开发中删除这一功能，以保证最终成品的稳定性。</p></blockquote>
+<h3 id="24-api文档的生成">2.4 API文档的生成</h3>
+<blockquote>
+<p><strong>推荐配置：Claude Sonnet 4，Agent模式</strong></p></blockquote>
+<h4 id="241-web应用前端与后端的交互">2.4.1 Web应用前端与后端的交互</h4>
+<img src="/images/fig2-1.png" alt="fig2-1" style="zoom:40%;" />
+<p>Web应用的前/后端交互通常存在三种方式：</p>
+<ul>
+<li>前端发生变化，通知后端进行调整。</li>
+<li>后端发生变化，通知前端进行调整。</li>
+<li>当需求发生变化时，直接同时前/后端协同进行调整。</li>
+</ul>
+<img src="/images/fig2-2.png" alt="fig2-2" style="zoom:40%;" />
+<p>而在基于Cursor的开发流程中，前/后端的交互模式通常如上图所示，当产品需求发生变更时，通常先通过修改后的需求文档，对前端进行更改，再重新生成前端的API文档传递至后端。最后，后端项目综合API文档与需求文档的变化进行更改。</p>
+<h4 id="242-前端api文档的生成">2.4.2 前端API文档的生成</h4>
+<p>我们可以通过如下提示词生成前端的API文档：</p>
+<blockquote>
+<p>根据 @api 下的所有api文件生成接口文档，放到doc目录中，遵循以下格式：</p>
+<ul>
+<li>接口名称</li>
+<li>功能描述: 详细描述接口的功能和用途</li>
+<li>入参: 参数类型和说明</li>
+<li>param1: type - 参数1说明</li>
+<li>param2: type - 参数2说明</li>
+<li>返回参数: 返回值类型和说明</li>
+<li>field1: type - 字段1说明</li>
+<li>field2: type - 字段2说明</li>
+<li>url地址: /api/endpoint</li>
+<li>请求方式: GET/POST/PUT/DELETE</li>
+</ul></blockquote>
+<p>进而我们即可在<code>doc</code>目录中获得生成的API文档，将其重命名为<code>api.md</code>，供后端开发使用。</p>
+<blockquote>
+<p>有时，在任务拆分执行时，Cursor就会自主生成API文档，此时我们仍建议遵循规范重新生成一次。</p></blockquote>
+<img src="/images/fig2-5.png" alt="fig2-5" style="zoom:67%;" />
+<p>完成前端开发后，我们应当可以得到上图所示的一个功能完整的前端界面，以下便可以进入Web应用的后端开发啦！</p>
+<h2 id="3-web应用后端开发流程">3. Web应用后端开发流程</h2>
+<h3 id="31-后端api文档的导入">3.1 后端API文档的导入</h3>
+<p>基于前文的说明，我们首先需要通过API文档对齐前/后端的开发需求，因此，我们首先通过Cursor打开DevBox中已创建好的远程项目，并在项目目录下建立一个<code>doc</code>目录，并将前端生成的API文档<code>api.md</code>复制进该目录下。</p>
+<p>同时，为保证Cursor能基于我们先前选择的项目语言与数据库进行开发，我们需要在API文档首添加一段提示词，指明后端项目语言与数据库连接方式，此处根据我的配置添加的提示词如下：</p>
+<blockquote>
+<p>这是一个基于Node.js的后端项目，数据库使用MongoDB实现，数据库连接方式是：mongodb://root:zqhjdpl6@test-db-mongodb.ns-828djh78.svc:27017</p></blockquote>
+<blockquote>
+<p>我们也可以在后续开发的提示词中加入上述提示词，以保证开发流程的稳健性。</p></blockquote>
+<h3 id="32-cursor任务执行">3.2 Cursor任务执行</h3>
+<blockquote>
+<p><strong>推荐配置：Claude Sonnet 4，Agent模式</strong></p></blockquote>
+<p>后端由于有明确的API文档，所以我们有两种基于Cursor的任务执行方式，第一种方式与前端相同，我们需要先进行后端任务拆分，再进行开发，可以首先使用如下提示词：</p>
+<blockquote>
+<p>你是具有丰富开发经验的后端开发工程师，请阅读前端API文档 @api.md ，你需要完成这个产品的后端开发，请你按照你丰富的后端开发经验，拆解出详细的后端开发任务，按照以下格式保存到doc目录的tasks.md中。</p>
+<p>格式如下：</p>
+<p>- 根据开发顺序创建TASK001这样的任务编号；</p>
+<p>- 每个任务包含名称,任务描述、版本、状态（计划中、测试单元编写中、开发中、完成等）；</p>
+<p>- 每个TASK都有验收标准清单和注意事项（提现用户或将来的AI助手需要注意的详细内容）；</p>
+<p>注意，任务描述中不需要返回任何代码示例。</p></blockquote>
+<p>获得拆分的任务文件<code>tasks.md</code>后，后续开发流程便与前端完全相同了，此处不再赘述。</p>
+<p>第二种方式则是一步到位，直接一次性完成所有接口，可以使用如下提示词：</p>
+<blockquote>
+<p>[此处可以添加后端项目信息]</p>
+<p>你是具有丰富开发经验的后端开发工程师，请阅读前端API文档 @api.md ，你需要完成这个产品的后端开发，请你按照你丰富的后端开发经验，生成对应的后端接口。</p></blockquote>
+<blockquote>
+<p>后一种方式仅适用于接口数较少，逻辑较简单的应用开发，对于大型应用开发，建议使用传统拆分任务的做法。</p></blockquote>
+<blockquote>
+<p>完成任务执行后，当遇到测试失败，或不知道如何启动项目的情况应该怎么办？请参考项目初始化与前端项目开发中的相关提示词。</p></blockquote>
+<p>完成所有任务开发后，我们可以运行项目进行测试，对于我所使用的Node.js而言，其项目可通过：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm install
+</span></span></code></pre></div><p>安装相关依赖包，再通过：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 开发环境启动</span>
+</span></span><span style="display:flex;"><span>npm run dev
+</span></span></code></pre></div><p>或：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 生产环境</span>
+</span></span><span style="display:flex;"><span>npm start
+</span></span></code></pre></div><p>启动。成功启动后，我们应当可以根据其输出获取后端运行的端口号，如下图所示：</p>
+<img src="/images/fig2-6.png" alt="fig2-6" style="zoom:67%;" />
+<p>此处可观察到，我的项目运行的端口号是<strong>3000</strong>，我们需要使<strong>DevBox</strong>中创建的项目端口号与其保持一致：</p>
+<img src="/images/fig2-7.png" alt="fig2-7" style="zoom:67%;" />
+<p>如上图，我们要将<strong>网络配置</strong>中的<strong>端口</strong>一项改为与项目匹配的<strong>3000</strong>，完成修改后重启项目，当<strong>公网调试地址</strong>由<strong>准备中</strong>变为<strong>可访问</strong>后，我们可以访问公网调试地址，查看后端项目是否正常启动，这是我的界面：</p>
+<img src="/images/fig2-8.png" alt="fig2-8" style="zoom:67%;" />
+<blockquote>
+<p>请注意，公网调试地址必须在后端项目启动后，状态才会由<strong>准备中</strong>变为<strong>可访问</strong>。</p></blockquote>
+<p>至此，我们基本完成了后端项目的开发。</p>
+<h2 id="4-web应用的调试与部署">4. Web应用的调试与部署</h2>
+<p>在前文中，我们已经分别独立完成了Web应用前端项目与后端项目的开发，但是，我们还需要进一步通过Cursor让前/后端形成有机连接，开发出实际可用的Web应用。</p>
+<h3 id="41-后端项目与前端项目的api对齐">4.1 后端项目与前端项目的API对齐</h3>
+<blockquote>
+<p><strong>推荐配置：Claude Sonnet 4，Agent模式</strong></p></blockquote>
+<p>在后端项目完成开发后，我们需要将后端项目提供的API重新反馈给前端，使前端对接上后端的真实API。这里，我们需要重新生成后端的API文档，并将其重新反馈回前端，我们首先使用如下提示词生成后端的API文档，保证与前端生成的API文档一致的格式：</p>
+<blockquote>
+<p>根据后端项目生成后端的接口文档，放到doc目录中，方便我与前端进行对接，遵循以下格式：</p>
+<ul>
+<li>接口名称</li>
+<li>功能描述: 详细描述接口的功能和用途</li>
+<li>入参: 参数类型和说明</li>
+<li>param1: type - 参数1说明</li>
+<li>param2: type - 参数2说明</li>
+<li>返回参数: 返回值类型和说明</li>
+<li>field1: type - 字段1说明</li>
+<li>field2: type - 字段2说明</li>
+<li>url地址: /api/endpoint</li>
+<li>请求方式: GET/POST/PUT/DELETE</li>
+</ul></blockquote>
+<blockquote>
+<p>为什么要重新生成API文档？这是因为使用Cursor开发时，虽然向后端项目中输入了前端生成的API文档，但是Cursor实现时不一定能保证所有细节的一致性，因此我们需要重新基于后端项目生成API文档，并反馈给前端。同时，后端的API文档中可能也包含更多实现的细节。简而言之，<strong>前端的API文档相当于需求文档，而后端的API文档相当于实现文档</strong>。</p></blockquote>
+<p>生成完成后，我们将其重命名为<code>api-fb.md</code>，此处我们需要修改API文档中的基础URL，一般这里会被设置成：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>http://localhost:3000
+</span></span></code></pre></div><p>但我们需要将其修改为<strong>DevBox</strong>中<strong>公网调试地址</strong>，此处为保证全面修改，我们可以再Cursor中使用如下提示词进行修改：</p>
+<blockquote>
+<p>请将 @api-fb.md 中的基础URL http://localhost:3000 修改为 [DevBox项目中的公网调试地址]</p></blockquote>
+<p>随后，我们可将<code>api-fb.md</code>复制到前端目录<code>frontend</code>的<code>doc</code>目录下，并使用如下提示词实现前端与后端的接口对齐：</p>
+<blockquote>
+<p>你是具有丰富开发经验的前端开发工程师，目前已完成项目的后端开发，请你阅读 @api-fb.md 这个后端接口文档（包含后端所有接口和对接方式），并完成前端项目中的所有接口对接工作。</p></blockquote>
+<blockquote>
+<p>或者，对于大型项目而言，在这一步也可以使用<strong>拆分任务，逐步执行</strong>的方式。</p></blockquote>
+<p>完成上述步骤后，我们可以启动前端项目进行测试，这一步大概率不会一次性成功，因此，我们仍需要遵循前端界面的debug方法，对接口的对接进行debug，直至界面可以正常工作。</p>
+<blockquote>
+<p>在前端项目测试时，由于此时集成了真实的后端接口，所以务必保证后端项目正在运行！</p></blockquote>
+<blockquote>
+<p>在前/后端项目联合调试时，容易出现的一个疑问是：当出现错误时，我们应当调用前端项目还是后端项目的Cursor进行调试呢？这里提供一个比较通用的做法：首先，我们需要观察错误的类型，如果明显是前端界面的语法问题，则直接调用前端项目的Cursor进行调试即可；如果是与API相关的错误，则我们这里尽量保证不修改后端，而去修改前端，这里我们采用的做法是——<strong>先调用后端项目Cursor，针对错误进行API分析与测试，并给出前端项目的修改建议，再调用前端项目Cursor复制修改建议进行修改，实现前/后端项目真正的协同开发</strong>，后端项目的提示词可参考：</p></blockquote>
+<blockquote>
+<p>[此处粘贴具体报错输出]</p>
+<p>请作为资深调试助手针对上述问题，进行相关的后端接口测试，分析这一问题可能的成因并给出修复建议。</p></blockquote>
+<img src="/images/fig2-9.png" alt="fig2-9" style="zoom:67%;" />
+<p>完成前/后端项目的协同开发后，我们需要保证应用的各种核心功能均可正常使用且在控制台不报错。至此，恭喜你完成了一个Web应用开发的全流程，随后便可正式上线我们开发的Web应用啦！</p>
+<h3 id="42-web应用的上线">4.2 Web应用的上线</h3>
+<blockquote>
+<p>在Web应用上线前，我们首先需要对前端/后端项目做最后一次修改，因为应用上线后，前/后项目均会分配新的域名，我们需要保证前端项目的请求不会被后端阻止，前端也能使用正确的域名调用后端的API。因此，我们需要首先在后端项目中修改，使其允许前端项目对应的域名访问，如果前端项目的域名是动态变化的，则可以要求Cursor设定特定的匹配规则。而对于前端使用正确的域名调用后端的API，我们将在后端上线后进行处理。</p></blockquote>
+<p>首先，我们需要对后端项目进行一些更改，使得DevBox可以自动运行该项目，我们需要在后端项目的根目录下找到<code>entrypoint.sh</code>这个文件，这是用于DevBox自动启动项目的Shell脚本，我们需要确认该脚本是否能够正常启动后端项目（<strong>因为Cursor有时候会对该脚本进行修改</strong>），对使用Node.js的后端项目而言，这个脚本仅需包含如下内容：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>npm install
+</span></span><span style="display:flex;"><span>npm start
+</span></span></code></pre></div><p>修改完成后，我们重新进入DevBox后端项目的界面中：</p>
+<img src="/images/fig2-10.png" alt="fig2-10" style="zoom:67%;" />
+<p>点击界面右下方的<strong>发布版本</strong>，并完善<strong>版本号</strong>后，即可点击<strong>发版</strong>发布当前的后端项目。并等待界面显示<strong>发版成功</strong>：</p>
+<img src="/images/fig2-11.png" alt="fig2-11" style="zoom:67%;" />
+<p>随后，我们直接点击<strong>上线</strong>，便可上线Web应用，进入应用部署界面：</p>
+<img src="/images/fig2-12.png" alt="fig2-12" style="zoom:67%;" />
+<p>在部署界面，我们仍需要保证<strong>网络配置</strong>一栏中的<strong>容器暴露端口</strong>与后端开发过程中后端运行的端口号一致，其余配置可按需使用，配置完成后，点击右上方的<strong>部署应用</strong>按钮，即可完成Web应用的部署，此时返回后端项目的界面，等待几分钟，应当可以看到<strong>公网地址</strong>的状态变为<strong>可访问</strong>，代表后端项目已经被成功启动：</p>
+<img src="/images/fig2-13.png" alt="fig2-13" style="zoom:67%;" />
+<p>此时，我们复制项目的公网地址，回到前端项目的Cursor中，我们需要将前端项目的基础URL修改为该地址，可以使用如下提示词：</p>
+<blockquote>
+<p>请将项目中的基础URL/接口地址修改为 [DevBox项目中的公网地址]</p></blockquote>
+<blockquote>
+<p><strong>之前不是已经修改过一次了吗：<strong>之前我们是将基础URL修改为</strong>公网调试地址</strong>，此处则为正式的<strong>公网地址</strong>，注意两者区别。同时，注意Cursor有时不会自动修改诸如<code>.env.local</code>这类隐藏配置文件中的基础URL，故我们需手动进行修改。</p></blockquote>
+<blockquote>
+<p>完成基础URL的修改后，我们可以在本地再次运行一次前端项目，此时，应用应当也可以正常运行。</p></blockquote>
+<p>让我们来回顾一下目前的流程：我们完成了后端项目的上线，并在本地成功运行了前端项目，以下，我们仅需将前端项目也部署到云端！此处，我们仍可以选择Sealos，在DevBox创建一个新的实例部署前端项目。由于前端项目已经全部开发完成，因此我们仅需将项目从本地上传至云端，再直接按之前的流程部署即可。</p>
+<blockquote>
+<p>将前端项目导入DevBox实例中时，可以在本地直接拖拽文件放置于IDE（如VSCode，Cursor）的文件目录中，无需使用SFTP等传输方法。</p></blockquote>
+<blockquote>
+<p>这里介绍的仅仅是一种部署方法，我们也可以将特定的应用部署至小程序或打包为APP。</p></blockquote>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

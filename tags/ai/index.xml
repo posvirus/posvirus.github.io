@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Index on </title>
-    <link>https://posvirus.github.io/tags/index/</link>
-    <description>Recent content in Index on </description>
+    <title>AI on </title>
+    <link>https://posvirus.github.io/tags/ai/</link>
+    <description>Recent content in AI on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Fri, 22 Aug 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/tags/index/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://posvirus.github.io/tags/ai/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Posts</title>
-      <link>https://posvirus.github.io/post/</link>
+      <title>基于Cursor的Web应用全流程开发文档</title>
+      <link>https://posvirus.github.io/post/ai-webdev/</link>
       <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/</guid>
-      <description></description>
+      <guid>https://posvirus.github.io/post/ai-webdev/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, Aug 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -8,20 +8,41 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Thu, 07 Aug 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 22 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Clang</title>
-      <link>https://posvirus.github.io/tags/clang/</link>
-      <pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/clang/</guid>
+      <title>AI</title>
+      <link>https://posvirus.github.io/tags/ai/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/ai/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cursor</title>
+      <link>https://posvirus.github.io/tags/cursor/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/cursor/</guid>
       <description></description>
     </item>
     <item>
       <title>Index</title>
       <link>https://posvirus.github.io/tags/index/</link>
-      <pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/index/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>WebDev</title>
+      <link>https://posvirus.github.io/tags/webdev/</link>
+      <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/webdev/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Clang</title>
+      <link>https://posvirus.github.io/tags/clang/</link>
+      <pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/clang/</guid>
       <description></description>
     </item>
     <item>
