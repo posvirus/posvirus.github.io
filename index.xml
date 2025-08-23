@@ -11,6 +11,13 @@
     <lastBuildDate>Sat, 23 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>AM Makefile解读（2）</title>
+      <link>https://posvirus.github.io/post/ysyx-am-makefile2/</link>
+      <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/post/ysyx-am-makefile2/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>ftrace实现的注意事项</title>
       <link>https://posvirus.github.io/post/ysyx-ftrace/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
@@ -22,7 +29,7 @@
       <link>https://posvirus.github.io/post/ai-webdev/</link>
       <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/post/ai-webdev/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, Aug 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>mtrace实现的注意事项</title>
@@ -60,10 +67,10 @@
       <description>&lt;h2 id=&#34;about-me&#34;&gt;About Me&lt;/h2&gt;&#xA;&lt;p&gt;&lt;strong&gt;Chen Wenyao&lt;/strong&gt; is pursuing the M.Eng. degree in Integrated Circuit Engineering at Tsinghua University, Beijing, China, since 2024. He received the B.Eng. degree in Microelectronic Science and Engineering from Shanghai Jiao Tong University (SJTU), Shanghai, China, in 2024.&lt;/p&gt;&#xA;&lt;p&gt;He is currently conducting research at the Institute of Integrated Circuit Design and Electronic Design Automation, School of Integrated Circuits, Tsinghua University. His research focuses on &lt;strong&gt;Chiplet interconnect technology&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;His academic achievements include:&lt;/p&gt;</description>
     </item>
     <item>
-      <title>AM Makefile解读</title>
-      <link>https://posvirus.github.io/post/ysyx-am-makefile/</link>
+      <title>AM Makefile解读（1）</title>
+      <link>https://posvirus.github.io/post/ysyx-am-makefile1/</link>
       <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-am-makefile/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-am-makefile1/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>

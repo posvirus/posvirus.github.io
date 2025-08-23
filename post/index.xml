@@ -11,6 +11,13 @@
     <lastBuildDate>Sat, 23 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>AM Makefile解读（2）</title>
+      <link>https://posvirus.github.io/post/ysyx-am-makefile2/</link>
+      <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/post/ysyx-am-makefile2/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>ftrace实现的注意事项</title>
       <link>https://posvirus.github.io/post/ysyx-ftrace/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
@@ -22,7 +29,7 @@
       <link>https://posvirus.github.io/post/ai-webdev/</link>
       <pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/post/ai-webdev/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, Aug 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>mtrace实现的注意事项</title>
@@ -53,10 +60,10 @@
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 24th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
-      <title>AM Makefile解读</title>
-      <link>https://posvirus.github.io/post/ysyx-am-makefile/</link>
+      <title>AM Makefile解读（1）</title>
+      <link>https://posvirus.github.io/post/ysyx-am-makefile1/</link>
       <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-am-makefile/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-am-makefile1/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>

@@ -5,6 +5,12 @@
     <loc>https://posvirus.github.io/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://posvirus.github.io/tags/am/</loc>
+    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/post/ysyx-am-makefile2/</loc>
+    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://posvirus.github.io/categories/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
@@ -15,6 +21,9 @@
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/tags/index/</loc>
+    <lastmod>2025-08-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/tags/makefile/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/tags/nemu/</loc>
@@ -53,17 +62,11 @@
     <loc>https://posvirus.github.io/post/ysyx-iringbuf/</loc>
     <lastmod>2025-08-04T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://posvirus.github.io/tags/am/</loc>
-    <lastmod>2025-07-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://posvirus.github.io/tags/stdio/</loc>
     <lastmod>2025-07-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/post/ysyx-sprintf/</loc>
     <lastmod>2025-07-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/tags/makefile/</loc>
-    <lastmod>2025-07-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/post/ysyx-batch/</loc>
     <lastmod>2025-07-24T00:00:00+00:00</lastmod>
@@ -71,7 +74,7 @@
     <loc>https://posvirus.github.io/about/</loc>
     <lastmod>2025-07-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://posvirus.github.io/post/ysyx-am-makefile/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-am-makefile1/</loc>
     <lastmod>2025-07-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/tags/c&#43;&#43;/</loc>
