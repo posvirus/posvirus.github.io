@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+ftrace实现的注意事项 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：ftrace实现的注意事项">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-ftrace/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>ftrace实现的注意事项</h1>
+    
+    	<p>YSYX学习笔记：ftrace实现的注意事项</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/nemu/">#NEMU</a><span></span>
+    <a href="/tags/clang/">#Clang</a><span></span>
+    <a href="/tags/riscv/">#RISCV</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-08-23">August 23, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>2 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, August 23rd, 2025</strong></p>
+<p>此处说明ftrace实现的一些相关注意事项：</p>
+<h3 id="1-elf文件的解析">1. ELF文件的解析</h3>
+<p><img src="/images/ELF.png" alt="elf"></p>
+<p>参考讲义，我们可以使用<code>man 5 elf</code>查看ELF文件的结构（可视化结构如上图所示）。这里主要说明如何对其进行解析：</p>
+<p>首先，需要指出，ELF文件本质上还是一个文件，所以我们可以使用<code>fread(), fopen()</code>等对文件相关的标准库函数对其进行读取。其次，基于ELF文件的结构，我们需要查找并存储所有函数符号的地址（Value）及对应大小（Size），需要经过如下步骤：</p>
+<ul>
+<li>阅读ELF文件的Header，使用<code>fread()</code>函数将其写入一个<code>ElfN_Ehdr</code>结构体中，并从中提取：
+<ul>
+<li>Section Header Table（节头表）的地址偏移量（<code>e_shoff</code>）。</li>
+<li>节头表的表项个数（亦即表的行数，<code>e_shnum</code>）。</li>
+<li>Section Header String Table（节头名字表）对应的节头表表项索引值（<code>e_shstrndx</code>）。这里需要指出，对于节头表的每一个表项，均索引ELF文件中的一个实体区域，节头表的各表项仅用于记录这个实体的各种参数（如名字、地址偏移量、大小与表项个数等等），而存在一个称为节头名字表的实体，专门用于储存节头表各表项的名字，且节头表同样会存在一个表项索引它。所以如果我们向获取节头表中的某个表项的名字，我们就需要先读取节头名字表，再根据表项提供的参数在节头名字表内定位到该表项对应的名字。</li>
+</ul>
+</li>
+<li>根据提取的参数，查找节头表中节头名字表对应的表项，使用<code>fread()</code>函数将其写入一个<code>ElfN_Shdr</code>结构体中，并从中提取：
+<ul>
+<li>节头名字表对应的地址偏移量（<code>sh_offset</code>）。</li>
+</ul>
+</li>
+<li>依据节头名字表的地址偏移量，我们即可定位到节头名字表，随后开始扫描节头表的各表项，使用<code>fread()</code>函数循环将各表项写入一个<code>ElfN_Shdr</code>结构体中，并根据表项的<code>sh_name</code>字段在节头名字表中读取定位该表项的名字，我们需要查找两个表项：
+<ul>
+<li>名字为<code>.symtab</code>的表项：符号表，用于存储程序中的符号，我们需要获取其对应的地址偏移量（<code>sh_offset</code>）与表项个数（这里可以使用符号表总大小<code>sh_size</code>与符号表单个表项的大小<code>sh_entsize</code>相除得到）。</li>
+<li>名字为<code>.strtab</code>的表项：符号名字表，用于存储符号表中各表项的名字，它与符号表的关系类似节头名字表与节头表的关系。我们需要获取其对应的地址偏移量（<code>sh_offset</code>）与大小（<code>sh_size</code>）。</li>
+</ul>
+</li>
+<li>完成表项的查找后，依据符号表的地址偏移量，我们可定位到符号表，随后便可开始查找函数符号对应的表项，具体原理是使用<code>fread()</code>函数循环将各表项写入一个<code>ElfN_Sym</code>结构体中，并提取其中的<code>st_info</code>字段，使用<code>ELFN_ST_TYPE()</code>宏即可从该字段中解析得到该符号表项的类型，如果是<code>STT_FUNC</code>（函数符号对应的类型），则存储该表项的地址（<code>st_value</code>）与大小（<code>st_size</code>）。</li>
+<li>同时，对于函数符号对应的表项，我们同样可以依据该表项的<code>st_name</code>字段，在符号名字表中定位并存储相应的函数名。</li>
+</ul>
+<p>基于上述流程，即可完成对ELF文件的解析。</p>
+<h3 id="2-函数调用与返回的判断">2. 函数调用与返回的判断</h3>
+<p>函数调用与返回的判断需要参考RISCV的ABI（Application Binary Interface，应用程序二进制接口，它定义了应用程序之间或应用程序和操作系统之间进行二进制级交互时必须遵循的规则和约定）。具体而言，RISCV的函数调用与返回主要涉及使用<code>jal</code>与<code>jalr</code>指令对<code>ra</code>寄存器进行写入与读取，包括：</p>
+<ul>
+<li><strong>函数调用：</strong> 将当前发生函数调用的<code>pc</code>存储在<code>ra</code>中，主要分为两种情况：</li>
+<li>使用<code>jal</code>，则指令应当形如<code>jal ra func</code>，将当前<code>pc</code>存储于<code>ra</code>后，直接跳转至<code>func</code>。</li>
+<li>使用<code>jalr</code>，则指令应当形如<code>jalr ra imm(rs1)</code>，将当前<code>pc</code>存储于<code>ra</code>后，跳转至<code>imm(rs1)</code>指向的<code>func</code>。</li>
+<li><strong>函数返回：</strong> 读取<code>ra</code>存储的<code>pc</code>并跳转，RISCV有专用的伪指令<code>ret</code>用于函数返回，该指令展开后为：<code>jalr zero 0(ra)</code>。</li>
+</ul>
+<p>因此，我们仅需在NEMU ISA的<code>jal</code>，<code>jalr</code>指令实现中增加对函数调用与函数返回的判断即可：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">INSTPAT</span>(<span style="color:#e6db74">&#34;??????? ????? ????? 000 ????? 11001 11&#34;</span>, jalr   , I, <span style="color:#a6e22e">R</span>(rd) <span style="color:#f92672">=</span> s<span style="color:#f92672">-&gt;</span>snpc; s<span style="color:#f92672">-&gt;</span>dnpc <span style="color:#f92672">=</span> (src1 <span style="color:#f92672">+</span> imm) <span style="color:#f92672">&amp;</span> (<span style="color:#f92672">~</span>(<span style="color:#66d9ef">word_t</span>)<span style="color:#ae81ff">1</span>); <span style="color:#66d9ef">if</span> (s<span style="color:#f92672">-&gt;</span>isa.inst <span style="color:#f92672">==</span> <span style="color:#ae81ff">0x00008067</span>) <span style="color:#a6e22e">print_return</span>(s<span style="color:#f92672">-&gt;</span>pc); <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (rd <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#a6e22e">print_call</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>dnpc, false));
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">INSTPAT</span>(<span style="color:#e6db74">&#34;??????? ????? ????? ??? ????? 11011 11&#34;</span>, jal    , J, <span style="color:#a6e22e">R</span>(rd) <span style="color:#f92672">=</span> s<span style="color:#f92672">-&gt;</span>snpc; s<span style="color:#f92672">-&gt;</span>dnpc <span style="color:#f92672">=</span> s<span style="color:#f92672">-&gt;</span>pc <span style="color:#f92672">+</span> imm; <span style="color:#66d9ef">if</span> (rd <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#a6e22e">print_call</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>dnpc, false));
+</span></span></code></pre></div><p>对应地，我们需要在ELF文件中的函数符号解析完成后，增加对应的函数调用与返回的打印函数。</p>
+<h3 id="3-尾调用的处理">3. 尾调用的处理</h3>
+<p>单纯基于上述逻辑实现的ftrace无法处理函数的<a href="https://ruanyifeng.com/blog/2015/04/tail-call.html">尾调用</a>，因为函数发生尾调用时，不会将当前发生调用的<code>pc</code>存储在<code>ra</code>中，只会使用<code>jalr zero 0(rs1)</code>直接跳转至<code>func</code>。为实现对尾调用的追踪，我们需要增加以下三点功能：</p>
+<ul>
+<li>在NEMU ISA的<code>jalr</code>指令实现中增加对函数尾调用的判断：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">INSTPAT</span>(<span style="color:#e6db74">&#34;??????? ????? ????? 000 ????? 11001 11&#34;</span>, jalr   , I, <span style="color:#a6e22e">R</span>(rd) <span style="color:#f92672">=</span> s<span style="color:#f92672">-&gt;</span>snpc; s<span style="color:#f92672">-&gt;</span>dnpc <span style="color:#f92672">=</span> (src1 <span style="color:#f92672">+</span> imm) <span style="color:#f92672">&amp;</span> (<span style="color:#f92672">~</span>(<span style="color:#66d9ef">word_t</span>)<span style="color:#ae81ff">1</span>); <span style="color:#66d9ef">if</span> (s<span style="color:#f92672">-&gt;</span>isa.inst <span style="color:#f92672">==</span> <span style="color:#ae81ff">0x00008067</span>) <span style="color:#a6e22e">print_return</span>(s<span style="color:#f92672">-&gt;</span>pc); <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (rd <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#a6e22e">print_call</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>dnpc, false); <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> ((rd <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">&amp;&amp;</span> (imm <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)) <span style="color:#a6e22e">print_call</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>dnpc, true));
+</span></span></code></pre></div><ul>
+<li>修改函数调用的打印函数<code>print_call()</code>，增加对尾调用的识别功能，当发生尾调用时，该函数会存储尾调用函数对应的调用深度、PC值至一个全局静态结构体数组中：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print_call</span>(<span style="color:#66d9ef">vaddr_t</span> pc, <span style="color:#66d9ef">vaddr_t</span> dnpc, <span style="color:#66d9ef">bool</span> tail) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> idx <span style="color:#f92672">=</span> <span style="color:#a6e22e">check_func</span>(dnpc);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (idx <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  func_depth<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">flog_write</span>(FMT_PADDR <span style="color:#e6db74">&#34;: %*scall [%s@&#34;</span> FMT_PADDR <span style="color:#e6db74">&#34;]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pc, (func_depth <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;&#34;</span>, func_hdr[idx].name, dnpc);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (tail) {
+</span></span><span style="display:flex;"><span>    tail_hdr[tail_nr].pc <span style="color:#f92672">=</span> pc;
+</span></span><span style="display:flex;"><span>    tail_hdr[tail_nr<span style="color:#f92672">++</span>].depth <span style="color:#f92672">=</span> func_depth <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>修改函数返回的打印函数<code>print_return()</code>，增加对尾调用的处理，当调用该函数时，该函数会在存储尾调用函数的结构体数组中查找当前是否存在尾调用函数，若存在，则一并输出函数返回信息。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print_return</span>(<span style="color:#66d9ef">vaddr_t</span> pc) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> idx <span style="color:#f92672">=</span> <span style="color:#a6e22e">check_func</span>(pc);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (idx <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">flog_write</span>(FMT_PADDR <span style="color:#e6db74">&#34;: %*sret [%s]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, pc, (func_depth <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;&#34;</span>, func_hdr[idx].name);
+</span></span><span style="display:flex;"><span>  func_depth<span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// tail call handler (recursion)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (tail_nr <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tail_hdr[tail_nr<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>].depth <span style="color:#f92672">==</span> func_depth) {
+</span></span><span style="display:flex;"><span>      tail_nr<span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">print_return</span>(tail_hdr[tail_nr].pc);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>注意<code>print_return()</code>函数中对尾调用函数的查找是递归的，因为可能存在连续嵌套的尾调用。</li>
+</ul>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
