@@ -8,8 +8,43 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Sat, 23 Aug 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 24 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CPU</title>
+      <link>https://posvirus.github.io/tags/cpu/</link>
+      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/cpu/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DiffTest</title>
+      <link>https://posvirus.github.io/tags/difftest/</link>
+      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/difftest/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Index</title>
+      <link>https://posvirus.github.io/tags/index/</link>
+      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/index/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>NEMU</title>
+      <link>https://posvirus.github.io/tags/nemu/</link>
+      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/nemu/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>RISCV</title>
+      <link>https://posvirus.github.io/tags/riscv/</link>
+      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/riscv/</guid>
+      <description></description>
+    </item>
     <item>
       <title>AM</title>
       <link>https://posvirus.github.io/tags/am/</link>
@@ -25,31 +60,10 @@
       <description></description>
     </item>
     <item>
-      <title>Index</title>
-      <link>https://posvirus.github.io/tags/index/</link>
-      <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/index/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Makefile</title>
       <link>https://posvirus.github.io/tags/makefile/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/makefile/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>NEMU</title>
-      <link>https://posvirus.github.io/tags/nemu/</link>
-      <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/nemu/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>RISCV</title>
-      <link>https://posvirus.github.io/tags/riscv/</link>
-      <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/riscv/</guid>
       <description></description>
     </item>
     <item>
@@ -85,13 +99,6 @@
       <link>https://posvirus.github.io/tags/c&#43;&#43;/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/c&#43;&#43;/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>CPU</title>
-      <link>https://posvirus.github.io/tags/cpu/</link>
-      <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/cpu/</guid>
       <description></description>
     </item>
     <item>

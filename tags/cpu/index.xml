@@ -8,8 +8,15 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 24 Aug 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/tags/cpu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DiffTest中的寄存器一致性</title>
+      <link>https://posvirus.github.io/post/ysyx-gpr/</link>
+      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/post/ysyx-gpr/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 24th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>exec_once()函数执行逻辑</title>
       <link>https://posvirus.github.io/post/ysyx-exec_once/</link>

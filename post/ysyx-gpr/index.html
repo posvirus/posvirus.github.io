@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+DiffTest中的寄存器一致性 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：DiffTest中的寄存器一致性">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-gpr/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>DiffTest中的寄存器一致性</h1>
+    
+    	<p>YSYX学习笔记：DiffTest中的寄存器一致性</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/riscv/">#RISCV</a><span></span>
+    <a href="/tags/cpu/">#CPU</a><span></span>
+    <a href="/tags/nemu/">#NEMU</a><span></span>
+    <a href="/tags/difftest/">#DiffTest</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-08-24">August 24, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>1 minute</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, August 24th, 2025</strong></p>
+<p>在讲义中提到，当使用<code>difftest_regcpy()</code>传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：</p>
+<p>首先，对于NEMU，RISCV32架构的寄存器顺序在<code>reg.c</code>中定义：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>regs[] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;$0&#34;</span>, <span style="color:#e6db74">&#34;ra&#34;</span>, <span style="color:#e6db74">&#34;sp&#34;</span>, <span style="color:#e6db74">&#34;gp&#34;</span>, <span style="color:#e6db74">&#34;tp&#34;</span>, <span style="color:#e6db74">&#34;t0&#34;</span>, <span style="color:#e6db74">&#34;t1&#34;</span>, <span style="color:#e6db74">&#34;t2&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;s0&#34;</span>, <span style="color:#e6db74">&#34;s1&#34;</span>, <span style="color:#e6db74">&#34;a0&#34;</span>, <span style="color:#e6db74">&#34;a1&#34;</span>, <span style="color:#e6db74">&#34;a2&#34;</span>, <span style="color:#e6db74">&#34;a3&#34;</span>, <span style="color:#e6db74">&#34;a4&#34;</span>, <span style="color:#e6db74">&#34;a5&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;a6&#34;</span>, <span style="color:#e6db74">&#34;a7&#34;</span>, <span style="color:#e6db74">&#34;s2&#34;</span>, <span style="color:#e6db74">&#34;s3&#34;</span>, <span style="color:#e6db74">&#34;s4&#34;</span>, <span style="color:#e6db74">&#34;s5&#34;</span>, <span style="color:#e6db74">&#34;s6&#34;</span>, <span style="color:#e6db74">&#34;s7&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;s8&#34;</span>, <span style="color:#e6db74">&#34;s9&#34;</span>, <span style="color:#e6db74">&#34;s10&#34;</span>, <span style="color:#e6db74">&#34;s11&#34;</span>, <span style="color:#e6db74">&#34;t3&#34;</span>, <span style="color:#e6db74">&#34;t4&#34;</span>, <span style="color:#e6db74">&#34;t5&#34;</span>, <span style="color:#e6db74">&#34;t6&#34;</span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>以下我们只需要查看RISCV32的REF（即Spike）中，寄存器的顺序是否与之一致即可，首先，在<code>tool</code>目录下的<code>difftest.cc</code>中可见：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> sim_t<span style="color:#f92672">::</span>diff_get_regs(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> diff_context) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">diff_context_t</span><span style="color:#f92672">*</span> ctx <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">diff_context_t</span><span style="color:#f92672">*</span>)diff_context;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> NR_GPR; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    ctx<span style="color:#f92672">-&gt;</span>gpr[i] <span style="color:#f92672">=</span> state<span style="color:#f92672">-&gt;</span>XPR[i];
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  ctx<span style="color:#f92672">-&gt;</span>pc <span style="color:#f92672">=</span> state<span style="color:#f92672">-&gt;</span>pc;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> sim_t<span style="color:#f92672">::</span>diff_set_regs(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> diff_context) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">diff_context_t</span><span style="color:#f92672">*</span> ctx <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">diff_context_t</span><span style="color:#f92672">*</span>)diff_context;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> NR_GPR; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    state<span style="color:#f92672">-&gt;</span>XPR.write(i, (sword_t)ctx<span style="color:#f92672">-&gt;</span>gpr[i]);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  state<span style="color:#f92672">-&gt;</span>pc <span style="color:#f92672">=</span> ctx<span style="color:#f92672">-&gt;</span>pc;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>其中<code>gpr[]</code>是NEMU中的通用寄存器成员，而<code>XPR[]</code>则应该是Spike中对应的通用寄存器成员，于是，我们可以进一步在Spike的项目目录下搜索该成员定义，最后发现在<code>regnames.cc</code>中定义了Spike对应的寄存器顺序：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> xpr_name[] <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;zero&#34;</span>, <span style="color:#e6db74">&#34;ra&#34;</span>, <span style="color:#e6db74">&#34;sp&#34;</span>,  <span style="color:#e6db74">&#34;gp&#34;</span>,  <span style="color:#e6db74">&#34;tp&#34;</span>, <span style="color:#e6db74">&#34;t0&#34;</span>,  <span style="color:#e6db74">&#34;t1&#34;</span>,  <span style="color:#e6db74">&#34;t2&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;s0&#34;</span>,   <span style="color:#e6db74">&#34;s1&#34;</span>, <span style="color:#e6db74">&#34;a0&#34;</span>,  <span style="color:#e6db74">&#34;a1&#34;</span>,  <span style="color:#e6db74">&#34;a2&#34;</span>, <span style="color:#e6db74">&#34;a3&#34;</span>,  <span style="color:#e6db74">&#34;a4&#34;</span>,  <span style="color:#e6db74">&#34;a5&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;a6&#34;</span>,   <span style="color:#e6db74">&#34;a7&#34;</span>, <span style="color:#e6db74">&#34;s2&#34;</span>,  <span style="color:#e6db74">&#34;s3&#34;</span>,  <span style="color:#e6db74">&#34;s4&#34;</span>, <span style="color:#e6db74">&#34;s5&#34;</span>,  <span style="color:#e6db74">&#34;s6&#34;</span>,  <span style="color:#e6db74">&#34;s7&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;s8&#34;</span>,   <span style="color:#e6db74">&#34;s9&#34;</span>, <span style="color:#e6db74">&#34;s10&#34;</span>, <span style="color:#e6db74">&#34;s11&#34;</span>, <span style="color:#e6db74">&#34;t3&#34;</span>, <span style="color:#e6db74">&#34;t4&#34;</span>,  <span style="color:#e6db74">&#34;t5&#34;</span>,  <span style="color:#e6db74">&#34;t6&#34;</span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>经验证，即可发现DUT与REF的寄存器顺序是一致的，无需额外调整。</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
