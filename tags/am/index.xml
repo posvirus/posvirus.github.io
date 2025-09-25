@@ -2,33 +2,33 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>AM on </title>
-    <link>https://posvirus.github.io/tags/am/</link>
+    <link>uildDrafts/tags/am/</link>
     <description>Recent content in AM on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Sat, 23 Aug 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/tags/am/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="uildDrafts/tags/am/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AM Makefile解读（2）</title>
-      <link>https://posvirus.github.io/post/ysyx-am-makefile2/</link>
+      <link>uildDrafts/post/ysyx-am-makefile2/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-am-makefile2/</guid>
+      <guid>uildDrafts/post/ysyx-am-makefile2/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>功能更强大的sprintf()函数</title>
-      <link>https://posvirus.github.io/post/ysyx-sprintf/</link>
+      <link>uildDrafts/post/ysyx-sprintf/</link>
       <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-sprintf/</guid>
+      <guid>uildDrafts/post/ysyx-sprintf/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 27th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>AM Makefile解读（1）</title>
-      <link>https://posvirus.github.io/post/ysyx-am-makefile1/</link>
+      <link>uildDrafts/post/ysyx-am-makefile1/</link>
       <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-am-makefile1/</guid>
+      <guid>uildDrafts/post/ysyx-am-makefile1/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>

@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Verilator on </title>
-    <link>https://posvirus.github.io/tags/verilator/</link>
+    <link>uildDrafts/tags/verilator/</link>
     <description>Recent content in Verilator on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/tags/verilator/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="uildDrafts/tags/verilator/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>浅析Verilator的wrapper文件写法</title>
-      <link>https://posvirus.github.io/post/ysyx-verilator/</link>
+      <link>uildDrafts/post/ysyx-verilator/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-verilator/</guid>
+      <guid>uildDrafts/post/ysyx-verilator/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>

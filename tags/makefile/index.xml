@@ -2,33 +2,33 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Makefile on </title>
-    <link>https://posvirus.github.io/tags/makefile/</link>
+    <link>uildDrafts/tags/makefile/</link>
     <description>Recent content in Makefile on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Sat, 23 Aug 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/tags/makefile/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="uildDrafts/tags/makefile/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AM Makefile解读（2）</title>
-      <link>https://posvirus.github.io/post/ysyx-am-makefile2/</link>
+      <link>uildDrafts/post/ysyx-am-makefile2/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-am-makefile2/</guid>
+      <guid>uildDrafts/post/ysyx-am-makefile2/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>如何让NEMU以批处理模式运行？</title>
-      <link>https://posvirus.github.io/post/ysyx-batch/</link>
+      <link>uildDrafts/post/ysyx-batch/</link>
       <pubDate>Thu, 24 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-batch/</guid>
+      <guid>uildDrafts/post/ysyx-batch/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 24th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>AM Makefile解读（1）</title>
-      <link>https://posvirus.github.io/post/ysyx-am-makefile1/</link>
+      <link>uildDrafts/post/ysyx-am-makefile1/</link>
       <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-am-makefile1/</guid>
+      <guid>uildDrafts/post/ysyx-am-makefile1/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>

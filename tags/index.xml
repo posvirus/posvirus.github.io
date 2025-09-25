@@ -2,89 +2,96 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on </title>
-    <link>https://posvirus.github.io/tags/</link>
+    <link>uildDrafts/tags/</link>
     <description>Recent content in Tags on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Sun, 24 Aug 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>CPU</title>
-      <link>https://posvirus.github.io/tags/cpu/</link>
-      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/cpu/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>DiffTest</title>
-      <link>https://posvirus.github.io/tags/difftest/</link>
-      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/difftest/</guid>
-      <description></description>
-    </item>
+    <lastBuildDate>Thu, 25 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="uildDrafts/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Index</title>
-      <link>https://posvirus.github.io/tags/index/</link>
-      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/index/</guid>
+      <link>uildDrafts/tags/index/</link>
+      <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>uildDrafts/tags/index/</guid>
       <description></description>
     </item>
     <item>
       <title>NEMU</title>
-      <link>https://posvirus.github.io/tags/nemu/</link>
+      <link>uildDrafts/tags/nemu/</link>
+      <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>uildDrafts/tags/nemu/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>NPC</title>
+      <link>uildDrafts/tags/npc/</link>
+      <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>uildDrafts/tags/npc/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>CPU</title>
+      <link>uildDrafts/tags/cpu/</link>
       <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/nemu/</guid>
+      <guid>uildDrafts/tags/cpu/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DiffTest</title>
+      <link>uildDrafts/tags/difftest/</link>
+      <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>uildDrafts/tags/difftest/</guid>
       <description></description>
     </item>
     <item>
       <title>RISCV</title>
-      <link>https://posvirus.github.io/tags/riscv/</link>
+      <link>uildDrafts/tags/riscv/</link>
       <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/riscv/</guid>
+      <guid>uildDrafts/tags/riscv/</guid>
       <description></description>
     </item>
     <item>
       <title>AM</title>
-      <link>https://posvirus.github.io/tags/am/</link>
+      <link>uildDrafts/tags/am/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/am/</guid>
+      <guid>uildDrafts/tags/am/</guid>
       <description></description>
     </item>
     <item>
       <title>Clang</title>
-      <link>https://posvirus.github.io/tags/clang/</link>
+      <link>uildDrafts/tags/clang/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/clang/</guid>
+      <guid>uildDrafts/tags/clang/</guid>
       <description></description>
     </item>
     <item>
       <title>Makefile</title>
-      <link>https://posvirus.github.io/tags/makefile/</link>
+      <link>uildDrafts/tags/makefile/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/makefile/</guid>
+      <guid>uildDrafts/tags/makefile/</guid>
       <description></description>
     </item>
     <item>
       <title>Stdio</title>
-      <link>https://posvirus.github.io/tags/stdio/</link>
+      <link>uildDrafts/tags/stdio/</link>
       <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/stdio/</guid>
+      <guid>uildDrafts/tags/stdio/</guid>
       <description></description>
     </item>
     <item>
       <title>C&#43;&#43;</title>
-      <link>https://posvirus.github.io/tags/c&#43;&#43;/</link>
+      <link>uildDrafts/tags/c&#43;&#43;/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/c&#43;&#43;/</guid>
+      <guid>uildDrafts/tags/c&#43;&#43;/</guid>
       <description></description>
     </item>
     <item>
       <title>Verilator</title>
-      <link>https://posvirus.github.io/tags/verilator/</link>
+      <link>uildDrafts/tags/verilator/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/tags/verilator/</guid>
+      <guid>uildDrafts/tags/verilator/</guid>
       <description></description>
     </item>
   </channel>
