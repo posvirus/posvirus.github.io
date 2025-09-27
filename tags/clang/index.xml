@@ -2,61 +2,61 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Clang on </title>
-    <link>uildDrafts/tags/clang/</link>
+    <link>https://posvirus.github.io/tags/clang/</link>
     <description>Recent content in Clang on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Sat, 23 Aug 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="uildDrafts/tags/clang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://posvirus.github.io/tags/clang/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ftrace实现的注意事项</title>
-      <link>uildDrafts/post/ysyx-ftrace/</link>
+      <link>https://posvirus.github.io/post/ysyx-ftrace/</link>
       <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-ftrace/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-ftrace/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 23rd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>mtrace实现的注意事项</title>
-      <link>uildDrafts/post/ysyx-mtrace/</link>
+      <link>https://posvirus.github.io/post/ysyx-mtrace/</link>
       <pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-mtrace/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-mtrace/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 7th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>指令环形缓冲器实现</title>
-      <link>uildDrafts/post/ysyx-iringbuf/</link>
+      <link>https://posvirus.github.io/post/ysyx-iringbuf/</link>
       <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-iringbuf/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-iringbuf/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, August 4th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>功能更强大的sprintf()函数</title>
-      <link>uildDrafts/post/ysyx-sprintf/</link>
+      <link>https://posvirus.github.io/post/ysyx-sprintf/</link>
       <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-sprintf/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-sprintf/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 27th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>如何让NEMU以批处理模式运行？</title>
-      <link>uildDrafts/post/ysyx-batch/</link>
+      <link>https://posvirus.github.io/post/ysyx-batch/</link>
       <pubDate>Thu, 24 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-batch/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-batch/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 24th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>exec_once()函数执行逻辑</title>
-      <link>uildDrafts/post/ysyx-exec_once/</link>
+      <link>https://posvirus.github.io/post/ysyx-exec_once/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-exec_once/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-exec_once/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>关于NEMU存储器访问的细节</title>
-      <link>uildDrafts/post/ysyx-nemu_memory/</link>
+      <link>https://posvirus.github.io/post/ysyx-nemu_memory/</link>
       <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-nemu_memory/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-nemu_memory/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>

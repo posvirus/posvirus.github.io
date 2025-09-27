@@ -2,100 +2,100 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>uildDrafts/</loc>
+    <loc>https://posvirus.github.io/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/categories/</loc>
+    <loc>https://posvirus.github.io/categories/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/index/</loc>
+    <loc>https://posvirus.github.io/tags/index/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/nemu/</loc>
+    <loc>https://posvirus.github.io/tags/nemu/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/npc/</loc>
+    <loc>https://posvirus.github.io/tags/npc/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-npc-note1/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-npc-note1/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/</loc>
+    <loc>https://posvirus.github.io/post/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/</loc>
+    <loc>https://posvirus.github.io/tags/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/categories/ysyx/</loc>
+    <loc>https://posvirus.github.io/categories/ysyx/</loc>
     <lastmod>2025-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/cpu/</loc>
+    <loc>https://posvirus.github.io/tags/cpu/</loc>
     <lastmod>2025-08-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/difftest/</loc>
+    <loc>https://posvirus.github.io/tags/difftest/</loc>
     <lastmod>2025-08-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-gpr/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-gpr/</loc>
     <lastmod>2025-08-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/riscv/</loc>
+    <loc>https://posvirus.github.io/tags/riscv/</loc>
     <lastmod>2025-08-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/am/</loc>
+    <loc>https://posvirus.github.io/tags/am/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-am-makefile2/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-am-makefile2/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/clang/</loc>
+    <loc>https://posvirus.github.io/tags/clang/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-ftrace/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-ftrace/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/makefile/</loc>
+    <loc>https://posvirus.github.io/tags/makefile/</loc>
     <lastmod>2025-08-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-mtrace/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-mtrace/</loc>
     <lastmod>2025-08-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-iringbuf/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-iringbuf/</loc>
     <lastmod>2025-08-04T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/stdio/</loc>
+    <loc>https://posvirus.github.io/tags/stdio/</loc>
     <lastmod>2025-07-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-sprintf/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-sprintf/</loc>
     <lastmod>2025-07-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-batch/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-batch/</loc>
     <lastmod>2025-07-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/about/</loc>
+    <loc>https://posvirus.github.io/about/</loc>
     <lastmod>2025-07-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-am-makefile1/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-am-makefile1/</loc>
     <lastmod>2025-07-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/c&#43;&#43;/</loc>
+    <loc>https://posvirus.github.io/tags/c&#43;&#43;/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-exec_once/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-exec_once/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-rv32m/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-rv32m/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/tags/verilator/</loc>
+    <loc>https://posvirus.github.io/tags/verilator/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-div/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-div/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-nemu_memory/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-nemu_memory/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>uildDrafts/post/ysyx-verilator/</loc>
+    <loc>https://posvirus.github.io/post/ysyx-verilator/</loc>
     <lastmod>2025-07-22T00:00:00+00:00</lastmod>
   </url>
 </urlset>

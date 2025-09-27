@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>NPC on </title>
-    <link>uildDrafts/tags/npc/</link>
+    <link>https://posvirus.github.io/tags/npc/</link>
     <description>Recent content in NPC on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Thu, 25 Sep 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="uildDrafts/tags/npc/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://posvirus.github.io/tags/npc/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NPC实现时的注意事项（1）</title>
-      <link>uildDrafts/post/ysyx-npc-note1/</link>
+      <link>https://posvirus.github.io/post/ysyx-npc-note1/</link>
       <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/post/ysyx-npc-note1/</guid>
+      <guid>https://posvirus.github.io/post/ysyx-npc-note1/</guid>
       <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, September 25th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>

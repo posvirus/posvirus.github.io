@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on </title>
-    <link>uildDrafts/categories/</link>
+    <link>https://posvirus.github.io/categories/</link>
     <description>Recent content in Categories on </description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
     <lastBuildDate>Thu, 25 Sep 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="uildDrafts/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://posvirus.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>YSYX</title>
-      <link>uildDrafts/categories/ysyx/</link>
+      <link>https://posvirus.github.io/categories/ysyx/</link>
       <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>uildDrafts/categories/ysyx/</guid>
+      <guid>https://posvirus.github.io/categories/ysyx/</guid>
       <description></description>
     </item>
   </channel>
