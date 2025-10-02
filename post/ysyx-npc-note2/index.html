@@ -266,20 +266,15 @@ NPC实现时的注意事项（2） | Posvirus&#39; Blog
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (g_print_step) { IFDEF(CONFIG_ITRACE, puts(logbuf)); }
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef CONFIG_DIFFTEST
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  pc_get(<span style="color:#f92672">&amp;</span>pc_d, <span style="color:#f92672">&amp;</span>dnpc_d); 
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  pc_get(<span style="color:#f92672">&amp;</span>pc_d, <span style="color:#f92672">&amp;</span>dnpc_d); load_cpu(top);
+</span></span><span style="display:flex;"><span>  difftest_step((vaddr_t)pc_d, (vaddr_t)dnpc_d); <span style="color:#75715e">// current-cycle difftest
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#endif
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">exec_once</span>(Vtop <span style="color:#f92672">*</span>top, VerilatedContext <span style="color:#f92672">*</span>contextp, VerilatedFstC <span style="color:#f92672">*</span>tfp, <span style="color:#66d9ef">bool</span> rst) {
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (rst) {
 </span></span><span style="display:flex;"><span>    EDGE_TRG_EVENT(top, top<span style="color:#f92672">-&gt;</span>rst <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; top<span style="color:#f92672">-&gt;</span>inst <span style="color:#f92672">=</span> vaddr_ifetch(top<span style="color:#f92672">-&gt;</span>inst_addr, <span style="color:#ae81ff">4</span>));
-</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
-</span></span><span style="display:flex;"><span>    EDGE_TRG_EVENT(top, top<span style="color:#f92672">-&gt;</span>inst <span style="color:#f92672">=</span> vaddr_ifetch(top<span style="color:#f92672">-&gt;</span>inst_addr, <span style="color:#ae81ff">4</span>));
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef CONFIG_DIFFTEST
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    load_cpu(top);
-</span></span><span style="display:flex;"><span>    difftest_step((vaddr_t)pc_d, (vaddr_t)dnpc_d); <span style="color:#75715e">// last-cycle difftest
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#endif
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  }
+</span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef CONFIG_ITRACE
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  IRingBuffer_write(top);
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
@@ -313,9 +308,11 @@ NPC实现时的注意事项（2） | Posvirus&#39; Blog
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> disassemble(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>str, <span style="color:#66d9ef">int</span> size, <span style="color:#66d9ef">uint64_t</span> pc, <span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>code, <span style="color:#66d9ef">int</span> nbyte);
 </span></span><span style="display:flex;"><span>  disassemble(p, logbuf <span style="color:#f92672">+</span> MAX_LOGBUF_LEN <span style="color:#f92672">-</span> p, top<span style="color:#f92672">-&gt;</span>inst_addr, (<span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>top<span style="color:#f92672">-&gt;</span>inst, <span style="color:#ae81ff">4</span>);
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  EDGE_TRG_EVENT(top, top<span style="color:#f92672">-&gt;</span>inst <span style="color:#f92672">=</span> vaddr_ifetch(top<span style="color:#f92672">-&gt;</span>inst_addr, <span style="color:#ae81ff">4</span>)); <span style="color:#75715e">// next instruction fetch
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span></code></pre></div><p>由于我们采用自定义的宏<code>EDGE_TRG_EVENT()</code>来实现对Verilator生成文件的激励，这会在实现DiffTest时带来一些时序问题，具体而言：NPC中定义的<code>exec_once()</code>函数实际上仿真的是从当前时钟周期时钟上升沿开始，到下一时钟周期上升沿前的时间，这使得当该函数执行完成，当前指令还没有对寄存器堆进行写回操作（这需要等到下一时钟上升沿后），寄存器堆内部的取值还没有更新，因此，如果像NEMU中，在<code>exec_once()</code>执行完成后直接进行DiffTest，便会引发错误。</p>
-<p>为此，我们将DiffTest拆解成两部分，首先，在当前时钟周期的<code>exec_once()</code>执行完成后，执行<code>trace_and_difftest()</code>记录当前的PC值；其次，在执行下一周期的<code>exec_once()</code>时，调用<code>difftest_step()</code>对上一周期的CPU状态进行DiffTest（此处我们还需要额外考虑，对首次调用的<code>exec_once()</code>，无需调用<code>difftest_step()</code>进行DiffTest）。</p>
+<p>为此，我们调整了<code>exec_once()</code>函数的执行顺序，将其仿真的时间修改为从当前时钟周期时钟上升沿后开始，到下一时钟上升沿后结束，即在<code>exec_once()</code>函数中会预取下一周期的指令。同时，我们需要额外保证在系统复位后，<code>exec_once()</code>函数中也会预取第一周期的指令。</p>
     </div>
 </div>
 
