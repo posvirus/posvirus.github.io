@@ -108,10 +108,9 @@ NPC实现时的注意事项（1） | Posvirus&#39; Blog
 </span></span><span style="display:flex;"><span>cs_free_dl <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>)(cs_insn<span style="color:#f92672">*</span>, size_t)<span style="color:#f92672">&gt;</span>(dlsym(dl_handle, <span style="color:#e6db74">&#34;cs_free&#34;</span>));
 </span></span><span style="display:flex;"><span>assert(cs_free_dl);
 </span></span></code></pre></div><h3 id="2-npc中sdb命令行的实现">2. NPC中sdb命令行的实现</h3>
-<p>sdb命令行需要调用<code>readline.h</code>库实现，在C++中，由于readline是一个动态库，编译的时候需要加上<code>-lreadline</code>，不然会找不到相关的函数。并且，Verilator是直接使用g++编译的，需要将<code>-lreadline</code>写在编译命令的最后。</p>
-<p>但是，我们是调用Verilator指令进行编译的，如何保证Verilator编译时<code>-lreadline</code>在命令的最后？</p>
+<p>sdb命令行需要调用<code>readline.h</code>库实现，在C++中，由于readline是一个动态库，编译的时候需要加上<code>-lreadline</code>，不然会找不到相关的函数。在Verilator中，我们可以直接使用<code>-LDFLAG</code>加载这一动态库。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#75715e"># load readline library (used for sdb)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>VRC_INPUT <span style="color:#f92672">+=</span> -lreadline
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>LDFLAGS_VR <span style="color:#f92672">+=</span> -lreadline
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">run</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">$(</span>VERILOG_INPUT<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>VRC_INPUT<span style="color:#66d9ef">)</span>
 </span></span><span style="display:flex;"><span>	@rm -rf input.vc
@@ -119,11 +118,11 @@ NPC实现时的注意事项（1） | Posvirus&#39; Blog
 </span></span><span style="display:flex;"><span>	@echo
 </span></span><span style="display:flex;"><span>	@echo <span style="color:#e6db74">&#34;---------- VERILATE ----------&#34;</span>
 </span></span><span style="display:flex;"><span>	@rm -rf <span style="color:#66d9ef">$(</span>OBJ_PATH<span style="color:#66d9ef">)</span>/*
-</span></span><span style="display:flex;"><span>	@<span style="color:#66d9ef">$(</span>VERILATOR<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>VERILATOR_FLAGS<span style="color:#66d9ef">)</span> --top-module <span style="color:#66d9ef">$(</span>VERILOG_TOP<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
+</span></span><span style="display:flex;"><span>	@@<span style="color:#66d9ef">$(</span>VERILATOR<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>VERILATOR_FLAGS<span style="color:#66d9ef">)</span> --top-module <span style="color:#66d9ef">$(</span>VERILOG_TOP<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
 </span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#66d9ef">$(</span>addprefix -CFLAGS , <span style="color:#66d9ef">$(</span>CXXFLAGS_VR<span style="color:#66d9ef">))</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		--Mdir <span style="color:#66d9ef">$(</span>OBJ_PATH<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>VERILATOR_INPUT<span style="color:#66d9ef">)</span> $^
-</span></span></code></pre></div><p>我们只需要把<code>-lreadline</code>添加在待编译的C++文件<code>VRC_INPUT</code>末尾即可。</p>
-<h3 id="3-sdb扫描npc寄存器的实现">3. sdb扫描NPC寄存器的实现</h3>
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#66d9ef">$(</span>addprefix -LDFLAGS , <span style="color:#66d9ef">$(</span>LDFLAGS_VR<span style="color:#66d9ef">))</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		--Mdir <span style="color:#66d9ef">$(</span>OBJ_PATH<span style="color:#66d9ef">)</span> $^
+</span></span></code></pre></div><h3 id="3-sdb扫描npc寄存器的实现">3. sdb扫描NPC寄存器的实现</h3>
 <p>我们考虑通过DPI-C实现，请注意DPI-C实际上是双向的，即：我可以在RTL代码中调用C++中实现的函数（<code>import</code>），也可以在C++代码中调用RTL代码中定义的任务（<code>export</code>）。在sdb中实现扫描NPC寄存器显然属于后者，即我们需要在RTL代码中定义一个读取寄存器的任务，再在C++代码中调用该任务：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-verilog" data-lang="verilog"><span style="display:flex;"><span>export <span style="color:#e6db74">&#34;DPI-C&#34;</span> <span style="color:#66d9ef">task</span> gpr;
 </span></span><span style="display:flex;"><span>
