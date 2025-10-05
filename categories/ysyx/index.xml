@@ -8,8 +8,15 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Sat, 04 Oct 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 05 Oct 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/categories/ysyx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>设备实时时钟与更强大的sprintf()函数</title>
+      <link>https://posvirus.github.io/post/ysyx-rtc_and_sprintf/</link>
+      <pubDate>Sun, 05 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/post/ysyx-rtc_and_sprintf/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, October 5th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>NEMU的设备实现注意事项</title>
       <link>https://posvirus.github.io/post/ysyx-device-note/</link>
