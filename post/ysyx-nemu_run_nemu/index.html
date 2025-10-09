@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+使用RV32E架构的NEMU运行NEMU | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：使用RV32E架构的NEMU运行NEMU">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-nemu_run_nemu/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>使用RV32E架构的NEMU运行NEMU</h1>
+    
+    	<p>YSYX学习笔记：使用RV32E架构的NEMU运行NEMU</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/makefile/">#Makefile</a><span></span>
+    <a href="/tags/nemu/">#NEMU</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-10-09">October 9, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>1 minute</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, October 9th, 2025</strong></p>
+<p>在原始的NEMU中，如果尝试使用RV32E架构的NEMU运行NEMU，会直接报错，为修复这一问题，我们需要对NEMU做如下修改：</p>
+<p>首先，在<code>am-kernels/kernels/nemu</code>文件夹中的Makefile中，我们通过<code>build_am</code>目标构建可在AM上运行的NEMU：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">build_am</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span>-am_defconfig
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> ARCH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span> mainargs<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>mainargs<span style="color:#66d9ef">)</span> <span style="color:#f92672">||</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#f92672">(</span><span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> restore_config; false<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>而这一依赖项会查找NEMU项目中的<code>$(ISA)-am_defconfig</code>文件，而目前NEMU项目的<code>configs</code>目录下缺少<code>riscv32e-am_defconfig</code>文件，需要予以补充：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>CONFIG_TARGET_AM<span style="color:#f92672">=</span>y
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CONFIG_TRACE is not set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>CONFIG_MSIZE<span style="color:#f92672">=</span><span style="color:#ae81ff">0x2000000</span>
+</span></span><span style="display:flex;"><span>CONFIG_DEVICE<span style="color:#f92672">=</span>y
+</span></span></code></pre></div><p>随后，对于NEMU而言，其构建的可执行文件的名称，是通过NEMU项目根目录下Makefile的如下代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>GUEST_ISA <span style="color:#f92672">?=</span> <span style="color:#66d9ef">$(</span>call remove_quote,<span style="color:#66d9ef">$(</span>CONFIG_ISA<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>ENGINE <span style="color:#f92672">?=</span> <span style="color:#66d9ef">$(</span>call remove_quote,<span style="color:#66d9ef">$(</span>CONFIG_ENGINE<span style="color:#66d9ef">))</span>
+</span></span><span style="display:flex;"><span>NAME    <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>GUEST_ISA<span style="color:#66d9ef">)</span>-nemu-<span style="color:#66d9ef">$(</span>ENGINE<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>以及AM项目根目录下Makefile的如下代码联合指定的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>IMAGE_REL <span style="color:#f92672">=</span> build/<span style="color:#66d9ef">$(</span>NAME<span style="color:#66d9ef">)</span>-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>IMAGE     <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>abspath <span style="color:#66d9ef">$(</span>IMAGE_REL<span style="color:#66d9ef">))</span>
+</span></span></code></pre></div><p>这里的<code>CONFIG_ISA</code>在Kconfig中只会被配置为<code>riscv32</code>，而使用该架构的E扩展是通过<code>CONFIG_RVE</code>来配置的，这就导致，在NEMU项目的<code>build</code>目录下，生成的可执行文件为<code>riscv32-nemu-interpreter-riscv32e-nemu.bin</code>，随后我们会通过：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">all</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> save_config
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> build_am
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> restore_config
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> run IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span>/build/<span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span>-nemu-interpreter-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.bin
+</span></span></code></pre></div><p>在NEMU上运行NEMU，但这里存在一个问题，这里指定的可执行文件中，<code>ISA</code>是在<code>ARCH</code>中提取的，因此如果我们输入<code>ARCH=riscv32e-nemu</code>的话，实际提取的<code>ISA=riscv32e</code>，这就导致<code>riscv32e-nemu-interpreter-riscv32e-nemu.bin</code>并不存在，因此，我们可以对该Makefile稍作修改，使其可以正常执行功能：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">all</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> save_config
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> build_am
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> restore_config
+</span></span><span style="display:flex;"><span>	@if <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;riscv32e&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> run IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span>/build/riscv32-nemu-interpreter-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.bin; <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	<span style="color:#66d9ef">else</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> run IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span>/build/<span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span>-nemu-interpreter-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.bin; <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	<span style="color:#66d9ef">fi</span>
+</span></span></code></pre></div>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
