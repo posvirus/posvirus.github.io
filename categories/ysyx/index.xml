@@ -8,14 +8,14 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Thu, 09 Oct 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 11 Oct 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/categories/ysyx/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用RV32E架构的NEMU运行NEMU</title>
       <link>https://posvirus.github.io/post/ysyx-nemu_run_nemu/</link>
-      <pubDate>Thu, 09 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <pubDate>Sat, 11 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/post/ysyx-nemu_run_nemu/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, October 9th, 2025&lt;/strong&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, October 11st, 2025&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>设备实时时钟与更强大的sprintf()函数</title>
