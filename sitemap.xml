@@ -3,37 +3,43 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://posvirus.github.io/</loc>
-    <lastmod>2025-10-11T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/tags/am/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/categories/</loc>
-    <lastmod>2025-10-11T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/tags/clang/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/tags/index/</loc>
-    <lastmod>2025-10-11T00:00:00+00:00</lastmod>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/tags/nemu/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/post/ysyx-yield/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/post/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/tags/riscv/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/tags/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://posvirus.github.io/categories/ysyx/</loc>
+    <lastmod>2025-10-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/tags/makefile/</loc>
     <lastmod>2025-10-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://posvirus.github.io/tags/nemu/</loc>
-    <lastmod>2025-10-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/post/</loc>
-    <lastmod>2025-10-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/tags/</loc>
-    <lastmod>2025-10-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/categories/ysyx/</loc>
-    <lastmod>2025-10-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://posvirus.github.io/post/ysyx-nemu_run_nemu/</loc>
     <lastmod>2025-10-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/tags/am/</loc>
-    <lastmod>2025-10-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/tags/clang/</loc>
-    <lastmod>2025-10-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/tags/device/</loc>
     <lastmod>2025-10-05T00:00:00+00:00</lastmod>
@@ -63,9 +69,6 @@
     <lastmod>2025-08-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/post/ysyx-gpr/</loc>
-    <lastmod>2025-08-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://posvirus.github.io/tags/riscv/</loc>
     <lastmod>2025-08-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://posvirus.github.io/post/ysyx-am-makefile2/</loc>

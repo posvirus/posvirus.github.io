@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+NEMU异常响应机制的实现 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：NEMU异常响应机制的实现">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-yield/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>NEMU异常响应机制的实现</h1>
+    
+    	<p>YSYX学习笔记：NEMU异常响应机制的实现</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/clang/">#Clang</a><span></span>
+    <a href="/tags/nemu/">#NEMU</a><span></span>
+    <a href="/tags/am/">#AM</a><span></span>
+    <a href="/tags/riscv/">#RISCV</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-10-14">October 14, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>3 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, October 14th, 2025</strong></p>
+<h3 id="1-特权级与异常响应机制的关系">1. 特权级与异常响应机制的关系</h3>
+<p>在PA3中，讲义同时引入了特权级与异常响应机制这两个概念，以下将简单阐述这两者之间的关系：</p>
+<p>以RISC-V架构为例：首先，RISC-V 定义了多个特权级（如<strong>Machine模式</strong>、<strong>Supervisor模式</strong>、<strong>User模式</strong>），权限逐级降低。用户程序通常在最低特权级（U模式）运行，无法直接访问关键系统资源，而当用户程序试图执行非法操作（如访问受保护内存、执行特权指令）时，会触发一个<strong>异常</strong>或<strong>中断</strong>。而此时，<strong>异常作为进入高特权级的入口</strong>，CPU会自动从当前特权级<strong>陷入</strong>（Trap）到一个预定义的更高特权级（通常是<strong>S模式</strong>或<strong>M模式</strong>）。</p>
+<p>其次，在更高特权级下，操作系统拥有足够的权限来分析异常原因、采取相应措施（如终止非法程序、调度其他任务等）。处理完毕后，操作系统通过特殊的返回指令（如 <code>sret</code> 或 <code>mret</code>）将控制权交还给用户程序，并返回到原来的特权级和程序断点继续执行。</p>
+<h3 id="2-nemu中csr的实现">2. NEMU中CSR的实现</h3>
+<p>CSR本质仍为寄存器，因此在实现时与通用寄存器（GPR）类似，首先，我们可在<code>CPU_state</code>结构体中补充定义CSR：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">word_t</span> gpr[<span style="color:#a6e22e">MUXDEF</span>(CONFIG_RVE, <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>)];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">vaddr_t</span> pc;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">word_t</span> csr[<span style="color:#ae81ff">4</span>];
+</span></span><span style="display:flex;"><span>} <span style="color:#a6e22e">MUXDEF</span>(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
+</span></span></code></pre></div><p>由于我们目前仅使用了<code>mstatus</code>，<code>mepc</code>，<code>mcause</code>与<code>mtvec</code>这4个CSR，因此仅例化4个CSR实例即可。</p>
+<p>同时，我们仿照GPR的实现，定义针对CSR的访问函数与宏：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* CSRs name mapping */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">enum</span> {
+</span></span><span style="display:flex;"><span>  MSTATUS <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, MEPC, MCAUSE, MTVEC, 
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">check_csr_idx</span>(<span style="color:#66d9ef">int</span> idx) {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">IFDEF</span>(CONFIG_RT_CHECK, <span style="color:#a6e22e">assert</span>(idx <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> idx <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>));
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> idx;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define csr(idx) (cpu.csr[check_csr_idx(idx)])
+</span></span></span></code></pre></div><p>同时，由于在RISC-V架构中，对各个CSR有唯一的编址，因此我们还需实现CSR编址与数组索引的映射：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">csr_addr_map</span>(<span style="color:#66d9ef">int</span> addr) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (addr) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">0x300</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">return</span> MSTATUS; <span style="color:#75715e">// Machine Status Registers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">0x305</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">return</span> MTVEC;   <span style="color:#75715e">// Machine Trap-Vector Base-Address Register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">0x341</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">return</span> MEPC;    <span style="color:#75715e">// Machine Exception Program Counter
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">0x342</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">return</span> MCAUSE;  <span style="color:#75715e">// Machine Cause Register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Illegal CSR&#39;s index: %03x!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, addr); <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define csr_map(addr) (csr(csr_addr_map(addr)))
+</span></span></span></code></pre></div><p>此时，我们可以使用：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">csr_map</span>(addr)
+</span></span></code></pre></div><p>访问编址为<code>addr</code>的CSR，也可以使用：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">csr</span>(NAME)
+</span></span></code></pre></div><p>直接访问名称为<code>NAME</code>的CSR，如<code>csr(MSTATUS)</code>访问的即为<code>mstatus</code>。</p>
+<p>利用上述实现，我们可以很容易地在NEMU中实现与异常响应以及CSR相关的指令，包括<code>ecall</code>，<code>mret</code>，<code>csrrw</code>，<code>csrrs</code>。同时，在实现指令的过程中，可能涉及对CSR的位操作，因此，我们补充定义了如下2个宏：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define BITRST(x, bit) (x &amp; ~(1u &lt;&lt; bit))
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define BITTO(x, src, tgt) (BITRST(x, tgt) | (((x &gt;&gt; src) &amp; 1u) &lt;&lt; tgt))
+</span></span></span></code></pre></div><p>其中，<code>BITRST(x, y)</code>可以将<code>x</code>二进制表示中的第<code>y</code>位置零，<code>BITTO(x, s, t)</code>可以将<code>x</code>二进制表示中的第<code>s</code>位赋值给第<code>t</code>位。</p>
+<h3 id="3-yield-test的执行流程">3. <code>yield test</code>的执行流程</h3>
+<p>首先，我们给出<code>yield test</code>的完整代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;amtest.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>Context <span style="color:#f92672">*</span><span style="color:#a6e22e">simple_trap</span>(Event ev, Context <span style="color:#f92672">*</span>ctx) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span>(ev.event) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> EVENT_IRQ_TIMER:
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">putch</span>(<span style="color:#e6db74">&#39;t&#39;</span>); <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> EVENT_IRQ_IODEV:
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">putch</span>(<span style="color:#e6db74">&#39;d&#39;</span>); <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> EVENT_YIELD:
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">putch</span>(<span style="color:#e6db74">&#39;y&#39;</span>); <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">panic</span>(<span style="color:#e6db74">&#34;Unhandled event&#34;</span>); <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> ctx;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">hello_intr</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Hello, AM World @ &#34;</span> __ISA__ <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;  t = timer, d = device, y = yield</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">io_read</span>(AM_INPUT_CONFIG);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">iset</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> (<span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000000</span>; i<span style="color:#f92672">++</span>) ;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">yield</span>();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>当主函数调用<code>hello_intr()</code>函数并运行至<code>yield()</code>函数时，触发<strong>自陷操作</strong>，将发生如下行为：</p>
+<p>首先，<code>yield()</code>函数被执行，其行为如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">yield</span>() {
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef __riscv_e
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;li a5, 11; ecall&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;li a7, 11; ecall&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>可知，该函数会将异常号（这里设置为11）保存在一个特定的GPR中，并执行<code>ecall</code>指令。而<code>ecall</code>指令会配置<code>mstatus</code>，将异常号保存在<code>mcause</code>中，保存当前的PC至<code>mepc</code>中，并跳转至<code>mtvec</code>中存储的地址，开始异常响应流程，这里<code>ecall</code>指令的逻辑是在NEMU中实现的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">word_t</span> <span style="color:#a6e22e">isa_raise_intr</span>(<span style="color:#66d9ef">word_t</span> NO, <span style="color:#66d9ef">vaddr_t</span> epc) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* TODO: Trigger an interrupt/exception with &#39;NO&#39;.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * Then return the address of the interrupt/exception vector.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   */</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* TODO: correctly set mstatus register */</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">csr</span>(MSTATUS) <span style="color:#f92672">=</span> <span style="color:#a6e22e">BITTO</span>(<span style="color:#a6e22e">csr</span>(MSTATUS), <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">7</span>); <span style="color:#75715e">// MPIE = MIE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">csr</span>(MSTATUS) <span style="color:#f92672">=</span> <span style="color:#a6e22e">BITRST</span>(<span style="color:#a6e22e">csr</span>(MSTATUS), <span style="color:#ae81ff">3</span>); <span style="color:#75715e">// MIE = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">csr</span>(MEPC) <span style="color:#f92672">=</span> epc;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">csr</span>(MCAUSE) <span style="color:#f92672">=</span> NO;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">csr</span>(MTVEC);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>  <span style="color:#a6e22e">INSTPAT</span>(<span style="color:#e6db74">&#34;0000000 00000 00000 000 00000 11100 11&#34;</span>, ecall  , N, <span style="color:#a6e22e">NEMUERROR</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>dnpc, <span style="color:#a6e22e">MUXDEF</span>(CONFIG_RVE, <span style="color:#a6e22e">R</span>(<span style="color:#ae81ff">15</span>), <span style="color:#a6e22e">R</span>(<span style="color:#ae81ff">17</span>)))); <span style="color:#75715e">// R(15) is $a5; R(17) is $a7
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define NEMUERROR(thispc, nextpc, code) do { \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  nextpc = isa_raise_intr(code, thispc); \
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">} while (0)
+</span></span></span></code></pre></div><p>那么，程序是如何保证<code>mtvec</code>中存储的地址一定是指向异常响应的程序段的呢？这是通过<code>cte_init()</code>函数实现的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">cte_init</span>(Context<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>handler)(Event, Context<span style="color:#f92672">*</span>)) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// initialize exception entry
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;csrw mtvec, %0&#34;</span> <span style="color:#f92672">:</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;r&#34;</span>(__am_asm_trap));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// register event handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  user_handler <span style="color:#f92672">=</span> handler;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> true;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>读该函数可知，程序随后会跳转至<code>__am_asm_trap</code>这一程序段所在位置，而该程序段由<code>trap.S</code>中的汇编程序给出，首先，其会对程序的上下文（所有GPR，CSR）进行压栈：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">.align 3
+.globl __am_asm_trap
+__am_asm_trap:
+  addi sp, sp, -CONTEXT_SIZE
+
+  MAP(REGS, PUSH)
+
+  csrr t0, mcause
+  csrr t1, mstatus
+  csrr t2, mepc
+
+  STORE t0, OFFSET_CAUSE(sp)
+  STORE t1, OFFSET_STATUS(sp)
+  STORE t2, OFFSET_EPC(sp)
+
+  # set mstatus.MPRV to pass difftest
+  li a0, (1 &lt;&lt; 17)
+  or t1, t1, a0
+  csrw mstatus, t1
+</code></pre><p>随后，该程序段会调用<code>__am_irq_handle()</code>函数，该函数需要接收一个<code>Context *</code>类型的参数，因此我们使用<code>mv</code>指令，将栈指针<code>sp</code>作为参数传递给该函数，因为此时<code>sp</code>指向的正是先前通过压栈组织起的上下文结构体。</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">  mv a0, sp
+  call __am_irq_handle
+</code></pre><p>而<code>__am_irq_handle()</code>函数会执行如下操作：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>Context<span style="color:#f92672">*</span> <span style="color:#a6e22e">__am_irq_handle</span>(Context <span style="color:#f92672">*</span>c) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (user_handler) {
+</span></span><span style="display:flex;"><span>    Event ev <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (c<span style="color:#f92672">-&gt;</span>mcause) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">11</span><span style="color:#f92672">:</span> ev.event <span style="color:#f92672">=</span> EVENT_YIELD; <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> ev.event <span style="color:#f92672">=</span> EVENT_ERROR; <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    c <span style="color:#f92672">=</span> <span style="color:#a6e22e">user_handler</span>(ev, c);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">assert</span>(c <span style="color:#f92672">!=</span> NULL);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> c;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>此时，该函数会调用<code>user_handler()</code>函数，处理不同类型的异常，异常的类型是通过上下文结构体中保存的<code>mcause</code>解析的，而此时的<code>user_handler()</code>函数被赋值为<code>simple_trap()</code>函数（在<code>am-tests</code>的主函数中首先将<code>simple_trap()</code>函数传参给<code>cte_init()</code>函数，随后在该函数中赋值<code>user_handler()</code>函数）。</p>
+<p><code>simple_trap()</code>函数完成执行后，会一直返回至<code>__am_asm_trap</code>程序段调用<code>__am_irq_handle()</code>函数的位置，并开始恢复上下文，将上下文中的GPR与CSR逐个弹栈：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">  LOAD t1, OFFSET_STATUS(sp)
+  LOAD t2, OFFSET_EPC(sp)
+  csrw mstatus, t1
+  csrw mepc, t2
+
+  MAP(REGS, POP)
+
+  addi sp, sp, CONTEXT_SIZE
+  mret
+</code></pre><p>完成上下文恢复后，最后调用<code>mret</code>指令跳转回<code>mepc</code>所存储的地址，也就是最初执行<code>ecall</code>时的PC，而此时当前指令又是<code>ecall</code>，便会无限重复先前所述的流程，在程序运行结果中表现为不断调用<code>simple_trap()</code>函数并输出<code>y</code>。这其实也解释了为什么<code>yield()</code>函数被称为<strong>自陷操作</strong>，因为一旦陷入便会陷入死循环，程序不会再向前执行（也就是<code>yield()</code>函数本身就是一个死循环，这与<code>hello_intr()</code>中的<code>while (1)</code>死循环没有任何关系，即使把它去掉，<code>yield()</code>函数也是死循环）。</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
