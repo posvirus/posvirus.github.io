@@ -175,12 +175,12 @@ NEMU异常响应机制的实现 | Posvirus&#39; Blog
 <p>首先，<code>yield()</code>函数被执行，其行为如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">yield</span>() {
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef __riscv_e
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;li a5, 11; ecall&#34;</span>);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;li a5, -1; ecall&#34;</span>);
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#else
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;li a7, 11; ecall&#34;</span>);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;li a7, -1; ecall&#34;</span>);
 </span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
-</span></span></code></pre></div><p>可知，该函数会将异常号（这里设置为11）保存在一个特定的GPR中，并执行<code>ecall</code>指令。而<code>ecall</code>指令会配置<code>mstatus</code>，将异常号保存在<code>mcause</code>中，保存当前的PC至<code>mepc</code>中，并跳转至<code>mtvec</code>中存储的地址，开始异常响应流程，这里<code>ecall</code>指令的逻辑是在NEMU中实现的：</p>
+</span></span></code></pre></div><p>可知，该函数会执行<code>ecall</code>指令。而<code>ecall</code>指令会配置<code>mstatus</code>，依据当前系统所处的模式将异常号保存在<code>mcause</code>中，保存当前的PC至<code>mepc</code>中（此处默认系统在M模式中，异常号为11），并跳转至<code>mtvec</code>中存储的地址，开始异常响应流程，这里<code>ecall</code>指令的逻辑是在NEMU中实现的：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">word_t</span> <span style="color:#a6e22e">isa_raise_intr</span>(<span style="color:#66d9ef">word_t</span> NO, <span style="color:#66d9ef">vaddr_t</span> epc) {
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* TODO: Trigger an interrupt/exception with &#39;NO&#39;.
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * Then return the address of the interrupt/exception vector.
@@ -194,11 +194,14 @@ NEMU异常响应机制的实现 | Posvirus&#39; Blog
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">csr</span>(MTVEC);
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>  <span style="color:#a6e22e">INSTPAT</span>(<span style="color:#e6db74">&#34;0000000 00000 00000 000 00000 11100 11&#34;</span>, ecall  , N, <span style="color:#a6e22e">NEMUERROR</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>dnpc, <span style="color:#a6e22e">MUXDEF</span>(CONFIG_RVE, <span style="color:#a6e22e">R</span>(<span style="color:#ae81ff">15</span>), <span style="color:#a6e22e">R</span>(<span style="color:#ae81ff">17</span>)))); <span style="color:#75715e">// R(15) is $a5; R(17) is $a7
-</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define NEMUERROR(thispc, nextpc, code) do { \
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>  <span style="color:#a6e22e">INSTPAT</span>(<span style="color:#e6db74">&#34;0000000 00000 00000 000 00000 11100 11&#34;</span>, ecall  , N, <span style="color:#a6e22e">NEMUERROR</span>(s<span style="color:#f92672">-&gt;</span>pc, s<span style="color:#f92672">-&gt;</span>dnpc, <span style="color:#ae81ff">11</span>));
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define NEMUERROR(thispc, nextpc, code) do { \
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">  nextpc = isa_raise_intr(code, thispc); \
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">} while (0)
-</span></span></span></code></pre></div><p>那么，程序是如何保证<code>mtvec</code>中存储的地址一定是指向异常响应的程序段的呢？这是通过<code>cte_init()</code>函数实现的：</p>
+</span></span></span></code></pre></div><blockquote>
+<p>为什么<code>yield()</code>函数中会有<code>li a5, -1</code>这一条指令：因为对于RISC-V架构而言，<code>ecall</code>指令本身不带参数，但是不同类型的异常都需要通过同样的<code>ecall</code>实现，为了方便操作系统区分异常类型，我们就需要通过额外的寄存器对其进行标识。</p>
+<p>更具体的内容可以参考：https://www.cnblogs.com/cilinmengye/p/18986213</p></blockquote>
+<p>那么，程序是如何保证<code>mtvec</code>中存储的地址一定是指向异常响应的程序段的呢？这是通过<code>cte_init()</code>函数实现的：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">cte_init</span>(Context<span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>handler)(Event, Context<span style="color:#f92672">*</span>)) {
 </span></span><span style="display:flex;"><span>  <span style="color:#75715e">// initialize exception entry
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">asm</span> <span style="color:#66d9ef">volatile</span>(<span style="color:#e6db74">&#34;csrw mtvec, %0&#34;</span> <span style="color:#f92672">:</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;r&#34;</span>(__am_asm_trap));
@@ -236,7 +239,19 @@ __am_asm_trap:
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (user_handler) {
 </span></span><span style="display:flex;"><span>    Event ev <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (c<span style="color:#f92672">-&gt;</span>mcause) {
-</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">11</span><span style="color:#f92672">:</span> ev.event <span style="color:#f92672">=</span> EVENT_YIELD; <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">11</span><span style="color:#f92672">:</span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef __riscv_e
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (c<span style="color:#f92672">-&gt;</span>gpr[<span style="color:#ae81ff">15</span>] <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) { <span style="color:#75715e">// $a5
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (c<span style="color:#f92672">-&gt;</span>gpr[<span style="color:#ae81ff">17</span>] <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) { <span style="color:#75715e">// $a7
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          ev.event <span style="color:#f92672">=</span> EVENT_YIELD;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// software: jump to next instruction
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          c<span style="color:#f92672">-&gt;</span>mepc <span style="color:#f92672">+=</span> <span style="color:#ae81ff">4</span>; <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>          ev.event <span style="color:#f92672">=</span> EVENT_SYSCALL; <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> ev.event <span style="color:#f92672">=</span> EVENT_ERROR; <span style="color:#66d9ef">break</span>;
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
@@ -246,7 +261,8 @@ __am_asm_trap:
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> c;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>此时，该函数会调用<code>user_handler()</code>函数，处理不同类型的异常，异常的类型是通过上下文结构体中保存的<code>mcause</code>解析的，而此时的<code>user_handler()</code>函数被赋值为<code>simple_trap()</code>函数（在<code>am-tests</code>的主函数中首先将<code>simple_trap()</code>函数传参给<code>cte_init()</code>函数，随后在该函数中赋值<code>user_handler()</code>函数）。</p>
+</span></span></code></pre></div><p>此时，该函数会调用<code>user_handler()</code>函数，处理不同类型的异常，异常的类型是通过上下文结构体中保存的<code>mcause</code>以及GPR中保存的标识共同解析的，而此时的<code>user_handler()</code>函数被赋值为<code>simple_trap()</code>函数（在<code>am-tests</code>的主函数中首先将<code>simple_trap()</code>函数传参给<code>cte_init()</code>函数，随后在该函数中赋值<code>user_handler()</code>函数）。</p>
+<p>同时，对于自陷操作，<code>ecall</code>指令在<code>mepc</code>中保存的是自陷操作本身所在的PC, 因此软件需要对保存的PC加上4, 使得将来返回到自陷操作的下一条指令。</p>
 <p><code>simple_trap()</code>函数完成执行后，会一直返回至<code>__am_asm_trap</code>程序段调用<code>__am_irq_handle()</code>函数的位置，并开始恢复上下文，将上下文中的GPR与CSR逐个弹栈：</p>
 <pre tabindex="0"><code class="language-assembly" data-lang="assembly">  LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
@@ -257,7 +273,7 @@ __am_asm_trap:
 
   addi sp, sp, CONTEXT_SIZE
   mret
-</code></pre><p>完成上下文恢复后，最后调用<code>mret</code>指令跳转回<code>mepc</code>所存储的地址，也就是最初执行<code>ecall</code>时的PC，而此时当前指令又是<code>ecall</code>，便会无限重复先前所述的流程，在程序运行结果中表现为不断调用<code>simple_trap()</code>函数并输出<code>y</code>。这其实也解释了为什么<code>yield()</code>函数被称为<strong>自陷操作</strong>，因为一旦陷入便会陷入死循环，程序不会再向前执行（也就是<code>yield()</code>函数本身就是一个死循环，这与<code>hello_intr()</code>中的<code>while (1)</code>死循环没有任何关系，即使把它去掉，<code>yield()</code>函数也是死循环）。</p>
+</code></pre><p>完成上下文恢复后，最后调用<code>mret</code>指令跳转回<code>mepc</code>所存储的地址，也就是最初执行<code>ecall</code>时的PC+4，而经过<code>while (1)</code>的死循环，又会重新运行到<code>yield()</code>函数，进而无限重复先前所述的流程，在程序运行结果中表现为不断调用<code>simple_trap()</code>函数并输出<code>y</code>。</p>
     </div>
 </div>
 
