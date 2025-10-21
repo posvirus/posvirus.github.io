@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+RT-Thread的上下文 | Posvirus&#39; Blog
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YSYX学习笔记：RT-Thread的上下文">
+
+<meta name="generator" content="Hugo 0.148.1">
+
+
+<link rel="canonical" href="https://posvirus.github.io/post/ysyx-rt_thread_context/" >
+
+
+
+
+<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a class="terminal" href="/">
+                <span>posvirus@github.io ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu">
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="https://posvirus.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+                <li>
+                    <a href="https://posvirus.github.io/blog" title="" >
+                        ~/blog</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>RT-Thread的上下文</h1>
+    
+    	<p>YSYX学习笔记：RT-Thread的上下文</p>
+    
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/rt-thread/">#RT-Thread</a><span></span>
+    <a href="/tags/am/">#AM</a><span></span>
+    <a href="/tags/clang/">#Clang</a></dd>
+            
+            
+            
+                
+<dt>categories</dt>
+<dd><span></span>
+    <a href="/categories/ysyx/">YSYX</a></dd>
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2025-10-21">October 21, 2025</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>2 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p><strong>Created by posvirus, October 21st, 2025</strong></p>
+<h3 id="1-rt-thread上下文创建">1. RT-Thread上下文创建</h3>
+<p>首先，我们考虑RT-Thread中的上下文创建函数<code>rt_hw_stack_init()</code>的实现，观察其参数列表：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">rt_uint8_t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rt_hw_stack_init</span>(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>tentry, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>parameter, <span style="color:#66d9ef">rt_uint8_t</span> <span style="color:#f92672">*</span>stack_addr, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>texit)
+</span></span></code></pre></div><p>该函数接收一个栈底指针<code>stack_addr</code>用于构建上下文，同时保证该上下文入口为<code>tentry</code>，参数为<code>parameter</code>，并返回这个上下文结构的指针。此外，若上下文对应的内核线程从<code>tentry</code>返回，则调用<code>texit</code>。</p>
+<p>这里首先需要解释，为什么在AM中，我们不允许内核线程从<code>tentry</code>返回：这主要是因为，入口为<code>tentry</code>的上下文是人工构造的，而在AM中构造上下文的功能函数<code>kcontext()</code>中，我们并没有为该入口构造相应的返回地址：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>Context <span style="color:#f92672">*</span><span style="color:#a6e22e">kcontext</span>(Area kstack, <span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>entry)(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>), <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>arg) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// instantiate a context
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Context <span style="color:#f92672">*</span>ret <span style="color:#f92672">=</span> (Context <span style="color:#f92672">*</span>)(kstack.end <span style="color:#f92672">-</span> <span style="color:#66d9ef">sizeof</span>(Context));
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// create entry
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ret<span style="color:#f92672">-&gt;</span>mepc <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uintptr_t</span>)entry;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// reset mstatus
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ret<span style="color:#f92672">-&gt;</span>mstatus <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uintptr_t</span>)<span style="color:#ae81ff">0x1800</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// function argument
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ret<span style="color:#f92672">-&gt;</span>gpr[<span style="color:#ae81ff">10</span>] <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uintptr_t</span>)arg;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// other GPR settings
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ret<span style="color:#f92672">-&gt;</span>gpr[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uintptr_t</span>)<span style="color:#ae81ff">0</span>;   <span style="color:#75715e">// $0  register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ret<span style="color:#f92672">-&gt;</span>gpr[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uintptr_t</span>)ret; <span style="color:#75715e">// $sp register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// return context pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> ret;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>所以线程一旦从<code>tentry</code>返回，将会跳转至非法的地址，从而导致程序非法运行。</p>
+<p>回到<code>rt_hw_stack_init()</code>函数，首先，我们需要对输入的<code>stack_addr</code>进行对齐：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* align the incoming stack pointer */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">rt_uint8_t</span> <span style="color:#f92672">*</span>stk;
+</span></span><span style="display:flex;"><span>stk <span style="color:#f92672">=</span> stack_addr <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uintptr_t</span>);
+</span></span><span style="display:flex;"><span>stk <span style="color:#f92672">=</span> (<span style="color:#66d9ef">rt_uint8_t</span> <span style="color:#f92672">*</span>)<span style="color:#a6e22e">RT_ALIGN_DOWN</span>((<span style="color:#66d9ef">uintptr_t</span>)stk, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uintptr_t</span>));
+</span></span></code></pre></div><p>此处我们以<code>sizeof(uintptr_t)</code>为最小单位，对该地址进行向下对齐（因为栈底在内存分布上位于高位地址），而<code>RT_ALIGN_DOWN</code>是RT-Thread内部定义的宏。</p>
+<p>随后，由于对<code>kcontext()</code>函数而言，其接收的用于构建上下文的参数只有栈空间分布<code>kstack</code>，上下文入口<code>entry</code>以及向入口传递的参数<code>arg</code>，但是RT-Thread中的还存在一个<code>texit</code>参数，这就导致，我们需要构造一个包裹函数，这里称为<code>tentry_wrapper()</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">tentry_wrapper</span>(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>arg) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> wrapper_args <span style="color:#f92672">*</span>stk_arg <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> wrapper_args <span style="color:#f92672">*</span>)arg;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// call tentry(parameter) first
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ((<span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>)(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>))stk_arg<span style="color:#f92672">-&gt;</span>tentry)(stk_arg<span style="color:#f92672">-&gt;</span>parameter);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// if return, call texit()
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ((<span style="color:#66d9ef">void</span> (<span style="color:#f92672">*</span>)())stk_arg<span style="color:#f92672">-&gt;</span>texit)();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>该包裹函数的作用是，接收一个<code>void *</code>类型的参数<code>arg</code>，该参数在函数内被强制类型转换为一个结构体类型<code>wrapper_args</code>，该类型包括三个字段：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> wrapper_args {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>tentry;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>texit;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>parameter;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>其中<code>tentry</code>即为上下文的入口，<code>parameter</code>即为上下文入口<code>tentry</code>对应的参数，<code>texit</code>即为线程如果在<code>tentry</code>返回的话需要调用的函数，进而我们可以在<code>tentry_wrapper()</code>函数中先对<code>tentry</code>进行调用，随后对<code>texit</code>进行调用，这样一旦<code>tentry</code>返回，随后会调用<code>texit</code>进行处理。</p>
+<p>有了<code>tentry_wrapper()</code>函数，我们在创建上下文时实际上就可以通过如下形式调用<code>kcontext()</code>函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">kcontext</span>([kstack], tentry_wrapper, [arg]);
+</span></span></code></pre></div><p>以下，我们需要考虑的是<code>kcontext()</code>函数的另外两个参数应该如何设定，首先考虑<code>arg</code>参数，对于<code>tentry_wrapper()</code>函数，我们需要传递一个指向一个<code>wrapper_args</code>结构体的指针，这里就涉及到该结构体如何创建及存储的问题，不妨先在<code>rt_hw_stack_init()</code>函数中先初始化一个<code>wrapper_args</code>结构体：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* allocate function arguments */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> wrapper_args tmp_args;
+</span></span><span style="display:flex;"><span>tmp_args.tentry <span style="color:#f92672">=</span> tentry;
+</span></span><span style="display:flex;"><span>tmp_args.texit <span style="color:#f92672">=</span> texit;
+</span></span><span style="display:flex;"><span>tmp_args.parameter <span style="color:#f92672">=</span> parameter;
+</span></span></code></pre></div><p>随后，我们需要确定该结构体存储的位置，首先，这个结构体肯定不能以临时变量进行存储，因为<code>rt_hw_stack_init()</code>函数实际上起到一个初始化上下文的功能，所以该函数中的临时变量是无法在程序的整个生命周期中都存在的。因此，一个合适的方法，就是将这个结构体复制到该上下文所在的栈上，此处可以直接先从栈底开始分配空间：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* re-allocate the stack pointer */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">size_t</span> arg_size <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> wrapper_args);
+</span></span><span style="display:flex;"><span>stk <span style="color:#f92672">=</span> stk <span style="color:#f92672">-</span> arg_size;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* Copy wrapper arguments to stack */</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">memcpy</span>(stk, <span style="color:#f92672">&amp;</span>tmp_args, arg_size);
+</span></span></code></pre></div><p>此时，我们将<code>stk</code>下移<code>sizeof(struct wrapper_args)</code>，并调用<code>memcpy()</code>函数将结构体复制到这一段空间中，此时<code>stk</code>一方面指向的就是栈上存储的结构体，另一方面<code>stk</code>也可以作为<code>kstack</code>参数对应栈空间的栈底，以使<code>kcontext()</code>函数可以以<code>stk</code>为栈底构建上下文，于是<code>rt_hw_stack_init()</code>函数的剩余部分可以作如下实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* create stack area */</span>
+</span></span><span style="display:flex;"><span>Area stack_area <span style="color:#f92672">=</span> { .end <span style="color:#f92672">=</span> stk };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* return context pointer */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> (<span style="color:#66d9ef">rt_uint8_t</span> <span style="color:#f92672">*</span>)<span style="color:#a6e22e">kcontext</span>(stack_area, tentry_wrapper, (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)stk);
+</span></span></code></pre></div><h3 id="2-rt-thread的上下文切换">2. RT-Thread的上下文切换</h3>
+<p>为实现RT-Thread的上下文切换，我们需要实现3个函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">rt_hw_context_switch</span>(<span style="color:#66d9ef">rt_ubase_t</span> from, <span style="color:#66d9ef">rt_ubase_t</span> to);
+</span></span></code></pre></div><p>首先，是<code>rt_hw_context_switch()</code>函数，其包含<code>from</code>与<code>to</code>两个参数，其都是指向上下文指针变量的指针（二级指针）。 它用于切换到<code>to</code>指向的上下文指针变量所指向的上下文，并将当前上下文的指针写入<code>from</code>指向的上下文指针变量中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">rt_hw_context_switch_to</span>(<span style="color:#66d9ef">rt_ubase_t</span> to);
+</span></span></code></pre></div><p>其次，是<code>rt_hw_context_switch_to()</code>函数，它只包含<code>to</code>一个参数，仅实现切换到<code>to</code>指向的上下文指针变量所指向的上下文这一功能，那么，该函数显然可以复用<code>rt_hw_context_switch()</code>实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">rt_hw_context_switch_to</span>(<span style="color:#66d9ef">rt_ubase_t</span> to) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// reuse function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">rt_hw_context_switch</span>((<span style="color:#66d9ef">rt_ubase_t</span>)NULL, to);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>最后，我们需要实现RT-Thread对应的事件处理回调函数<code>ev_handler()</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> Context<span style="color:#f92672">*</span> <span style="color:#a6e22e">ev_handler</span>(Event e, Context <span style="color:#f92672">*</span>c);
+</span></span></code></pre></div><p>通过上述分析，我们其实仅需实现<code>rt_hw_context_switch()</code>函数与<code>ev_handler()</code>函数即可，首先考查前者的实现：按PA讲义的说法，为了进行上下文切换, 我们可以通过<code>yield()</code>触发一次自陷, 在事件处理回调函数<code>ev_handler()</code>中识别出代处理事件后, 再处理<code>to</code>和<code>from</code>，为此，我们需要将<code>to</code>与<code>from</code>参数传递至<code>ev_handler()</code>。</p>
+<p>由于无法通过函数参数传递的方式传递<code>to</code>与<code>from</code>，同时也不适合直接通过全局变量的方式传递（多线程时存在风险），因此，我们考虑使用进程控制块（PCB, process control block）存储<code>to</code>与<code>from</code>，因为这一数据结构为各线程所独有，不会存在多线程的冲突。在RT-Thread中，PCB对应的结构体名称为<code>rt_thread_t</code>，可通过<code>rt_thread_self()</code>获取当前线程对应的PCB。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">rt_thread_t</span> current <span style="color:#f92672">=</span> <span style="color:#a6e22e">rt_thread_self</span>();
+</span></span></code></pre></div><p>同时，<code>rt_thread_t</code>结构体中存在<code>user_data</code>字段，用于存储当前线程的私有用户数据，我们可以将<code>to</code>与<code>from</code>存储于该字段中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* create private user data copy */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">rt_ubase_t</span> temp_user_data <span style="color:#f92672">=</span> current<span style="color:#f92672">-&gt;</span>user_data;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* passing arguments */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">rt_ubase_t</span> param[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>param[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> to; param[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> from;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>current<span style="color:#f92672">-&gt;</span>user_data <span style="color:#f92672">=</span> (<span style="color:#66d9ef">rt_ubase_t</span>)param;
+</span></span></code></pre></div><p>此处，我们还需要另外定义一个临时变量<code>temp_user_data</code>，作为当前线程原始<code>user_data</code>字段的备份。随后，我们便可调用<code>yield()</code>函数实现上下文切换，当切换回当前上下文时（即<code>yield()</code>返回时），再将临时变量内的<code>user_data</code>字段恢复：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">yield</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* recover user data */</span>
+</span></span><span style="display:flex;"><span>current<span style="color:#f92672">-&gt;</span>user_data <span style="color:#f92672">=</span> temp_user_data;
+</span></span></code></pre></div><p>随后，考虑事件处理回调函数<code>ev_handler()</code>的实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> Context<span style="color:#f92672">*</span> <span style="color:#a6e22e">ev_handler</span>(Event e, Context <span style="color:#f92672">*</span>c) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">rt_thread_t</span> current;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">rt_ubase_t</span><span style="color:#f92672">*</span> param;
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (e.event) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> EVENT_YIELD:
+</span></span><span style="display:flex;"><span>      current <span style="color:#f92672">=</span> <span style="color:#a6e22e">rt_thread_self</span>();
+</span></span><span style="display:flex;"><span>      param <span style="color:#f92672">=</span> (<span style="color:#66d9ef">rt_ubase_t</span><span style="color:#f92672">*</span>)current<span style="color:#f92672">-&gt;</span>user_data;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">rt_ubase_t</span> to <span style="color:#f92672">=</span> param[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">rt_ubase_t</span> from <span style="color:#f92672">=</span> param[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (from) <span style="color:#f92672">*</span>((Context <span style="color:#f92672">**</span>)from) <span style="color:#f92672">=</span> c;
+</span></span><span style="display:flex;"><span>      c <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>(Context <span style="color:#f92672">**</span>)to;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> EVENT_IRQ_TIMER:
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> <span style="color:#75715e">// printf(&#34;Unhandled event ID = %d\n&#34;, e.event);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> c;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>阅读AM CTE的实现可知，事件处理回调函数是在上下文真正发生切换之前被调用的，因此，我们仍可通过<code>rt_thread_self()</code>函数获取当前的PCB，并提取<code>from</code>与<code>to</code>字段。</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2025 Posvirus&#39; Blog, Built with
+            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
+            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

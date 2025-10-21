@@ -8,27 +8,34 @@
     <language>en-us</language>
     <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
     <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Tue, 14 Oct 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 21 Oct 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AM</title>
       <link>https://posvirus.github.io/tags/am/</link>
-      <pubDate>Tue, 14 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/am/</guid>
       <description></description>
     </item>
     <item>
       <title>Clang</title>
       <link>https://posvirus.github.io/tags/clang/</link>
-      <pubDate>Tue, 14 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/clang/</guid>
       <description></description>
     </item>
     <item>
       <title>Index</title>
       <link>https://posvirus.github.io/tags/index/</link>
-      <pubDate>Tue, 14 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
       <guid>https://posvirus.github.io/tags/index/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>RT-Thread</title>
+      <link>https://posvirus.github.io/tags/rt-thread/</link>
+      <pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
+      <guid>https://posvirus.github.io/tags/rt-thread/</guid>
       <description></description>
     </item>
     <item>
