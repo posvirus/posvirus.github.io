@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：NPC实现时的注意事项（2）">
+<title>NPC实现时的注意事项（2）</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/npc-note2/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="NPC实现时的注意事项（2）">
+<meta property='og:description' content="YSYX学习笔记：NPC实现时的注意事项（2）">
+<meta property='og:url' content='https://posvirus.github.io/p/npc-note2/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='NPC' /><meta property='article:tag' content='NEMU' /><meta property='article:published_time' content='2025-09-30T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-09-30T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="NPC实现时的注意事项（2）">
+<meta name="twitter:description" content="YSYX学习笔记：NPC实现时的注意事项（2）">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#cpu状态的存储">CPU状态的存储</a></li>
+    <li><a href="#rv32e指令集的适配">RV32E指令集的适配</a></li>
+    <li><a href="#nemu作为ref的自动化编译">NEMU作为REF的自动化编译</a></li>
+    <li><a href="#difftest的时序问题">DiffTest的时序问题</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/npc-note2/">NPC实现时的注意事项（2）</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：NPC实现时的注意事项（2）
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 30, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 6 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>此处，我们主要关注向NPC中集成DiffTest时的一些注意事项：</p>
+<h2 id="cpu状态的存储">CPU状态的存储
+</h2><p>在运行DiffTest时，我们需要比较REF与DUT的CPU的状态是否一致，而NPC先前未定义存储CPU状态的结构体（因为CPU的状态实际存储在RTL代码中），为方便DiffTest的传参，我们补充定义存储CPU状态的结构体<code>CPU_state</code>，以及它对应的初始化函数与状态同步函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">word_t</span> <span class="n">grf</span><span class="p">[</span><span class="n">MUXDEF</span><span class="p">(</span><span class="n">CONFIG_RVE</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">)];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">vaddr_t</span> <span class="n">pc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">CPU_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">CPU_state</span> <span class="n">cpu</span><span class="p">;</span> <span class="c1">// defining struct facilitates parameter passing
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">load_cpu</span><span class="p">(</span><span class="n">Vtop</span><span class="o">*</span> <span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">cpu</span><span class="p">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">inst_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">long</span> <span class="kt">long</span> <span class="n">temp_grf</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MUXDEF</span><span class="p">(</span><span class="n">CONFIG_RVE</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gpr</span><span class="p">((</span><span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">i</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">temp_grf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu</span><span class="p">.</span><span class="n">grf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">word_t</span><span class="p">)</span><span class="n">temp_grf</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// the NPC RegisterFile has no reset signal, 
+</span></span></span><span class="line"><span class="cl"><span class="c1">// so the initial value of gpr need to be given manually
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">init_cpu</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">cpu</span><span class="p">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">RESET_VECTOR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MUXDEF</span><span class="p">(</span><span class="n">CONFIG_RVE</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cpu</span><span class="p">.</span><span class="n">grf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里，我们首先定义了<code>load_cpu()</code>函数，它会将当前CPU模块中的PC寄存器与寄存器堆的值传递至<code>cpu</code>中。其次，我们还补充定义了<code>init_cpu()</code>函数，这是因为，目前我们在<code>init_monitor()</code>函数中进行DiffTest的初始化，而该函数在主函数中会先于系统仿真复位函数执行，为保证<code>cpu</code>可以正确获取CPU模块复位的状态，我们需要手动为<code>cpu</code>中的字段赋值。</p>
+<h2 id="rv32e指令集的适配">RV32E指令集的适配
+</h2><p>NEMU的Kconfig中有一个<code>RVE</code>的选项，用于将NEMU的指令集架构指定为RV32E，选中该选项后，会在生成<code>CONFIG_RVE</code>的宏定义，为使NEMU适配RV32E指令集，我们需要对NEMU代码进行相应更改，修改主要集中于对NEMU的寄存器堆访问，需要根据<code>CONFIG_RVE</code>判断寄存器的总数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">isa_reg_display</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">reg_cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">reg_cnt</span> <span class="o">&lt;</span> <span class="nf">MUXDEF</span><span class="p">(</span><span class="n">CONFIG_RVE</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span> <span class="n">reg_cnt</span> <span class="o">=</span> <span class="n">reg_cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\t</span><span class="s">0x%08x</span><span class="se">\t</span><span class="s">%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">regs</span><span class="p">[</span><span class="n">reg_cnt</span><span class="p">],</span> <span class="nf">gpr</span><span class="p">(</span><span class="n">reg_cnt</span><span class="p">),</span> <span class="nf">gpr</span><span class="p">(</span><span class="n">reg_cnt</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// extra print PC register
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;pc</span><span class="se">\t</span><span class="s">0x%08x</span><span class="se">\t</span><span class="s">%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">cpu</span><span class="p">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">cpu</span><span class="p">.</span><span class="n">pc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">word_t</span> <span class="nf">isa_reg_str2val</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">bool</span> <span class="o">*</span><span class="n">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">reg_cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">reg_cnt</span> <span class="o">&lt;</span> <span class="nf">MUXDEF</span><span class="p">(</span><span class="n">CONFIG_RVE</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span> <span class="n">reg_cnt</span> <span class="o">=</span> <span class="n">reg_cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">regs</span><span class="p">[</span><span class="n">reg_cnt</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="o">*</span><span class="n">success</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nf">gpr</span><span class="p">(</span><span class="n">reg_cnt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// extra find pc register
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&#34;pc&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">success</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">cpu</span><span class="p">.</span><span class="n">pc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">*</span><span class="n">success</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;register %s not found!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">isa_difftest_checkregs</span><span class="p">(</span><span class="n">CPU_state</span> <span class="o">*</span><span class="n">ref_r</span><span class="p">,</span> <span class="kt">vaddr_t</span> <span class="n">pc</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">reg_num</span> <span class="o">=</span> <span class="nf">MUXDEF</span><span class="p">(</span><span class="n">CONFIG_RVE</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">extern</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">regs</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">reg_num</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">difftest_check_reg</span><span class="p">(</span><span class="n">regs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pc</span><span class="p">,</span> <span class="n">ref_r</span><span class="o">-&gt;</span><span class="n">gpr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cpu</span><span class="p">.</span><span class="n">gpr</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">difftest_check_reg</span><span class="p">(</span><span class="s">&#34;pc&#34;</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">ref_r</span><span class="o">-&gt;</span><span class="n">pc</span><span class="p">,</span> <span class="n">cpu</span><span class="p">.</span><span class="n">pc</span><span class="p">))</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="nemu作为ref的自动化编译">NEMU作为REF的自动化编译
+</h2><p>在集成DiffTest时，我们需要将NEMU编译成动态库文件，并在NPC中动态链接该动态库文件，从而实现NEMU作为REF的DiffTest。但是，我们实际上不希望在每次运行NPC的DiffTest时，还要进入NEMU的目录下手动修改NEMU的配置并编译动态库文件，我们希望的一个理想的操作流是：</p>
+<ul>
+<li>在NPC的Kconfig中使能DiffTest后，构建NPC时会自动配置NEMU并编译NEMU的动态库文件。</li>
+<li>NEMU的配置在NPC运行DiffTest后不应发生任何更改。</li>
+</ul>
+<p>为此，我们实现如下的Makefile：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">define</span> <span class="err">remove_quote</span>
+</span></span><span class="line"><span class="cl"><span class="k">$(</span><span class="nv">strip</span> <span class="k">$(</span><span class="nv">subst</span> &#34;,,<span class="k">$(</span>1<span class="k">)))</span>
+</span></span><span class="line"><span class="cl"><span class="err">endef</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">ifdef</span> <span class="err">CONFIG_DIFFTEST</span>
+</span></span><span class="line"><span class="cl"><span class="nv">DIFF_REF_PATH</span> <span class="o">=</span> <span class="k">$(</span>NEMU_HOME<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">DIFF_REF_SO</span> <span class="o">=</span> <span class="k">$(</span>NEMU_HOME<span class="k">)</span>/build/<span class="k">$(</span>call remove_quote,<span class="k">$(</span>CONFIG_ISA<span class="k">))</span>-<span class="k">$(</span>call remove_quote,<span class="k">$(</span>CONFIG_DIFFTEST_REF_NAME<span class="k">))</span>-<span class="k">$(</span>call remove_quote,<span class="k">$(</span>CONFIG_ENGINE<span class="k">))</span>-so
+</span></span><span class="line"><span class="cl"><span class="nv">MKFLAGS</span> <span class="o">=</span> <span class="nv">GUEST_ISA</span><span class="o">=</span><span class="k">$(</span>call remove_quote,<span class="k">$(</span>CONFIG_ISA<span class="k">))</span> <span class="nv">SHARE</span><span class="o">=</span><span class="m">1</span> <span class="nv">ENGINE</span><span class="o">=</span><span class="k">$(</span>call remove_quote,<span class="k">$(</span>CONFIG_ENGINE<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ARGS_DIFF</span> <span class="o">=</span> --diff<span class="o">=</span><span class="k">$(</span>DIFF_REF_SO<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># Backup and restore NEMU config files
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nv">NEMU_AUTO_CONF</span> <span class="o">=</span> <span class="k">$(</span>NEMU_HOME<span class="k">)</span>/include/config/auto.conf
+</span></span><span class="line"><span class="cl"><span class="nv">NEMU_AUTOCONF_H</span> <span class="o">=</span> <span class="k">$(</span>NEMU_HOME<span class="k">)</span>/include/generated/autoconf.h
+</span></span><span class="line"><span class="cl"><span class="nv">NEMU_AUTO_CONF_BK</span> <span class="o">=</span> <span class="k">$(</span>NEMU_HOME<span class="k">)</span>/include/config/auto.conf.bk
+</span></span><span class="line"><span class="cl"><span class="nv">NEMU_AUTOCONF_H_BK</span> <span class="o">=</span> <span class="k">$(</span>NEMU_HOME<span class="k">)</span>/include/generated/autoconf.h.bk
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">backup-nemu</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	@echo <span class="s2">&#34;Backing up NEMU config files...&#34;</span>
+</span></span><span class="line"><span class="cl">	@if <span class="o">[</span> -f <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		cp <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span> <span class="k">$(</span>NEMU_AUTO_CONF_BK<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_TARGET_NATIVE_ELF/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_TRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_ITRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_MTRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_FTRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_EXPR_TEST/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_DIFFTEST/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^CONFIG_ISA/d&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="nb">echo</span> <span class="s2">&#34;CONFIG_ISA=\&#34;riscv32\&#34;&#34;</span> &gt;&gt; <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="nb">echo</span> <span class="s2">&#34;CONFIG_ISA_riscv=y&#34;</span> &gt;&gt; <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">if</span> <span class="o">[</span> -n <span class="s2">&#34;</span><span class="k">$(</span>CONFIG_RVE<span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">if</span> ! grep -q <span class="s1">&#39;^CONFIG_RVE=&#39;</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>				<span class="nb">echo</span> <span class="s2">&#34;CONFIG_RVE=y&#34;</span> &gt;&gt; <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">fi</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">fi</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">fi</span>
+</span></span><span class="line"><span class="cl">	@if <span class="o">[</span> -f <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		cp <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span> <span class="k">$(</span>NEMU_AUTOCONF_H_BK<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_TARGET_NATIVE_ELF/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_TRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_ITRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_MTRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_FTRACE/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_EXPR_TEST/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_DIFFTEST/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		sed -i <span class="s1">&#39;/^#define CONFIG_ISA/d&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="nb">echo</span> <span class="s2">&#34;#define CONFIG_ISA \&#34;riscv32\&#34;&#34;</span> &gt;&gt; <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="nb">echo</span> <span class="s2">&#34;#define CONFIG_ISA_riscv 1&#34;</span> &gt;&gt; <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">if</span> <span class="o">[</span> -n <span class="s2">&#34;</span><span class="k">$(</span>CONFIG_RVE<span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">if</span> ! grep -q <span class="s1">&#39;^#define CONFIG_RVE&#39;</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>				<span class="nb">echo</span> <span class="s2">&#34;#define CONFIG_RVE 1&#34;</span> &gt;&gt; <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">fi</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">fi</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">restore-nemu</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	@echo <span class="s2">&#34;Restoring NEMU config files...&#34;</span>
+</span></span><span class="line"><span class="cl">	@if <span class="o">[</span> -f <span class="k">$(</span>NEMU_AUTO_CONF_BK<span class="k">)</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		mv <span class="k">$(</span>NEMU_AUTO_CONF_BK<span class="k">)</span> <span class="k">$(</span>NEMU_AUTO_CONF<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">fi</span>
+</span></span><span class="line"><span class="cl">	@if <span class="o">[</span> -f <span class="k">$(</span>NEMU_AUTOCONF_H_BK<span class="k">)</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		mv <span class="k">$(</span>NEMU_AUTOCONF_H_BK<span class="k">)</span> <span class="k">$(</span>NEMU_AUTOCONF_H<span class="k">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">ifdef</span> <span class="err">CONFIG_DIFFTEST_REF_NEMU</span>
+</span></span><span class="line"><span class="cl"><span class="nf">$(DIFF_REF_SO)</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>MAKE<span class="k">)</span> backup-nemu
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>MAKE<span class="k">)</span> -s -C <span class="k">$(</span>DIFF_REF_PATH<span class="k">)</span> <span class="k">$(</span>MKFLAGS<span class="k">)</span>
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>MAKE<span class="k">)</span> restore-nemu
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="k">$(</span><span class="nv">DIFF_REF_SO</span><span class="k">)</span> <span class="n">backup</span>-<span class="n">nemu</span> <span class="n">restore</span>-<span class="n">nemu</span>
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>该Makefile的基本结构参考了<code>nemu/tools/difftest.mk</code>，其中<code>DIFF_REF_SO</code>即为REF的动态库文件，当将该Makefile包含在主Makefile中，即可通过：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">run</span><span class="o">:</span> <span class="k">$(</span><span class="nv">VERILOG_INPUT</span><span class="k">)</span> <span class="k">$(</span><span class="nv">VRC_INPUT</span><span class="k">)</span> 
+</span></span><span class="line"><span class="cl"><span class="err">ifdef</span> <span class="err">CONFIG_DIFFTEST</span>
+</span></span><span class="line"><span class="cl">	<span class="err">@echo</span> <span class="s2">&#34;-------- REF COMPILE ---------&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="err">@</span><span class="k">$(</span><span class="nv">MAKE</span><span class="k">)</span> <span class="k">$(</span><span class="nv">DIFF_REF_SO</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>调用并构建NEMU的动态库文件。以下，我们将解释该Makefile是如何实现对NEMU的配置及恢复的，这主要包括两方面：</p>
+<p>首先，在<code>DIFF_REF_SO</code>的<code>MKFLAGS</code>中，我们将通过Makfile传递NEMU的<code>GUEST_ISA</code>、<code>SHARE</code>与<code>ENGINE</code>参数。此处设置<code>SHARE=1</code>，NEMU便会自动编译成动态库文件。</p>
+<p>其次，当NEMU作为REF时，我们需要除能NEMU配置中一些非必要的功能，比如itrace、ftrace、mtrace等，因为这些功能本身具有输出功能，如果编译动态库文件中包含这些功能，在NPC中运行DiffTest时将会混杂NEMU的输出，造成功能异常。</p>
+<p>为此，我们定义了<code>backup-nemu</code>与<code>restore-nemu</code>两个目标，前者用于将NEMU通过Kconfig生成的配置文件（<code>autoconf.h</code>与<code>auto.conf</code>）保存为副本，并修改配置文件的配置项；后者则用于将副本重新加载为NEMU配置文件。在<code>backup-nemu</code>中，我们修改的配置主要包括：</p>
+<ul>
+<li>除能<code>CONFIG_TARGET_NATIVE_ELF</code>，保证NEMU编译成动态库文件，此处之所以没有补充定义<code>CONFIG_TARGET_SHARE</code>，是因为定义该配置的效果完全等同于在构建时传递<code>SHARE=1</code>。</li>
+<li>除能NEMU的指令集架构，将其统一设置为RISCV32，这使得即使我们没有使用RISCV32架构的NEMU，仍然可以在NPC中成功编译RISCV32架构的NEMU动态库文件。</li>
+<li>除能NEMU的itrace，mtrace，ftrace功能。</li>
+<li>除能NEMU的sdb表达式求值测试功能。</li>
+<li>当NPC指令集架构为RV32E，在NEMU中补充定义<code>CONFIG_RVE</code>，将其指令集架构修改为RV32E。</li>
+</ul>
+<h2 id="difftest的时序问题">DiffTest的时序问题
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">trace_and_difftest</span><span class="p">(</span><span class="n">Vtop</span> <span class="o">*</span><span class="n">top</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_ITRACE
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="n">log_write</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">logbuf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="k">if</span> <span class="p">(</span><span class="n">g_print_step</span><span class="p">)</span> <span class="p">{</span> <span class="n">IFDEF</span><span class="p">(</span><span class="n">CONFIG_ITRACE</span><span class="p">,</span> <span class="n">puts</span><span class="p">(</span><span class="n">logbuf</span><span class="p">));</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_DIFFTEST
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="n">pc_get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pc_d</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dnpc_d</span><span class="p">);</span> <span class="n">load_cpu</span><span class="p">(</span><span class="n">top</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">difftest_step</span><span class="p">((</span><span class="n">vaddr_t</span><span class="p">)</span><span class="n">pc_d</span><span class="p">,</span> <span class="p">(</span><span class="n">vaddr_t</span><span class="p">)</span><span class="n">dnpc_d</span><span class="p">);</span> <span class="c1">// current-cycle difftest
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">exec_once</span><span class="p">(</span><span class="n">Vtop</span> <span class="o">*</span><span class="n">top</span><span class="p">,</span> <span class="n">VerilatedContext</span> <span class="o">*</span><span class="n">contextp</span><span class="p">,</span> <span class="n">VerilatedFstC</span> <span class="o">*</span><span class="n">tfp</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">rst</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">EDGE_TRG_EVENT</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">rst</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">inst</span> <span class="o">=</span> <span class="n">vaddr_ifetch</span><span class="p">(</span><span class="n">top</span><span class="o">-&gt;</span><span class="n">inst_addr</span><span class="p">,</span> <span class="mi">4</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_ITRACE
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="n">IRingBuffer_write</span><span class="p">(</span><span class="n">top</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="n">half_cycle</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">contextp</span><span class="p">,</span> <span class="n">tfp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">EDGE_TRG</span><span class="p">(</span><span class="n">top</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">half_cycle</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">contextp</span><span class="p">,</span> <span class="n">tfp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_FTRACE
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="kt">int</span> <span class="n">type_ft</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="n">pc_ft</span><span class="p">,</span> <span class="n">dnpc_ft</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ftrace_type</span><span class="p">(</span><span class="o">&amp;</span><span class="n">type_ft</span><span class="p">);</span> <span class="n">pc_get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pc_ft</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">dnpc_ft</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="n">type_ft</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="n">print_call</span><span class="p">((</span><span class="n">vaddr_t</span><span class="p">)</span><span class="n">pc_ft</span><span class="p">,</span> <span class="p">(</span><span class="n">vaddr_t</span><span class="p">)</span><span class="n">dnpc_ft</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">2</span><span class="o">:</span> <span class="n">print_return</span><span class="p">((</span><span class="n">vaddr_t</span><span class="p">)</span><span class="n">pc_ft</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">3</span><span class="o">:</span> <span class="n">print_call</span><span class="p">((</span><span class="n">vaddr_t</span><span class="p">)</span><span class="n">pc_ft</span><span class="p">,</span> <span class="p">(</span><span class="n">vaddr_t</span><span class="p">)</span><span class="n">dnpc_ft</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_ITRACE
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">logbuf</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p</span> <span class="o">+=</span> <span class="n">snprintf</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">MAX_LOGBUF_LEN</span><span class="p">,</span> <span class="n">FMT_WORD</span> <span class="s">&#34;:&#34;</span><span class="p">,</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">inst_addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">inst</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">top</span><span class="o">-&gt;</span><span class="n">inst</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span> <span class="o">+=</span> <span class="n">snprintf</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&#34; %02x&#34;</span><span class="p">,</span> <span class="n">inst</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">memset</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">p</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="n">disassemble</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">str</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="n">pc</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">code</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nbyte</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">disassemble</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">logbuf</span> <span class="o">+</span> <span class="n">MAX_LOGBUF_LEN</span> <span class="o">-</span> <span class="n">p</span><span class="p">,</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">inst_addr</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">top</span><span class="o">-&gt;</span><span class="n">inst</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl">  <span class="n">EDGE_TRG_EVENT</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">top</span><span class="o">-&gt;</span><span class="n">inst</span> <span class="o">=</span> <span class="n">vaddr_ifetch</span><span class="p">(</span><span class="n">top</span><span class="o">-&gt;</span><span class="n">inst_addr</span><span class="p">,</span> <span class="mi">4</span><span class="p">));</span> <span class="c1">// next instruction fetch
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>由于我们采用自定义的宏<code>EDGE_TRG_EVENT()</code>来实现对Verilator生成文件的激励，这会在实现DiffTest时带来一些时序问题，具体而言：NPC中定义的<code>exec_once()</code>函数实际上仿真的是从当前时钟周期时钟上升沿开始，到下一时钟周期上升沿前的时间，这使得当该函数执行完成，当前指令还没有对寄存器堆进行写回操作（这需要等到下一时钟上升沿后），寄存器堆内部的取值还没有更新，因此，如果像NEMU中，在<code>exec_once()</code>执行完成后直接进行DiffTest，便会引发错误。</p>
+<p>为此，我们调整了<code>exec_once()</code>函数的执行顺序，将其仿真的时间修改为从当前时钟周期时钟上升沿后开始，到下一时钟上升沿后结束，即在<code>exec_once()</code>函数中会预取下一周期的指令。同时，我们需要额外保证在系统复位后，<code>exec_once()</code>函数中也会预取第一周期的指令。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/npc/">NPC</a>
+        
+            <a href="/tags/nemu/">NEMU</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Sep 30, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/npc-note1/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NPC实现时的注意事项（1）</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/nemu-run-nemu/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用RV32E架构的NEMU运行NEMU</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/difftest-gpr/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DiffTest中的寄存器一致性</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

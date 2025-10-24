@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Categories on </title>
-    <link>https://posvirus.github.io/categories/</link>
-    <description>Recent content in Categories on </description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
-    <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Tue, 21 Oct 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>YSYX</title>
-      <link>https://posvirus.github.io/categories/ysyx/</link>
-      <pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/categories/ysyx/</guid>
-      <description></description>
-    </item>
-  </channel>
+    <channel>
+        <title>Categories on Posvirus的博客</title>
+        <link>https://posvirus.github.io/categories/</link>
+        <description>Recent content in Categories on Posvirus的博客</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Chen Wenyao</copyright>
+        <lastBuildDate>Tue, 21 Oct 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>YSYX</title>
+        <link>https://posvirus.github.io/categories/ysyx/</link>
+        <pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/categories/ysyx/</guid>
+        <description></description>
+        </item>
+        
+    </channel>
 </rss>

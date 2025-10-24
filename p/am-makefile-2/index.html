@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：AM Makefile解读（2）">
+<title>AM Makefile解读（2）</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/am-makefile-2/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="AM Makefile解读（2）">
+<meta property='og:description' content="YSYX学习笔记：AM Makefile解读（2）">
+<meta property='og:url' content='https://posvirus.github.io/p/am-makefile-2/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='AM' /><meta property='article:tag' content='Makefile' /><meta property='article:published_time' content='2025-08-23T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-08-23T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="AM Makefile解读（2）">
+<meta name="twitter:description" content="YSYX学习笔记：AM Makefile解读（2）">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#native可执行文件的生成">native可执行文件的生成</a></li>
+    <li><a href="#makefile的错误码">Makefile的错误码</a></li>
+    <li><a href="#klib的链接">klib的链接</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/am-makefile-2/">AM Makefile解读（2）</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：AM Makefile解读（2）
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Aug 23, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 3 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="native可执行文件的生成">native可执行文件的生成
+</h2><p>在AM Makefile中，我们会通过：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c">### Paste in arch-specific configurations (e.g., from `scripts/x86_64-qemu.mk`)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="err">-include</span> <span class="k">$(</span><span class="nv">AM_HOME</span><span class="k">)</span><span class="err">/scripts/</span><span class="k">$(</span><span class="nv">ARCH</span><span class="k">)</span><span class="err">.mk</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>包含架构相关的Makefile，当我们指定<code>ARCH=native</code>时，包含的Makefile内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">AM_SRCS</span> <span class="o">:=</span> native/trm.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/ioe.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/cte.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/trap.S <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/vme.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/mpe.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/platform.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/ioe/input.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/ioe/timer.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/ioe/gpu.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/ioe/uart.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/ioe/audio.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           native/ioe/disk.c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">CFLAGS</span>  <span class="o">+=</span> -fpie <span class="k">$(</span>shell sdl2-config --cflags<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ASFLAGS</span> <span class="o">+=</span> -fpie -pie
+</span></span><span class="line"><span class="cl"><span class="nv">comma</span> <span class="o">=</span> ,
+</span></span><span class="line"><span class="cl"><span class="nv">LDFLAGS_CXX</span> <span class="o">=</span> <span class="k">$(</span>addprefix -Wl<span class="k">$(</span>comma<span class="k">)</span>, <span class="k">$(</span>LDFLAGS<span class="k">))</span> -pie -ldl <span class="k">$(</span>shell sdl2-config --libs<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">run</span><span class="o">:</span> <span class="n">image</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>IMAGE<span class="k">)</span>.elf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">gdb</span><span class="o">:</span> <span class="n">image</span>
+</span></span><span class="line"><span class="cl">	gdb -ex <span class="s2">&#34;handle SIGUSR1 SIGUSR2 SIGSEGV noprint nostop&#34;</span> <span class="k">$(</span>IMAGE<span class="k">)</span>.elf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先，该Makefile会定义<code>AM_SRCS</code>，包含GNU/Linux默认的运行时环境<code>native</code>用于实现AM API的所有源文件，该变量会在<code>am</code>路径下的Makefile中被使用，作为<code>SRC</code>进行编译：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">NAME</span>     <span class="o">:=</span> am
+</span></span><span class="line"><span class="cl"><span class="nv">SRCS</span>      <span class="o">=</span> <span class="k">$(</span>addprefix src/, <span class="k">$(</span>AM_SRCS<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">INC_PATH</span> <span class="o">+=</span> <span class="k">$(</span>AM_HOME<span class="k">)</span>/am/src
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">include</span> <span class="k">$(</span><span class="nv">AM_HOME</span><span class="k">)</span><span class="err">/Makefile</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>随后，该Makefile会补充<code>native</code>架构下对应的编译选项，这部分我们暂且不作说明。</p>
+<p>最后，该Makefile定义了<code>run</code>与<code>gdb</code>两个目标，分别用于直接执行<code>$(IMAGE).elf</code>与调试执行<code>$(IMAGE).elf</code>。</p>
+<h2 id="makefile的错误码">Makefile的错误码
+</h2><p>使用如下指令在<code>native</code>架构下执行测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="nv">ARCH</span><span class="o">=</span>native <span class="nv">ALL</span><span class="o">=</span><span class="nv">$PROGRAM</span> run
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如若执行失败，则会返回：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make<span class="o">[</span>1<span class="o">]</span>: *** <span class="o">[</span>run<span class="o">]</span> Error <span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此处我们将分析这里错误码1的来源：首先，我们知道测试程序的正确与错误是通过程序中的<code>check()</code>函数实现的，于是我们可查看该函数的实现，在<code>trap.h</code>中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">check</span><span class="p">(</span><span class="kt">bool</span> <span class="n">cond</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">cond</span><span class="p">)</span> <span class="nf">halt</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>据此可观察到，当条件<code>cond</code>为<code>false</code>时，函数会调用<code>halt(1)</code>，该函数应该是控制错误码的核心函数，于是我们寻找该函数的定义，在AM的<code>trm.c</code>中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">halt</span><span class="p">(</span><span class="kt">int</span> <span class="n">code</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span> <span class="o">=</span> <span class="s">&#34;Exit code = 40h</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">;</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span> <span class="n">p</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">ch</span> <span class="o">=</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">&#39;0&#39;</span> <span class="o">||</span> <span class="n">ch</span> <span class="o">==</span> <span class="sc">&#39;4&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">ch</span> <span class="o">=</span> <span class="s">&#34;0123456789abcdef&#34;</span><span class="p">[(</span><span class="n">code</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">ch</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xf</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">putch</span><span class="p">(</span><span class="n">ch</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">__am_exit_platform</span><span class="p">(</span><span class="n">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">putstr</span><span class="p">(</span><span class="s">&#34;Should not reach here!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>不难发现，<code>halt()</code>函数的<code>code</code>参数即用于控制错误码。为验证这一点，我们不妨将<code>check()</code>函数中的<code>halt(1)</code>改为<code>halt(3)</code>，再次运行某个程序，并打印对应的错误输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Building add-run [native]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Building am-archive [native]</span>
+</span></span><span class="line"><span class="cl">+ CC src/native/cte.c
+</span></span><span class="line"><span class="cl">+ CC src/native/vme.c
+</span></span><span class="line"><span class="cl">+ CC src/native/mpe.c
+</span></span><span class="line"><span class="cl">+ CC src/native/platform.c
+</span></span><span class="line"><span class="cl">+ CC src/native/ioe/audio.c
+</span></span><span class="line"><span class="cl">+ AR -&gt; build/am-native.a
+</span></span><span class="line"><span class="cl"><span class="c1"># Building klib-archive [native]</span>
+</span></span><span class="line"><span class="cl">+ CC src/stdio.c
+</span></span><span class="line"><span class="cl">+ CC src/cpp.c
+</span></span><span class="line"><span class="cl">+ CC src/stdlib.c
+</span></span><span class="line"><span class="cl">+ CC src/string.c
+</span></span><span class="line"><span class="cl">+ AR -&gt; build/klib-native.a
+</span></span><span class="line"><span class="cl">+ CC tests/add.c
+</span></span><span class="line"><span class="cl"><span class="c1"># Creating image [native]</span>
+</span></span><span class="line"><span class="cl">+ LD -&gt; build/add-native.elf
+</span></span><span class="line"><span class="cl">Exit <span class="nv">code</span> <span class="o">=</span> 03h
+</span></span><span class="line"><span class="cl">make<span class="o">[</span>1<span class="o">]</span>: *** <span class="o">[</span>/home/chenwy/ysyx-workbench/abstract-machine/scripts/native.mk:21: run<span class="o">]</span> Error <span class="m">3</span>
+</span></span><span class="line"><span class="cl"><span class="nb">test</span> list <span class="o">[</span><span class="m">1</span> item<span class="o">(</span>s<span class="o">)]</span>: add
+</span></span><span class="line"><span class="cl"><span class="o">[</span>           add<span class="o">]</span> ***FAIL***
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时可观察到，程序的错误码输出已变成3。</p>
+<h2 id="klib的链接">klib的链接
+</h2><p>框架代码编译到<code>native</code>的时候默认链接到glibc, 我们需要把这些库函数的调用链接到我们编写的klib来进行测试. 我们可以通过在<code>klib.h</code> 中通过定义宏<code>__NATIVE_USE_KLIB__</code>来把库函数链接到klib。该功能的实现原理如下：</p>
+<ul>
+<li><strong>编译阶段：</strong> 在klib的库函数实现中包含如下字段：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>该字段表明，如果程序在非<code>native</code>架构下编译，或在<code>native</code>架构下编译且定义了<code>__NATIVE_USE_KLIB__</code>，则译该文件中的函数实现。</li>
+<li><strong>链接阶段：</strong> 链接器会按顺序处理目标文件和库。自定义实现的符号会优先被链接，而不是系统标准库中的相同符号（因为链接器默认先处理显式指定的目标文件，后处理库）。</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/am/">AM</a>
+        
+            <a href="/tags/makefile/">Makefile</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Aug 23, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/am-makefile-1/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">AM Makefile解读（1）</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/rt-thread/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">RT-Thread的上下文</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/nemu-run-nemu/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用RV32E架构的NEMU运行NEMU</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

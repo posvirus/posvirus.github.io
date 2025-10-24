@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：AM Makefile解读（1）">
+<title>AM Makefile解读（1）</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/am-makefile-1/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="AM Makefile解读（1）">
+<meta property='og:description' content="YSYX学习笔记：AM Makefile解读（1）">
+<meta property='og:url' content='https://posvirus.github.io/p/am-makefile-1/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='AM' /><meta property='article:tag' content='Makefile' /><meta property='article:published_time' content='2025-07-23T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-07-23T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="AM Makefile解读（1）">
+<meta name="twitter:description" content="YSYX学习笔记：AM Makefile解读（1）">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#提供可读性更强的makefile版本">提供可读性更强的Makefile版本</a></li>
+    <li><a href="#基本配置与运行检查">基本配置与运行检查</a></li>
+    <li><a href="#编译目标定义">编译目标定义</a></li>
+    <li><a href="#编译选项设置">编译选项设置</a></li>
+    <li><a href="#目标构建规则">目标构建规则</a></li>
+    <li><a href="#构建顺序定义">构建顺序定义</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/am-makefile-1/">AM Makefile解读（1）</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：AM Makefile解读（1）
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 23, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 8 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="提供可读性更强的makefile版本">提供可读性更强的Makefile版本
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">html</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	cat Makefile <span class="p">|</span> sed <span class="s1">&#39;s/^\([^#]\)/    \1/g&#39;</span> <span class="p">|</span> markdown_py &gt; Makefile.html
+</span></span><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="n">html</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先，该Makefile给出了一个<code>html</code>目标，用于生成可读性更强的Makefile，其具体实现原理是，首先通过<code>cat</code>以输出Makefile的所有内容至标准输出，并通过管道将其传递至<code>sed</code>指令，<code>sed</code>会通过正则表达式匹配所有非注释行，并将所有非注释行的第一个非<code>#</code>字符前加入四个空格。这时，该Makefile的所有注释行在Markdown语法中会被识别为标题；所有非注释行则会被识别为代码块（因为插入了四个空格）<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。</p>
+<p>最后，再调用<code>markdown_py</code>将其转换为HTML格式，并重定向至<code>Makefile.html</code>中。</p>
+<h2 id="基本配置与运行检查">基本配置与运行检查
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">ifeq</span> <span class="err">(</span><span class="k">$(</span><span class="nv">MAKECMDGOALS</span><span class="k">)</span><span class="err">,)</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">MAKECMDGOALS</span>  <span class="o">=</span> image
+</span></span><span class="line"><span class="cl">  .DEFAULT_GOAL <span class="o">=</span> image
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先，我们会检查Makefile执行的目标，这里通过一个环境变量<code>MAKECMDGOALS</code>引用，当该值为空时，说明我们仅输入了<code>make</code>，此时将<code>MAKECMDGOALS</code>设置为<code>image</code>，代表默认创建一个裸机镜像。同时将另一个环境变量<code>.DEFAULT_GOAL</code>也设置为<code>image</code>，请注意，<code>.DEFAULT_GOALS</code>会真正地将Makefile的执行目标设定为<code>image</code>，而我们此处将<code>MAKECMDGOALS</code>设置为<code>image</code>的目的是为了后续的配置与运行检查。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">ifeq</span> <span class="err">(</span><span class="k">$(</span><span class="nv">findstring</span> <span class="k">$(</span><span class="nv">MAKECMDGOALS</span><span class="k">)</span>,<span class="nv">clean</span>|<span class="nv">clean</span>-<span class="nv">all</span>|<span class="nv">html</span><span class="k">)</span><span class="err">,)</span>
+</span></span><span class="line"><span class="cl"><span class="err">...</span>
+</span></span><span class="line"><span class="cl"><span class="c">### Checks end here
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="err">endif</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其次，我们会使用<code>findstring</code>检查<code>MAKECMDGOALS</code>是否是<code>clean</code>、<code>clean-all</code>、<code>html</code>中的一者，如果是，则该判断为<code>false</code>，我们会跳过该段运行环境检查，这里需要注意的是，<code>ifeq</code>与对应的<code>endif</code>离得很远，需要明确中间的语句均只有在判断为真的时候才执行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="k">$(</span><span class="nv">info</span> # <span class="nv">Building</span> <span class="k">$(</span><span class="nv">NAME</span><span class="k">)</span>-<span class="k">$(</span><span class="nv">MAKECMDGOALS</span><span class="k">)</span> [<span class="k">$(</span><span class="nv">ARCH</span><span class="k">)</span>]<span class="k">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在命令行中输出对应的构建模板，其中<code>MAKECMDGOALS</code>是该Makefile对应的构建目标，<code>NAME</code>是AM其他子目录下的Makefile定义的变量，比如在<code>src</code>下的Makefile对应的<code>NAME</code>为<code>am</code>，而<code>ARCH</code>则为在输入<code>make</code>时指令的架构变量，回忆PA2的前一节，我们在运行<code>cpu-tests</code>时使用过如下形式的<code>make</code>指令进行构建：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="nv">ARCH</span><span class="o">=</span><span class="nv">$ISA</span>-nemu <span class="nv">ALL</span><span class="o">=</span>dummy run
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此处我们即指定了<code>ARCH</code>变量对应的值。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">ifeq</span> <span class="err">(</span><span class="k">$(</span><span class="nv">wildcard</span> <span class="k">$(</span><span class="nv">AM_HOME</span><span class="k">)</span>/<span class="nv">am</span>/<span class="nv">include</span>/<span class="nv">am</span>.<span class="nv">h</span><span class="k">)</span><span class="err">,)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">$(</span><span class="nv">error</span> <span class="k">$$</span><span class="nv">AM_HOME</span> <span class="nv">must</span> <span class="nv">be</span> <span class="nv">an</span> <span class="nv">AbstractMachine</span> <span class="nv">repo</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接着，Makefile会检查环境变量<code>AM_HOME</code>是否设置正确，此处主要使用<code>wildcard</code>查找<code>am.h</code>文件是否存在，如果存在则说明正确。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">ARCHS</span> <span class="o">=</span> <span class="k">$(</span>basename <span class="k">$(</span>notdir <span class="k">$(</span>shell ls <span class="k">$(</span>AM_HOME<span class="k">)</span>/scripts/*.mk<span class="k">)))</span>
+</span></span><span class="line"><span class="cl"><span class="err">ifeq</span> <span class="err">(</span><span class="k">$(</span><span class="nv">filter</span> <span class="k">$(</span><span class="nv">ARCHS</span><span class="k">)</span>, <span class="k">$(</span><span class="nv">ARCH</span><span class="k">))</span><span class="err">,</span> <span class="err">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">$(</span><span class="nv">error</span> <span class="nv">Expected</span> <span class="k">$$</span><span class="nv">ARCH</span> <span class="nv">in</span> {<span class="k">$(</span><span class="nv">ARCHS</span><span class="k">)</span>}, <span class="nv">Got</span> &#34;<span class="k">$(</span><span class="nv">ARCH</span><span class="k">)</span>&#34;<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>随后，我们会检查通过命令行传输的架构信息<code>ARCH</code>是否在项目中存在对应的Makefile，为此，我们使用<code>ls</code>指令列举<code>scripts</code>子目录下的所有<code>.mk</code>文件，直接运行该指令的输出为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/home/chenwy/ysyx-workbench/abstract-machine/scripts/loongarch32r-nemu.mk  /home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32-nemu.mk
+</span></span><span class="line"><span class="cl">/home/chenwy/ysyx-workbench/abstract-machine/scripts/mips32-nemu.mk        /home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv64-nemu.mk
+</span></span><span class="line"><span class="cl">/home/chenwy/ysyx-workbench/abstract-machine/scripts/native.mk             /home/chenwy/ysyx-workbench/abstract-machine/scripts/spike.mk
+</span></span><span class="line"><span class="cl">/home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32e-nemu.mk      /home/chenwy/ysyx-workbench/abstract-machine/scripts/x86_64-qemu.mk
+</span></span><span class="line"><span class="cl">/home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32e-npc.mk       /home/chenwy/ysyx-workbench/abstract-machine/scripts/x86-nemu.mk
+</span></span><span class="line"><span class="cl">/home/chenwy/ysyx-workbench/abstract-machine/scripts/riscv32mini-nemu.mk   /home/chenwy/ysyx-workbench/abstract-machine/scripts/x86-qemu.mk
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们使用<code>notdir</code>函数过滤文件前的文件夹路径，需要指出，<code>notdir</code>是一个Makfile函数而非bash指令。</p>
+<p>接着，我们使用<code>basename</code>指令（这是一条指令）获取这些文件的文件名，并将其赋值给<code>ARCHS</code>，代表AM目前支持的架构集合。进而，我们即可使用<code>filter</code>函数（这同样是一个Makefile函数）判断<code>ARCH</code>对应的架构是否存在于<code>ARCHS</code>中，如不存在则报错。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">ARCH_SPLIT</span> <span class="o">=</span> <span class="k">$(</span>subst -, ,<span class="k">$(</span>ARCH<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ISA</span>        <span class="o">=</span> <span class="k">$(</span>word 1,<span class="k">$(</span>ARCH_SPLIT<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">PLATFORM</span>   <span class="o">=</span> <span class="k">$(</span>word 2,<span class="k">$(</span>ARCH_SPLIT<span class="k">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以下，确定架构有效后，我们可以使用<code>subst</code>函数将<code>ARCH</code>连接平台与ISA的连字符<code>-</code>替换为空格，再使用<code>word</code>函数分别提取对应的ISA（如<code>riscv32</code>等）与平台（<code>nemu</code>、<code>qemu</code>与<code>npc</code>等）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">ifeq</span> <span class="err">(</span><span class="k">$(</span><span class="nv">flavor</span> <span class="nv">SRCS</span><span class="k">)</span><span class="err">,</span> <span class="err">undefined)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">$(</span><span class="nv">error</span> <span class="nv">Nothing</span> <span class="nv">to</span> <span class="nv">build</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后，我们使用<code>flavor</code>函数检查<code>SRC</code>，即需要构建的源文件是否被定义，若未定义则同样报错。</p>
+<p>此处需要指出，<code>SRCS</code>与之前的<code>NAME</code>类似，都是通过其他Makefile定义，再包含该Makefile给出的，因此我们事实上无法通过这个Makefile构建某个目标（当然<code>html</code>除外），而应当是其它Makefile调用该Makefile进行构建。</p>
+<p>至此，基本配置与运行检查完毕。</p>
+<h2 id="编译目标定义">编译目标定义
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">WORK_DIR</span>  <span class="o">=</span> <span class="k">$(</span>shell <span class="nb">pwd</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">DST_DIR</span>   <span class="o">=</span> <span class="k">$(</span>WORK_DIR<span class="k">)</span>/build/<span class="k">$(</span>ARCH<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">$(</span><span class="nv">shell</span> <span class="nv">mkdir</span> -<span class="nv">p</span> <span class="k">$(</span><span class="nv">DST_DIR</span><span class="k">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先，我们定义工作目录<code>WORK_DIR</code>为当前目录，同时定义编译输出目录<code>DST_DIR</code>为工作目录下<code>build</code>目录中对应的<code>$(ARCH)</code>子目录，并使用<code>mkdir -p</code>创建该目录。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">IMAGE_REL</span> <span class="o">=</span> build/<span class="k">$(</span>NAME<span class="k">)</span>-<span class="k">$(</span>ARCH<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">IMAGE</span>     <span class="o">=</span> <span class="k">$(</span>abspath <span class="k">$(</span>IMAGE_REL<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ARCHIVE</span>   <span class="o">=</span> <span class="k">$(</span>WORK_DIR<span class="k">)</span>/build/<span class="k">$(</span>NAME<span class="k">)</span>-<span class="k">$(</span>ARCH<span class="k">)</span>.a
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其次，<code>IMAGE_REL</code>定义了最终的可执行文件<code>$(NAME)-$(ARCH)</code>的相对路径，同时使用<code>IMAGE</code>调用<code>abspath</code>函数定义其绝对路径，<code>ARCHIVE</code>则定义了归档文件<code>$(NAME)-$(ARCH).a</code>对应的绝对路径。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">OBJS</span>      <span class="o">=</span> <span class="k">$(</span>addprefix <span class="k">$(</span>DST_DIR<span class="k">)</span>/, <span class="k">$(</span>addsuffix .o, <span class="k">$(</span>basename <span class="k">$(</span>SRCS<span class="k">))))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">LIBS</span>     <span class="o">:=</span> <span class="k">$(</span>sort <span class="k">$(</span>LIBS<span class="k">)</span> am klib<span class="k">)</span> <span class="c1"># lazy evaluation (&#34;=&#34;) causes infinite recursions</span>
+</span></span><span class="line"><span class="cl"><span class="nv">LINKAGE</span>   <span class="o">=</span> <span class="k">$(</span>OBJS<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="k">$(</span>addsuffix -<span class="k">$(</span>ARCH<span class="k">)</span>.a, <span class="k">$(</span>join <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="k">$(</span>addsuffix /build/, <span class="k">$(</span>addprefix <span class="k">$(</span>AM_HOME<span class="k">)</span>/, <span class="k">$(</span>LIBS<span class="k">)))</span>, <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="k">$(</span>LIBS<span class="k">)</span> <span class="o">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接着，我们定义了编译的输出中间文件文件路径<code>OBJS</code>，该定义首先通过<code>basename</code>指令获取<code>SRCS</code>的文件名，并使用<code>addsuffix</code>函数将文件后缀置为<code>.o</code>，随后使用<code>addprefix</code>将中间文件路径统一指定为输出目录<code>DST_DIR</code>下。</p>
+<p>而我们继续可以定义库文件所在路径<code>LIBS</code>，通过立即赋值<code>:=</code>可以避免该定义被递归展开<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>，同时使用<code>sort</code>避免重复定义，这是因为<code>LIBS</code>可能在其它Makefile中也被定义，因此可能本身就包含<code>am</code>或<code>klib</code>，故此处需要去重处理。</p>
+<p>最后，我们收集所有需要被链接的文件，包括<code>OBJS</code>以及归档文件（如<code>am-$(ARCH).a</code>、<code>klib-$(ARCH).a</code>）。</p>
+<p>这里需要对<code>LINKAGE</code>与<code>ARCHIVE</code>进行一个对比，<code>LINKAGE</code>是我们在生成裸机镜像时需要使用的，所有需要链接的文件，它包含了编译输出的所有中间文件<code>OBJS</code>以及<code>LIBS</code>对应的所有归档文件。而<code>ARCHIVE</code>对应的是一个局部性的概念，是指某一个文件夹调用该Makefile时，生成的归档文件（在该Makefile后续逻辑中我们会知道，生成裸机镜像<code>image</code>与生成归档文件<code>archive</code>是两个相对独立的目标）。因此，在PA2前一节我们运行<code>cpu-tests</code>时，对应的<code>make</code>输出如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c"># Building am-archive [riscv32-nemu]
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/trm.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/ioe/ioe.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/ioe/timer.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/ioe/input.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/ioe/gpu.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/ioe/audio.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/ioe/disk.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/platform/nemu/mpe.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">AS</span> <span class="err">src/riscv/nemu/start.S</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/riscv/nemu/cte.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">AS</span> <span class="err">src/riscv/nemu/trap.S</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/riscv/nemu/vme.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">AR</span> <span class="err">-&gt;</span> <span class="err">build/am-riscv32-nemu.a</span>
+</span></span><span class="line"><span class="cl"><span class="c"># Building klib-archive [riscv32-nemu]
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="err">+</span> <span class="err">CC</span> <span class="err">src/stdio.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/int64.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/cpp.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/stdlib.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">src/string.c</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">AR</span> <span class="err">-&gt;</span> <span class="err">build/klib-riscv32-nemu.a</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">CC</span> <span class="err">tests/dummy.c</span>
+</span></span><span class="line"><span class="cl"><span class="c"># Creating image [riscv32-nemu]
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="err">+</span> <span class="err">LD</span> <span class="err">-&gt;</span> <span class="err">build/dummy-riscv32-nemu.elf</span>
+</span></span><span class="line"><span class="cl"><span class="err">+</span> <span class="err">OBJCOPY</span> <span class="err">-&gt;</span> <span class="err">build/dummy-riscv32-nemu.bin</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们可以知道，这个<code>make</code>其实包含三个步骤：</p>
+<ul>
+<li><strong>第一步：</strong> 将<code>am</code>目录下的源文件编译，并打包为归档文件<code>am-riscv32-nemu.a</code>（即为<code>ARCHIVE</code>）。</li>
+<li><strong>第二步：</strong> 将<code>klib</code>目录下的源文件编译，并打包为归档文件<code>klib-riscv32-nemu.a</code>（即为<code>ARCHIVE</code>）。</li>
+<li><strong>第三步：</strong> 编译客户程序<code>dummy.c</code>，并将其与之前生成的归档文件一起链接为可执行文件（即为<code>LINKAGE</code>）。</li>
+</ul>
+<h2 id="编译选项设置">编译选项设置
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">AS</span>        <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>gcc
+</span></span><span class="line"><span class="cl"><span class="nv">CC</span>        <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>gcc
+</span></span><span class="line"><span class="cl"><span class="nv">CXX</span>       <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>g++
+</span></span><span class="line"><span class="cl"><span class="nv">LD</span>        <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>ld
+</span></span><span class="line"><span class="cl"><span class="nv">AR</span>        <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>ar
+</span></span><span class="line"><span class="cl"><span class="nv">OBJDUMP</span>   <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>objdump
+</span></span><span class="line"><span class="cl"><span class="nv">OBJCOPY</span>   <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>objcopy
+</span></span><span class="line"><span class="cl"><span class="nv">READELF</span>   <span class="o">=</span> <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>readelf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先定义交叉编译所需的工具名，这里的<code>CROSS_COMPILE</code>在<code>$(AM_HOME)/scripts/isa</code>中的Makefile被定义。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">INC_PATH</span> <span class="o">+=</span> <span class="k">$(</span>WORK_DIR<span class="k">)</span>/include <span class="k">$(</span>addsuffix /include/, <span class="k">$(</span>addprefix <span class="k">$(</span>AM_HOME<span class="k">)</span>/, <span class="k">$(</span>LIBS<span class="k">)))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">INCFLAGS</span> <span class="o">+=</span> <span class="k">$(</span>addprefix -I, <span class="k">$(</span>INC_PATH<span class="k">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>随后定义包含的路径，包括当前路径下的<code>include</code>与AM库文件<code>LIBS</code>下的<code>include</code>，并在其前加入<code>-I</code>作为<code>INCFLAGS</code>供编译器使用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">ARCH_H</span> <span class="o">:=</span> arch/<span class="k">$(</span>ARCH<span class="k">)</span>.h
+</span></span><span class="line"><span class="cl"><span class="nv">CFLAGS</span>   <span class="o">+=</span> -O2 -MMD -Wall -Werror <span class="k">$(</span>INCFLAGS<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>            -D__ISA__<span class="o">=</span><span class="se">\&#34;</span><span class="k">$(</span>ISA<span class="k">)</span><span class="se">\&#34;</span> -D__ISA_<span class="k">$(</span>shell <span class="nb">echo</span> <span class="k">$(</span>ISA<span class="k">)</span> <span class="p">|</span> tr a-z A-Z<span class="k">)</span>__ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>            -D__ARCH__<span class="o">=</span><span class="k">$(</span>ARCH<span class="k">)</span> -D__ARCH_<span class="k">$(</span>shell <span class="nb">echo</span> <span class="k">$(</span>ARCH<span class="k">)</span> <span class="p">|</span> tr a-z A-Z <span class="p">|</span> tr - _<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>            -D__PLATFORM__<span class="o">=</span><span class="k">$(</span>PLATFORM<span class="k">)</span> -D__PLATFORM_<span class="k">$(</span>shell <span class="nb">echo</span> <span class="k">$(</span>PLATFORM<span class="k">)</span> <span class="p">|</span> tr a-z A-Z <span class="p">|</span> tr - _<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>            -DARCH_H<span class="o">=</span><span class="se">\&#34;</span><span class="k">$(</span>ARCH_H<span class="k">)</span><span class="se">\&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>            -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>            -Wno-main -U_FORTIFY_SOURCE -fvisibility<span class="o">=</span>hidden
+</span></span><span class="line"><span class="cl"><span class="nv">CXXFLAGS</span> <span class="o">+=</span>  <span class="k">$(</span>CFLAGS<span class="k">)</span> -ffreestanding -fno-rtti -fno-exceptions
+</span></span><span class="line"><span class="cl"><span class="nv">ASFLAGS</span>  <span class="o">+=</span> -MMD <span class="k">$(</span>INCFLAGS<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">LDFLAGS</span>  <span class="o">+=</span> -z noexecstack <span class="k">$(</span>addprefix -T, <span class="k">$(</span>LDSCRIPTS<span class="k">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里定义具体的编译/链接选项，此处不作说明。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">-include</span> <span class="k">$(</span><span class="nv">AM_HOME</span><span class="k">)</span><span class="err">/scripts/</span><span class="k">$(</span><span class="nv">ARCH</span><span class="k">)</span><span class="err">.mk</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时，我们包含<code>ARCH</code>架构的Makefile，对前面的选项进行进一步配置。</p>
+<h2 id="目标构建规则">目标构建规则
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c">### Rule (compile): a single `.c` -&gt; `.o` (gcc)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">$(DST_DIR)/%.o</span><span class="o">:</span> %.<span class="n">c</span>
+</span></span><span class="line"><span class="cl">	@mkdir -p <span class="k">$(</span>dir <span class="nv">$@</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> + CC $&lt;
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>CC<span class="k">)</span> -std<span class="o">=</span>gnu11 <span class="k">$(</span>CFLAGS<span class="k">)</span> -c -o <span class="nv">$@</span> <span class="k">$(</span>realpath $&lt;<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">### Rule (compile): a single `.cc` -&gt; `.o` (g++)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">$(DST_DIR)/%.o</span><span class="o">:</span> %.<span class="n">cc</span>
+</span></span><span class="line"><span class="cl">	@mkdir -p <span class="k">$(</span>dir <span class="nv">$@</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> + CXX $&lt;
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>CXX<span class="k">)</span> -std<span class="o">=</span>c++17 <span class="k">$(</span>CXXFLAGS<span class="k">)</span> -c -o <span class="nv">$@</span> <span class="k">$(</span>realpath $&lt;<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">### Rule (compile): a single `.cpp` -&gt; `.o` (g++)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">$(DST_DIR)/%.o</span><span class="o">:</span> %.<span class="n">cpp</span>
+</span></span><span class="line"><span class="cl">	@mkdir -p <span class="k">$(</span>dir <span class="nv">$@</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> + CXX $&lt;
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>CXX<span class="k">)</span> -std<span class="o">=</span>c++17 <span class="k">$(</span>CXXFLAGS<span class="k">)</span> -c -o <span class="nv">$@</span> <span class="k">$(</span>realpath $&lt;<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">### Rule (compile): a single `.S` -&gt; `.o` (gcc, which preprocesses and calls as)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">$(DST_DIR)/%.o</span><span class="o">:</span> %.<span class="n">S</span>
+</span></span><span class="line"><span class="cl">	@mkdir -p <span class="k">$(</span>dir <span class="nv">$@</span><span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> + AS $&lt;
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>AS<span class="k">)</span> <span class="k">$(</span>ASFLAGS<span class="k">)</span> -c -o <span class="nv">$@</span> <span class="k">$(</span>realpath $&lt;<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">### Rule (recursive make): build a dependent library (am, klib, ...)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">$(LIBS)</span><span class="o">:</span> %:
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>MAKE<span class="k">)</span> -s -C <span class="k">$(</span>AM_HOME<span class="k">)</span>/<span class="nv">$*</span> archive
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">### Rule (link): objects (`*.o`) and libraries (`*.a`) -&gt; `IMAGE.elf`, the final ELF binary to be packed into image (ld)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">$(IMAGE).elf</span><span class="o">:</span> <span class="k">$(</span><span class="nv">LINKAGE</span><span class="k">)</span> <span class="k">$(</span><span class="nv">LDSCRIPTS</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">	@echo <span class="se">\#</span> Creating image <span class="o">[</span><span class="k">$(</span>ARCH<span class="k">)</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">	@echo + LD <span class="s2">&#34;-&gt;&#34;</span> <span class="k">$(</span>IMAGE_REL<span class="k">)</span>.elf
+</span></span><span class="line"><span class="cl"><span class="err">ifneq</span> <span class="err">(</span><span class="k">$(</span><span class="nv">filter</span> <span class="k">$(</span><span class="nv">ARCH</span><span class="k">)</span>,<span class="nv">native</span><span class="k">)</span><span class="err">,)</span>
+</span></span><span class="line"><span class="cl">	<span class="err">@</span><span class="k">$(</span><span class="nv">CXX</span><span class="k">)</span> <span class="err">-o</span> <span class="k">$@</span> <span class="err">-Wl,--whole-archive</span> <span class="k">$(</span><span class="nv">LINKAGE</span><span class="k">)</span> <span class="err">-Wl,-no-whole-archive</span> <span class="k">$(</span><span class="nv">LDFLAGS_CXX</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">else</span>
+</span></span><span class="line"><span class="cl">	<span class="err">@</span><span class="k">$(</span><span class="nv">LD</span><span class="k">)</span> <span class="k">$(</span><span class="nv">LDFLAGS</span><span class="k">)</span> <span class="err">-o</span> <span class="k">$@</span> <span class="err">--start-group</span> <span class="k">$(</span><span class="nv">LINKAGE</span><span class="k">)</span> <span class="err">--end-group</span>
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">### Rule (archive): objects (`*.o`) -&gt; `ARCHIVE.a` (ar)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">$(ARCHIVE)</span><span class="o">:</span> <span class="k">$(</span><span class="nv">OBJS</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">	@echo + AR <span class="s2">&#34;-&gt;&#34;</span> <span class="k">$(</span>shell realpath <span class="nv">$@</span> --relative-to .<span class="k">)</span>
+</span></span><span class="line"><span class="cl">	@<span class="k">$(</span>AR<span class="k">)</span> rcs <span class="nv">$@</span> $^
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">### Rule (`#include` dependencies): paste in `.d` files generated by gcc on `-MMD`
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="err">-include</span> <span class="k">$(</span><span class="nv">addprefix</span> <span class="k">$(</span><span class="nv">DST_DIR</span><span class="k">)</span>/, <span class="k">$(</span><span class="nv">addsuffix</span> .<span class="nv">d</span>, <span class="k">$(</span><span class="nv">basename</span> <span class="k">$(</span><span class="nv">SRCS</span><span class="k">))))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这部分是具体的目标构建规则，不作赘述。</p>
+<h2 id="构建顺序定义">构建顺序定义
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">image</span><span class="o">:</span> <span class="n">image</span>-<span class="n">dep</span>
+</span></span><span class="line"><span class="cl"><span class="nf">archive</span><span class="o">:</span> <span class="k">$(</span><span class="nv">ARCHIVE</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">image-dep</span><span class="o">:</span> <span class="k">$(</span><span class="nv">LIBS</span><span class="k">)</span> <span class="k">$(</span><span class="nv">IMAGE</span><span class="k">)</span>.<span class="n">elf</span>
+</span></span><span class="line"><span class="cl"><span class="nf">.NOTPARALLEL</span><span class="o">:</span> <span class="n">image</span>-<span class="n">dep</span>
+</span></span><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="n">image</span> <span class="n">image</span>-<span class="n">dep</span> <span class="n">archive</span> <span class="n">run</span> <span class="k">$(</span><span class="nv">LIBS</span><span class="k">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这部分定义了各个目标的依赖关系，当我们构建裸机镜像<code>image</code>时，需要首先构建<code>$(LIBS)</code>及<code>$(IMAGE).elf</code>，<code>$(IMAGE).elf</code>的构建依赖于<code>LINKAGE</code>，这包含了<code>OBJS</code>与<code>LIBS</code>对应的归档文件两部分，构建<code>$(LIBS)</code>时，我们便会使用<code>make archive</code>创建其对应的归档文件。而<code>OBJS</code>的构建则依赖于目标构建规则中的单文件编译。</p>
+<p>至此，我们大致梳理了AM的Makefile架构及实现原理。</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/360411198"  target="_blank" rel="noopener"
+    >简书Markdown用法：4个空格标记代码块的说明</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a class="link" href="https://blog.csdn.net/b876144622/article/details/80372161"  target="_blank" rel="noopener"
+    >Makefile中:=, =, ?=和+=的含义</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/am/">AM</a>
+        
+            <a href="/tags/makefile/">Makefile</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Jul 23, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/am-makefile-2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">AM Makefile解读（2）</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/rt-thread/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">RT-Thread的上下文</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/nemu-run-nemu/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用RV32E架构的NEMU运行NEMU</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

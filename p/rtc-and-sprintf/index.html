@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：设备实时时钟与更强大的sprintf()函数">
+<title>设备实时时钟与更强大的sprintf()函数</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/rtc-and-sprintf/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="设备实时时钟与更强大的sprintf()函数">
+<meta property='og:description' content="YSYX学习笔记：设备实时时钟与更强大的sprintf()函数">
+<meta property='og:url' content='https://posvirus.github.io/p/rtc-and-sprintf/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Clang' /><meta property='article:tag' content='stdio' /><meta property='article:tag' content='AM' /><meta property='article:tag' content='Device' /><meta property='article:published_time' content='2025-10-05T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-10-05T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="设备实时时钟与更强大的sprintf()函数">
+<meta name="twitter:description" content="YSYX学习笔记：设备实时时钟与更强大的sprintf()函数">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#设备实时时钟的实现">设备实时时钟的实现</a></li>
+    <li><a href="#功能更强大的sprintf函数">功能更强大的<code>sprintf()</code>函数</a>
+      <ol>
+        <li><a href="#stdioc中库函数的完整实现"><code>stdio.c</code>中库函数的完整实现</a></li>
+        <li><a href="#打印函数的功能扩展">打印函数的功能扩展</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/rtc-and-sprintf/">设备实时时钟与更强大的sprintf()函数</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：设备实时时钟与更强大的sprintf()函数
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Oct 05, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 6 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="设备实时时钟的实现">设备实时时钟的实现
+</h2><p>在PA2中，我们只被要求实现<code>AM_TIMER_UPTIME</code>，即系统启动后的微秒数，而此处为了更好的展示效果，我们将实现<code>AM_TIMER_RTC</code>，实现对当前真实时间的读取。</p>
+<p>在AM的<code>timer.c</code>中我们可以看到，<code>rtc</code>共有<code>second</code>、<code>minute</code>、<code>hour</code>、<code>day</code>、<code>month</code>与<code>year</code>共6个字段，为此，我们需要在NEMU的中为这些字段分配相应的空间，但是，如果我们为每个字段都分配一个32位的空间，时钟设备的地址空间会与其它设备产生交叠，但我们又不希望修改整个地址空间映射，应该如何解决这个问题呢？</p>
+<p>我们注意到，<code>second</code>、<code>minute</code>、<code>hour</code>、<code>day</code>、<code>month</code>这些字段，它们的取值其实非常有限，以至于我们分配8位/16位的空间给它们就足够了，所以，我们通过下面这种方式，将这6个字段压缩至2个32位空间中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// rtc[2] = [(u16)year][(u16)second]
+</span></span></span><span class="line"><span class="cl"><span class="c1">// rtc[3] = [(u8)month][(u8)day][(u8)hour][(u8)minute]
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>于是我们仅需再为时钟申请8个字节的地址空间即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">init_timer</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">rtc_port_base</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="nf">new_space</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef CONFIG_HAS_PORT_IO
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="nf">add_pio_map</span> <span class="p">(</span><span class="s">&#34;rtc&#34;</span><span class="p">,</span> <span class="n">CONFIG_RTC_PORT</span><span class="p">,</span> <span class="n">rtc_port_base</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">rtc_io_handler</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#else
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="nf">add_mmio_map</span><span class="p">(</span><span class="s">&#34;rtc&#34;</span><span class="p">,</span> <span class="n">CONFIG_RTC_MMIO</span><span class="p">,</span> <span class="n">rtc_port_base</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">rtc_io_handler</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>  <span class="nf">IFNDEF</span><span class="p">(</span><span class="n">CONFIG_TARGET_AM</span><span class="p">,</span> <span class="nf">add_alarm_handle</span><span class="p">(</span><span class="n">timer_intr</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而对于这些字段的赋值，我们调用<code>time.h</code>中的<code>time()</code>函数获取当前时间，并调用<code>localtime()</code>函数将其格式化即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">rtc_io_handler</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">is_write</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">assert</span><span class="p">(</span><span class="n">offset</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">4</span> <span class="o">||</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">8</span> <span class="o">||</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">12</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_write</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">offset</span> <span class="o">==</span> <span class="mi">4</span> <span class="o">||</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">8</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">us</span> <span class="o">=</span> <span class="nf">get_time</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rtc_port_base</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">us</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rtc_port_base</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">us</span> <span class="o">&gt;&gt;</span> <span class="mi">32</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">time_t</span> <span class="n">timep</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">tm</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">time</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timep</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">p</span> <span class="o">=</span> <span class="nf">localtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timep</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// rtc register allocation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// rtc[2] = [(u16)year][(u16)second]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// rtc[3] = [(u8)month][(u8)day][(u8)hour][(u8)minute]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">rtc_port_base</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">tm_year</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span>
+</span></span><span class="line"><span class="cl">                       <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">tm_sec</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rtc_port_base</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">tm_mon</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span><span class="p">)</span>  <span class="o">|</span> 
+</span></span><span class="line"><span class="cl">                       <span class="p">(((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">tm_mday</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span>
+</span></span><span class="line"><span class="cl">                       <span class="p">(((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">tm_hour</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span>  <span class="o">|</span>
+</span></span><span class="line"><span class="cl">                       <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">tm_min</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后，我们即可在AM中的<code>timer.c</code>中实现字段的解码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">__am_timer_rtc</span><span class="p">(</span><span class="n">AM_TIMER_RTC_T</span> <span class="o">*</span><span class="n">rtc</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// rtc[2] = [(u16)year][(u16)second]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// rtc[3] = [(u8)month][(u8)day][(u8)hour][(u8)minute]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kt">uint32_t</span> <span class="n">time_cmb0</span> <span class="o">=</span> <span class="nf">inl</span><span class="p">(</span><span class="n">RTC_ADDR</span> <span class="o">+</span> <span class="mi">8</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">uint32_t</span> <span class="n">time_cmb1</span> <span class="o">=</span> <span class="nf">inl</span><span class="p">(</span><span class="n">RTC_ADDR</span> <span class="o">+</span> <span class="mi">12</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">rtc</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">time_cmb0</span> <span class="o">&amp;</span> <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="mh">0xffffu</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="n">rtc</span><span class="o">-&gt;</span><span class="n">minute</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">time_cmb1</span> <span class="o">&amp;</span> <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="mh">0xffu</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="n">rtc</span><span class="o">-&gt;</span><span class="n">hour</span>   <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)((</span><span class="n">time_cmb1</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="mh">0xffu</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="n">rtc</span><span class="o">-&gt;</span><span class="n">day</span>    <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)((</span><span class="n">time_cmb1</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="mh">0xffu</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="n">rtc</span><span class="o">-&gt;</span><span class="n">month</span>  <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)((</span><span class="n">time_cmb1</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="mh">0xffu</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="n">rtc</span><span class="o">-&gt;</span><span class="n">year</span>   <span class="o">=</span> <span class="mi">1900</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)((</span><span class="n">time_cmb0</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="mh">0xffffu</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此处，我们需要注意，<code>localtime()</code>函数解码后的<code>tm_year</code>字段是相对1900年经过的年份，<code>tm_mon</code>字段则将12个月编码为0-11。</p>
+<p>另外，我们需要解释一下为什么<code>rtc_io_handler()</code>中会存在如下语句：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_write</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">offset</span> <span class="o">==</span> <span class="mi">4</span> <span class="o">||</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">8</span><span class="p">))</span> <span class="p">{</span> <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是因为对AM而言，读取<code>AM_TIME_UPTIME</code>时：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">__am_timer_uptime</span><span class="p">(</span><span class="n">AM_TIMER_UPTIME_T</span> <span class="o">*</span><span class="n">uptime</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// read RTC register
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kt">uint32_t</span> <span class="n">time_msb</span> <span class="o">=</span> <span class="nf">inl</span><span class="p">(</span><span class="n">RTC_ADDR</span> <span class="o">+</span> <span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">uint32_t</span> <span class="n">time_lsb</span> <span class="o">=</span> <span class="nf">inl</span><span class="p">(</span><span class="n">RTC_ADDR</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// convert to uptime
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">uptime</span><span class="o">-&gt;</span><span class="n">us</span> <span class="o">=</span> <span class="p">(((</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time_msb</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">32</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">time_lsb</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们会分别对该时间的高32位与低32位进行读取，而我们只希望<code>rtc_io_handler()</code>函数中的<code>us</code>在读取高32位（即<code>offset</code>为4）时进行更新，因为如果<code>us</code>在两次读取中均进行更新，假设读取高32位时<code>us</code>对应取值为<code>{32'h0, 32'hffffffff}</code>，而读取低32位时<code>us</code>对应取值为<code>{32'h1, 32'h00001234}</code>，那么我们最终读取的结果就是<code>{32'h0, 32'h00001234}</code>，这显然与真实值存在较大的误差。因此，我们让<code>us</code>只在第一次读取时（此处为读取高32位）进行更新，以保证读取结果的正确性。</p>
+<p>对于<code>AM_TIME_RTC</code>而言，我们也做了类似的处理，只不过因为<code>AM_TIME_RTC</code>的最小时间单位为秒，所以发生上述错误的几率小了许多。</p>
+<h2 id="功能更强大的sprintf函数">功能更强大的<code>sprintf()</code>函数
+</h2><p>在运行设备测试时，我们需要在klib中实现功能更强大的I/O输出函数，为此，我们需要对先前实现的<code>sprintf()</code>函数进行优化，优化主要集中在两方面：</p>
+<ul>
+<li>首先，需要完整实现<code>stdio.c</code>中的函数，这涉及到对当前已实现函数的重构与复用。</li>
+<li>其次，需要增加打印函数的功能，其需要识别前导0与固定位宽的标识符，如<code>%02d</code>，因为在设备测试中会使用到该功能。</li>
+</ul>
+<h3 id="stdioc中库函数的完整实现"><code>stdio.c</code>中库函数的完整实现
+</h3><p>在原来的<code>stdio.c</code>实现中，我们直接对<code>sprintf()</code>函数进行实现，而没有实现剩余的函数，但是通过探究发现，将函数的功能主体集中于<code>sprintf()</code>函数中实现并不是最优选项，为追求函数实现的可复用性，一个较好的实现策略如下：</p>
+<p>首先，实现<code>vsprintf()</code>函数，该函数会接收一个<code>va_list</code>变量来对输入中的标识符进行例化。</p>
+<p>其次，基于<code>vsprintf()</code>函数，实现<code>sprintf()</code>函数与<code>printf()</code>函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">printf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">STR_MAX</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// va-args initialization
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">va_list</span> <span class="n">args</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">va_start</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">fmt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nf">vsprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nf">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// end of args extraction
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// put string to terminal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">putstr</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">sprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// va-args initialization
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">va_list</span> <span class="n">args</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">va_start</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">fmt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nf">vsprintf</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nf">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// end of args extraction
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">out</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时，我们只需要将<code>sprintf()</code>函数的可变输入创建为一个<code>va_list</code>变量，随后调用<code>vsprintf()</code>函数即可。<code>printf()</code>函数也同理，我们只需利用<code>vsprintf()</code>函数将输出暂存于一个字符数组中，随后使用<code>putstr()</code>宏将其输出即可。</p>
+<p>最后，基于<code>vsprintf()</code>函数，实现<code>vsnprintf()</code>函数，并基于<code>vsnprintf()</code>函数实现<code>snprintf()</code>函数即可，复用方法类似：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">vsnprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="n">va_list</span> <span class="n">ap</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">STR_MAX</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nf">vsprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">ap</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="nf">strncpy</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span> <span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span> <span class="c1">// ensure there is an EOL
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">snprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// va-args initialization
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">va_list</span> <span class="n">args</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">va_start</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">fmt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="nf">vsnprintf</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// end of args extraction
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="打印函数的功能扩展">打印函数的功能扩展
+</h3><p>为了增加对前导0与固定位宽的识别功能，我们需要扩展<code>stdio.c</code>中存储标识符的结构体<code>SP_Token</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">sp_token</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">len</span><span class="p">;</span> <span class="c1">// limited string length (unlimited len = -1)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kt">bool</span> <span class="n">pad</span><span class="p">;</span> <span class="c1">// 1: &#39;0&#39;; 0: &#39; &#39;; (only used in number)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="n">SP_Token</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里为其增加了2个字段，<code>len</code>代表该标识符对应实际字符串的长度（不限制长度则取-1），<code>pad</code>则代表使用空格还是0进行前导填充。</p>
+<p>随后，在<code>sp_make_token()</code>函数中，我们需要在识别到<code>%</code>字符后，补充对前导0与固定位宽的识别逻辑，随后再进行后续识别：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">bool</span> <span class="nf">sp_make_token</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* Try all types one by one */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;%&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// basic char
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_CHAR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">len</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">pad</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>      
+</span></span><span class="line"><span class="cl">      <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// set initial state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">len</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">pad</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %0, zero filled number
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">pad</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="c1">// limited length data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">((</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">&gt;</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="sc">&#39;9&#39;</span><span class="p">))</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">str_len</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">);</span> <span class="c1">// MSB
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="p">((</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="sc">&#39;9&#39;</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">str_len</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">str_len</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">len</span> <span class="o">=</span> <span class="n">str_len</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="cm">/* ... */</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// EOL token (to make sure)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_CHAR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后，在将标识符对应输入参数映射为字符串后，我们需要额外依据标识符结构体中的<code>len</code>与<code>pad</code>字段为其添加前导填充：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">cutstr</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">re</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">pad</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">str_len</span> <span class="o">=</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">re</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">((</span><span class="n">len</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;=</span> <span class="n">str_len</span><span class="p">))</span> <span class="k">return</span> <span class="n">re</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">memset</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="p">(</span><span class="n">pad</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="sc">&#39; &#39;</span><span class="p">),</span> <span class="n">len</span> <span class="o">-</span> <span class="n">str_len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">buf</span><span class="p">[</span><span class="n">len</span> <span class="o">-</span> <span class="n">str_len</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">((</span><span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">pad</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// negative number with &#39;0&#39; filling
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">strcat</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">re</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="nf">strcpy</span><span class="p">(</span><span class="n">re</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">strcat</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">re</span><span class="p">);</span> <span class="nf">strcpy</span><span class="p">(</span><span class="n">re</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">re</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里需要注意，对于负数，其前导填充如果是空格，则填充在负号前；如果是0，则填充在负号与数字之间。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/clang/">Clang</a>
+        
+            <a href="/tags/stdio/">Stdio</a>
+        
+            <a href="/tags/am/">AM</a>
+        
+            <a href="/tags/device/">Device</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Oct 05, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/sprintf/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">功能更强大的sprintf()函数</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/rt-thread/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">RT-Thread的上下文</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/am-makefile-2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">AM Makefile解读（2）</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

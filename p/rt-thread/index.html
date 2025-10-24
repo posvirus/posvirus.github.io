@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：RT-Thread的上下文">
+<title>RT-Thread的上下文</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/rt-thread/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="RT-Thread的上下文">
+<meta property='og:description' content="YSYX学习笔记：RT-Thread的上下文">
+<meta property='og:url' content='https://posvirus.github.io/p/rt-thread/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='AM' /><meta property='article:tag' content='Clang' /><meta property='article:published_time' content='2025-10-21T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-10-21T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="RT-Thread的上下文">
+<meta name="twitter:description" content="YSYX学习笔记：RT-Thread的上下文">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#rt-thread上下文创建">RT-Thread上下文创建</a></li>
+    <li><a href="#rt-thread的上下文切换">RT-Thread的上下文切换</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/rt-thread/">RT-Thread的上下文</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：RT-Thread的上下文
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Oct 21, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 6 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="rt-thread上下文创建">RT-Thread上下文创建
+</h2><p>首先，我们考虑RT-Thread中的上下文创建函数<code>rt_hw_stack_init()</code>的实现，观察其参数列表：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">rt_uint8_t</span> <span class="o">*</span><span class="nf">rt_hw_stack_init</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">tentry</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">parameter</span><span class="p">,</span> <span class="kt">rt_uint8_t</span> <span class="o">*</span><span class="n">stack_addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">texit</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>该函数接收一个栈底指针<code>stack_addr</code>用于构建上下文，同时保证该上下文入口为<code>tentry</code>，参数为<code>parameter</code>，并返回这个上下文结构的指针。此外，若上下文对应的内核线程从<code>tentry</code>返回，则调用<code>texit</code>。</p>
+<p>这里首先需要解释，为什么在AM中，我们不允许内核线程从<code>tentry</code>返回：这主要是因为，入口为<code>tentry</code>的上下文是人工构造的，而在AM中构造上下文的功能函数<code>kcontext()</code>中，我们并没有为该入口构造相应的返回地址：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">Context</span> <span class="o">*</span><span class="nf">kcontext</span><span class="p">(</span><span class="n">Area</span> <span class="n">kstack</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">entry</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="p">),</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// instantiate a context
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">Context</span> <span class="o">*</span><span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="n">Context</span> <span class="o">*</span><span class="p">)(</span><span class="n">kstack</span><span class="p">.</span><span class="n">end</span> <span class="o">-</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Context</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// create entry
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">ret</span><span class="o">-&gt;</span><span class="n">mepc</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">entry</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// reset mstatus
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">ret</span><span class="o">-&gt;</span><span class="n">mstatus</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="mh">0x1800</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// function argument
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">ret</span><span class="o">-&gt;</span><span class="n">gpr</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// other GPR settings
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">ret</span><span class="o">-&gt;</span><span class="n">gpr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="mi">0</span><span class="p">;</span>   <span class="c1">// $0  register
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">ret</span><span class="o">-&gt;</span><span class="n">gpr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">ret</span><span class="p">;</span> <span class="c1">// $sp register
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// return context pointer
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>所以线程一旦从<code>tentry</code>返回，将会跳转至非法的地址，从而导致程序非法运行。</p>
+<p>回到<code>rt_hw_stack_init()</code>函数，首先，我们需要对输入的<code>stack_addr</code>进行对齐：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* align the incoming stack pointer */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">rt_uint8_t</span> <span class="o">*</span><span class="n">stk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">stk</span> <span class="o">=</span> <span class="n">stack_addr</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">stk</span> <span class="o">=</span> <span class="p">(</span><span class="kt">rt_uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="nf">RT_ALIGN_DOWN</span><span class="p">((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">stk</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此处我们以<code>sizeof(uintptr_t)</code>为最小单位，对该地址进行向下对齐（因为栈底在内存分布上位于高位地址），而<code>RT_ALIGN_DOWN</code>是RT-Thread内部定义的宏。</p>
+<p>随后，由于对<code>kcontext()</code>函数而言，其接收的用于构建上下文的参数只有栈空间分布<code>kstack</code>，上下文入口<code>entry</code>以及向入口传递的参数<code>arg</code>，但是RT-Thread中的还存在一个<code>texit</code>参数，这就导致，我们需要构造一个包裹函数，这里称为<code>tentry_wrapper()</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">tentry_wrapper</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">struct</span> <span class="n">wrapper_args</span> <span class="o">*</span><span class="n">stk_arg</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">wrapper_args</span> <span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// call tentry(parameter) first
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">((</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="p">))</span><span class="n">stk_arg</span><span class="o">-&gt;</span><span class="n">tentry</span><span class="p">)(</span><span class="n">stk_arg</span><span class="o">-&gt;</span><span class="n">parameter</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// if return, call texit()
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">((</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)())</span><span class="n">stk_arg</span><span class="o">-&gt;</span><span class="n">texit</span><span class="p">)();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>该包裹函数的作用是，接收一个<code>void *</code>类型的参数<code>arg</code>，该参数在函数内被强制类型转换为一个结构体类型<code>wrapper_args</code>，该类型包括三个字段：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">wrapper_args</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="o">*</span><span class="n">tentry</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="o">*</span><span class="n">texit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="o">*</span><span class="n">parameter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中<code>tentry</code>即为上下文的入口，<code>parameter</code>即为上下文入口<code>tentry</code>对应的参数，<code>texit</code>即为线程如果在<code>tentry</code>返回的话需要调用的函数，进而我们可以在<code>tentry_wrapper()</code>函数中先对<code>tentry</code>进行调用，随后对<code>texit</code>进行调用，这样一旦<code>tentry</code>返回，随后会调用<code>texit</code>进行处理。</p>
+<p>有了<code>tentry_wrapper()</code>函数，我们在创建上下文时实际上就可以通过如下形式调用<code>kcontext()</code>函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">kcontext</span><span class="p">([</span><span class="n">kstack</span><span class="p">],</span> <span class="n">tentry_wrapper</span><span class="p">,</span> <span class="p">[</span><span class="n">arg</span><span class="p">]);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以下，我们需要考虑的是<code>kcontext()</code>函数的另外两个参数应该如何设定，首先考虑<code>arg</code>参数，对于<code>tentry_wrapper()</code>函数，我们需要传递一个指向一个<code>wrapper_args</code>结构体的指针，这里就涉及到该结构体如何创建及存储的问题，不妨先在<code>rt_hw_stack_init()</code>函数中先初始化一个<code>wrapper_args</code>结构体：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* allocate function arguments */</span>
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">wrapper_args</span> <span class="n">tmp_args</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tmp_args</span><span class="p">.</span><span class="n">tentry</span> <span class="o">=</span> <span class="n">tentry</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tmp_args</span><span class="p">.</span><span class="n">texit</span> <span class="o">=</span> <span class="n">texit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tmp_args</span><span class="p">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="n">parameter</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>随后，我们需要确定该结构体存储的位置，首先，这个结构体肯定不能以临时变量进行存储，因为<code>rt_hw_stack_init()</code>函数实际上起到一个初始化上下文的功能，所以该函数中的临时变量是无法在程序的整个生命周期中都存在的。因此，一个合适的方法，就是将这个结构体复制到该上下文所在的栈上，此处可以直接先从栈底开始分配空间：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* re-allocate the stack pointer */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">size_t</span> <span class="n">arg_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">wrapper_args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">stk</span> <span class="o">=</span> <span class="n">stk</span> <span class="o">-</span> <span class="n">arg_size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Copy wrapper arguments to stack */</span>
+</span></span><span class="line"><span class="cl"><span class="nf">memcpy</span><span class="p">(</span><span class="n">stk</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tmp_args</span><span class="p">,</span> <span class="n">arg_size</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时，我们将<code>stk</code>下移<code>sizeof(struct wrapper_args)</code>，并调用<code>memcpy()</code>函数将结构体复制到这一段空间中，此时<code>stk</code>一方面指向的就是栈上存储的结构体，另一方面<code>stk</code>也可以作为<code>kstack</code>参数对应栈空间的栈底，以使<code>kcontext()</code>函数可以以<code>stk</code>为栈底构建上下文，于是<code>rt_hw_stack_init()</code>函数的剩余部分可以作如下实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* create stack area */</span>
+</span></span><span class="line"><span class="cl"><span class="n">Area</span> <span class="n">stack_area</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">stk</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* return context pointer */</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="p">(</span><span class="kt">rt_uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="nf">kcontext</span><span class="p">(</span><span class="n">stack_area</span><span class="p">,</span> <span class="n">tentry_wrapper</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">stk</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="rt-thread的上下文切换">RT-Thread的上下文切换
+</h2><p>为实现RT-Thread的上下文切换，我们需要实现3个函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">rt_hw_context_switch</span><span class="p">(</span><span class="kt">rt_ubase_t</span> <span class="n">from</span><span class="p">,</span> <span class="kt">rt_ubase_t</span> <span class="n">to</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先，是<code>rt_hw_context_switch()</code>函数，其包含<code>from</code>与<code>to</code>两个参数，其都是指向上下文指针变量的指针（二级指针）。 它用于切换到<code>to</code>指向的上下文指针变量所指向的上下文，并将当前上下文的指针写入<code>from</code>指向的上下文指针变量中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">rt_hw_context_switch_to</span><span class="p">(</span><span class="kt">rt_ubase_t</span> <span class="n">to</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其次，是<code>rt_hw_context_switch_to()</code>函数，它只包含<code>to</code>一个参数，仅实现切换到<code>to</code>指向的上下文指针变量所指向的上下文这一功能，那么，该函数显然可以复用<code>rt_hw_context_switch()</code>实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">rt_hw_context_switch_to</span><span class="p">(</span><span class="kt">rt_ubase_t</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// reuse function
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">rt_hw_context_switch</span><span class="p">((</span><span class="kt">rt_ubase_t</span><span class="p">)</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">to</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后，我们需要实现RT-Thread对应的事件处理回调函数<code>ev_handler()</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">Context</span><span class="o">*</span> <span class="nf">ev_handler</span><span class="p">(</span><span class="n">Event</span> <span class="n">e</span><span class="p">,</span> <span class="n">Context</span> <span class="o">*</span><span class="n">c</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过上述分析，我们其实仅需实现<code>rt_hw_context_switch()</code>函数与<code>ev_handler()</code>函数即可，首先考查前者的实现：按PA讲义的说法，为了进行上下文切换, 我们可以通过<code>yield()</code>触发一次自陷, 在事件处理回调函数<code>ev_handler()</code>中识别出代处理事件后, 再处理<code>to</code>和<code>from</code>，为此，我们需要将<code>to</code>与<code>from</code>参数传递至<code>ev_handler()</code>。</p>
+<p>由于无法通过函数参数传递的方式传递<code>to</code>与<code>from</code>，同时也不适合直接通过全局变量的方式传递（多线程时存在风险），因此，我们考虑使用进程控制块（PCB, process control block）存储<code>to</code>与<code>from</code>，因为这一数据结构为各线程所独有，不会存在多线程的冲突。在RT-Thread中，PCB对应的结构体名称为<code>rt_thread_t</code>，可通过<code>rt_thread_self()</code>获取当前线程对应的PCB。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">rt_thread_t</span> <span class="n">current</span> <span class="o">=</span> <span class="nf">rt_thread_self</span><span class="p">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时，<code>rt_thread_t</code>结构体中存在<code>user_data</code>字段，用于存储当前线程的私有用户数据，我们可以将<code>to</code>与<code>from</code>存储于该字段中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* create private user data copy */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">rt_ubase_t</span> <span class="n">temp_user_data</span> <span class="o">=</span> <span class="n">current</span><span class="o">-&gt;</span><span class="n">user_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* passing arguments */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">rt_ubase_t</span> <span class="n">param</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">to</span><span class="p">;</span> <span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">from</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">current</span><span class="o">-&gt;</span><span class="n">user_data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">rt_ubase_t</span><span class="p">)</span><span class="n">param</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此处，我们还需要另外定义一个临时变量<code>temp_user_data</code>，作为当前线程原始<code>user_data</code>字段的备份。随后，我们便可调用<code>yield()</code>函数实现上下文切换，当切换回当前上下文时（即<code>yield()</code>返回时），再将临时变量内的<code>user_data</code>字段恢复：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* recover user data */</span>
+</span></span><span class="line"><span class="cl"><span class="n">current</span><span class="o">-&gt;</span><span class="n">user_data</span> <span class="o">=</span> <span class="n">temp_user_data</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>随后，考虑事件处理回调函数<code>ev_handler()</code>的实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">Context</span><span class="o">*</span> <span class="nf">ev_handler</span><span class="p">(</span><span class="n">Event</span> <span class="n">e</span><span class="p">,</span> <span class="n">Context</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">rt_thread_t</span> <span class="n">current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">rt_ubase_t</span><span class="o">*</span> <span class="n">param</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">EVENT_YIELD</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="n">current</span> <span class="o">=</span> <span class="nf">rt_thread_self</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="n">param</span> <span class="o">=</span> <span class="p">(</span><span class="kt">rt_ubase_t</span><span class="o">*</span><span class="p">)</span><span class="n">current</span><span class="o">-&gt;</span><span class="n">user_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">rt_ubase_t</span> <span class="n">to</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">      <span class="kt">rt_ubase_t</span> <span class="n">from</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="n">from</span><span class="p">)</span> <span class="o">*</span><span class="p">((</span><span class="n">Context</span> <span class="o">**</span><span class="p">)</span><span class="n">from</span><span class="p">)</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">c</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">Context</span> <span class="o">**</span><span class="p">)</span><span class="n">to</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">EVENT_IRQ_TIMER</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span> <span class="c1">// printf(&#34;Unhandled event ID = %d\n&#34;, e.event);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>阅读AM CTE的实现可知，事件处理回调函数是在上下文真正发生切换之前被调用的，因此，我们仍可通过<code>rt_thread_self()</code>函数获取当前的PCB，并提取<code>from</code>与<code>to</code>字段。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/rt-thread/">RT-Thread</a>
+        
+            <a href="/tags/am/">AM</a>
+        
+            <a href="/tags/clang/">Clang</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Oct 21, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/rtc-and-sprintf/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">设备实时时钟与更强大的sprintf()函数</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/sprintf/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">功能更强大的sprintf()函数</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/am-makefile-2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">AM Makefile解读（2）</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

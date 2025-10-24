@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：NPC实现时的注意事项（1）">
+<title>NPC实现时的注意事项（1）</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/npc-note1/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="NPC实现时的注意事项（1）">
+<meta property='og:description' content="YSYX学习笔记：NPC实现时的注意事项（1）">
+<meta property='og:url' content='https://posvirus.github.io/p/npc-note1/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='NPC' /><meta property='article:tag' content='NEMU' /><meta property='article:published_time' content='2025-09-25T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-09-25T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="NPC实现时的注意事项（1）">
+<meta name="twitter:description" content="YSYX学习笔记：NPC实现时的注意事项（1）">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#npc指令的反汇编">NPC指令的反汇编</a></li>
+    <li><a href="#npc中sdb命令行的实现">NPC中sdb命令行的实现</a></li>
+    <li><a href="#sdb扫描npc寄存器的实现">sdb扫描NPC寄存器的实现</a></li>
+    <li><a href="#verilator的优化输出">Verilator的优化输出</a></li>
+    <li><a href="#sdb退出指令的优化">sdb退出指令的优化</a></li>
+    <li><a href="#npc默认程序的日志输出">NPC默认程序的日志输出</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/npc-note1/">NPC实现时的注意事项（1）</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：NPC实现时的注意事项（1）
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 25, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 4 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="npc指令的反汇编">NPC指令的反汇编
+</h2><p>当直接在NPC中使用<a class="link" href="https://github.com/capstone-engine/capstone/"  target="_blank" rel="noopener"
+    >capstone项目</a>提供的反汇编功能，并将NEMU中的<code>disasm.c</code>复制到NPC中，会出现报错。具体而言，我们需要对<code>disasm.c</code>中的几个函数指针进行显示强制类型转换：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">cs_err</span> <span class="p">(</span><span class="o">*</span><span class="n">cs_open_dl</span><span class="p">)(</span><span class="n">cs_arch</span> <span class="n">arch</span><span class="p">,</span> <span class="n">cs_mode</span> <span class="n">mode</span><span class="p">,</span> <span class="n">csh</span> <span class="o">*</span><span class="n">handle</span><span class="p">)</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">cs_open_dl</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">cs_err</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">cs_arch</span><span class="p">,</span> <span class="n">cs_mode</span><span class="p">,</span> <span class="n">csh</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handle</span><span class="p">,</span> <span class="s">&#34;cs_open&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="n">assert</span><span class="p">(</span><span class="n">cs_open_dl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cs_disasm_dl</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">size_t</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">csh</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint8_t</span><span class="o">*</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="kt">uint64_t</span><span class="p">,</span> <span class="n">size_t</span><span class="p">,</span> <span class="n">cs_insn</span><span class="o">**</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handle</span><span class="p">,</span> <span class="s">&#34;cs_disasm&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="n">assert</span><span class="p">(</span><span class="n">cs_disasm_dl</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cs_free_dl</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">cs_insn</span><span class="o">*</span><span class="p">,</span> <span class="n">size_t</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dl_handle</span><span class="p">,</span> <span class="s">&#34;cs_free&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="n">assert</span><span class="p">(</span><span class="n">cs_free_dl</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="npc中sdb命令行的实现">NPC中sdb命令行的实现
+</h2><p>sdb命令行需要调用<code>readline.h</code>库实现，在C++中，由于readline是一个动态库，编译的时候需要加上<code>-lreadline</code>，不然会找不到相关的函数。在Verilator中，我们可以直接使用<code>-LDFLAG</code>加载这一动态库。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c"># load readline library (used for sdb)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nv">LDFLAGS_VR</span> <span class="o">+=</span> -lreadline
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">run</span><span class="o">:</span> <span class="k">$(</span><span class="nv">VERILOG_INPUT</span><span class="k">)</span> <span class="k">$(</span><span class="nv">VRC_INPUT</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">	@rm -rf input.vc
+</span></span><span class="line"><span class="cl">	@echo <span class="s2">&#34;</span><span class="k">$(</span>INPUT_FLAG<span class="k">)</span><span class="s2">&#34;</span> <span class="p">|</span> cat &gt; input.vc
+</span></span><span class="line"><span class="cl">	@echo
+</span></span><span class="line"><span class="cl">	@echo <span class="s2">&#34;---------- VERILATE ----------&#34;</span>
+</span></span><span class="line"><span class="cl">	@rm -rf <span class="k">$(</span>OBJ_PATH<span class="k">)</span>/*
+</span></span><span class="line"><span class="cl">	@@<span class="k">$(</span>VERILATOR<span class="k">)</span> <span class="k">$(</span>VERILATOR_FLAGS<span class="k">)</span> --top-module <span class="k">$(</span>VERILOG_TOP<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">$(</span>addprefix -CFLAGS , <span class="k">$(</span>CXXFLAGS_VR<span class="k">))</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">$(</span>addprefix -LDFLAGS , <span class="k">$(</span>LDFLAGS_VR<span class="k">))</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		--Mdir <span class="k">$(</span>OBJ_PATH<span class="k">)</span> $^
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="sdb扫描npc寄存器的实现">sdb扫描NPC寄存器的实现
+</h2><p>我们考虑通过DPI-C实现，请注意DPI-C实际上是双向的，即：我可以在RTL代码中调用C++中实现的函数（<code>import</code>），也可以在C++代码中调用RTL代码中定义的任务（<code>export</code>）。在sdb中实现扫描NPC寄存器显然属于后者，即我们需要在RTL代码中定义一个读取寄存器的任务，再在C++代码中调用该任务：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="n">export</span> <span class="s">&#34;DPI-C&#34;</span> <span class="k">task</span> <span class="n">gpr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">task</span> <span class="n">gpr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">input</span>  <span class="kt">longint</span> <span class="n">addr</span><span class="p">;</span> <span class="c1">// 64-bit space
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">output</span> <span class="kt">longint</span> <span class="n">data</span><span class="p">;</span> <span class="c1">// 64-bit space
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">addr</span> <span class="o">==</span> <span class="o">-</span><span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="p">{{(</span><span class="mh">64</span><span class="o">-</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="n">cur_pc</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="p">{{(</span><span class="mh">64</span><span class="o">-</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="n">u_ysyx_25070184_IDU</span><span class="p">.</span><span class="n">u_ysyx_25070184_RegisterFile</span><span class="p">.</span><span class="n">rf</span><span class="p">[</span><span class="n">addr</span><span class="p">[</span><span class="no">`ysyx_25070184_REG_ADDR_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]]};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">endtask</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在实现该任务时，有以下几点需要注意：</p>
+<ol>
+<li>这里我们将任务名定义成<code>gpr</code>，这样我们就可以在C++代码中通过<code>gpr(N)</code>读取第<code>N</code>个寄存器的值，保持其与NEMU代码中的一致性。</li>
+<li>我们将任务定义在顶层模块中，这样可以同时读取PC寄存器与通用寄存器。</li>
+<li>为防止RTL代码与C++代码中复杂的类型转换，我们统一将<code>addr</code>与<code>data</code>类型定义为<code>longint</code>，这样可以直接映射至C++中的<code>long long</code>类型，且对32/64位的CPU均不会产生溢出。</li>
+</ol>
+<h2 id="verilator的优化输出">Verilator的优化输出
+</h2><p>Verilator编译的原始输出相对比较冗杂，难以在其中提取有效信息，我希望可以通过修改Makefile将其输出优化为NEMU的规整编译输出。但是NEMU是基于多个Makefile的嵌套，实现对项目的逐文件编译，在NPC中较难实现这一点（一般我们是将需要编译的文件一次性在Makefile中嵌入Verilator编译指令中）。</p>
+<p>于是，我这里采用了一种取巧的方法，直接将Verilator的原始编译输出重定向并依据其输出格式进行信息提取，从而实现规整输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">@</span><span class="k">$(</span><span class="nv">VERILATOR</span><span class="k">)</span> <span class="k">$(</span><span class="nv">VERILATOR_FLAGS</span><span class="k">)</span> <span class="err">--top-module</span> <span class="k">$(</span><span class="nv">VERILOG_TOP</span><span class="k">)</span> <span class="err">\</span>
+</span></span><span class="line"><span class="cl">		<span class="k">$(</span><span class="nv">addprefix</span> -<span class="nv">CFLAGS</span> , <span class="k">$(</span><span class="nv">CXXFLAGS_VR</span><span class="k">))</span> <span class="err">\</span>
+</span></span><span class="line"><span class="cl">		<span class="err">--Mdir</span> <span class="k">$(</span><span class="nv">OBJ_PATH</span><span class="k">)</span> <span class="k">$(</span><span class="nv">VERILATOR_INPUT</span><span class="k">)</span> <span class="err">$^</span> <span class="err">2&gt;&amp;1</span> <span class="err">|</span> <span class="err">\</span>
+</span></span><span class="line"><span class="cl">		<span class="err">while</span> <span class="nv">IFS</span><span class="o">=</span> <span class="nb">read</span> -r line<span class="p">;</span> <span class="k">do</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">if</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span> <span class="o">==</span> *<span class="s2">&#34;g++&#34;</span>* <span class="o">]]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="nv">last_word</span><span class="o">=</span><span class="nv">$$</span><span class="o">(</span><span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $$NF}&#39;</span><span class="o">)</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">if</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">last_word&#34;</span> <span class="o">==</span> *<span class="s2">&#34;.cpp&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>				<span class="nb">echo</span> <span class="s2">&#34;[CXX] </span><span class="nv">$$</span><span class="s2">last_word&#34;</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">else</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>				<span class="nb">echo</span> <span class="s2">&#34;[BUILD] </span><span class="nv">$$</span><span class="s2">last_word&#34;</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">fi</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">elif</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span> <span class="o">==</span> *<span class="s2">&#34;python3&#34;</span>* <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span> <span class="o">==</span> *<span class="s2">&#34;.cpp&#34;</span>* <span class="o">]]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span> <span class="p">|</span> grep -o <span class="s1">&#39;[^ ]*\.cpp&#39;</span> <span class="p">|</span> <span class="k">while</span> <span class="nb">read</span> -r cpp_file<span class="p">;</span> <span class="k">do</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>				<span class="nb">echo</span> <span class="s2">&#34;[PYTHON] verilator include: </span><span class="nv">$$</span><span class="s2">cpp_file&#34;</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">done</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">elif</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span> <span class="o">==</span> *<span class="s2">&#34;echo&#34;</span>* <span class="o">]]</span> <span class="o">||</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span> <span class="o">==</span> *<span class="s2">&#34;rm&#34;</span>* <span class="o">]]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="k">continue</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">else</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>			<span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">line&#34;</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">fi</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="sdb退出指令的优化">sdb退出指令的优化
+</h2><p>在实现NPC时，发现NEMU sdb中的退出指令（q）有一个bug，原始的<code>cmd_q()</code>函数通常实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">cmd_q</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">nemu_state</span><span class="p">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NEMU_QUIT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这会导致在运行<code>am-kernels</code>中的测试程序时，如果没有使用批处理模式，且程序最终<code>HIT BAD TRAP</code>，此时直接使用退出指令退出，NEMU的状态会被重置为<code>NEMU_QUIT</code>，导致最后<code>is_exit_status_bad()</code>函数的返回值仍为<code>0</code>，这使得程序虽然测试失败，但最终仍会返回<code>PASS</code>的结果。</p>
+<p>为此，我们需要额外对运行退出指令时NEMU的状态进行判断，如果程序非正常退出，则保持程序当前的状态：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">cmd_q</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// if nemu hits bad trap, hold state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">((</span><span class="n">nemu_state</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">NEMU_ABORT</span><span class="p">)</span> <span class="o">||</span> 
+</span></span><span class="line"><span class="cl">      <span class="p">((</span><span class="n">nemu_state</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">NEMU_END</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">nemu_state</span><span class="p">.</span><span class="n">halt_ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// do nothing
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nemu_state</span><span class="p">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NEMU_QUIT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里其实还有另外一个问题，就是如果在程序运行过程中退出，是否需要保留当前NEMU的状态？此处我们暂时认为无需保留，即NEMU的状态会被重置为<code>NEMU_QUIT</code>，程序测试会返回<code>PASS</code>的结果。</p>
+<h2 id="npc默认程序的日志输出">NPC默认程序的日志输出
+</h2><p>在NPC中直接运行默认程序，会发现每条日志输出都会在命令行中重复输出两次，这主要是因为在<code>init_log()</code>函数中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">init_log</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">log_file</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">log_fp</span> <span class="o">=</span> <span class="n">stdout</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">log_file</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FILE</span> <span class="o">*</span><span class="n">fp</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="s">&#34;w&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Assert</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s">&#34;Can not open &#39;%s&#39;&#34;</span><span class="p">,</span> <span class="n">log_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">log_fp</span> <span class="o">=</span> <span class="n">fp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Log</span><span class="p">(</span><span class="s">&#34;Log is written to %s&#34;</span><span class="p">,</span> <span class="n">log_file</span> <span class="o">?</span> <span class="nl">log_file</span> <span class="p">:</span> <span class="s">&#34;stdout&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>log_fp</code>被初始化为<code>stdout</code>，这使得<code>log_write()</code>在调用<code>fprintf()</code>函数时，也会直接将日志输出至命令行中。</p>
+<p>为解决这一点，我们只需在Makfile中加入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">override</span> <span class="nv">ARGS</span> <span class="o">?=</span> --log<span class="o">=</span><span class="k">$(</span>BUILD_PATH<span class="k">)</span>/npc-log.txt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使得运行NPC默认程序时的日志会输出至构建目录的<code>npc-log.txt</code>中即可。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/npc/">NPC</a>
+        
+            <a href="/tags/nemu/">NEMU</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Sep 25, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/npc-note2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NPC实现时的注意事项（2）</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/nemu-run-nemu/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用RV32E架构的NEMU运行NEMU</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/difftest-gpr/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DiffTest中的寄存器一致性</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

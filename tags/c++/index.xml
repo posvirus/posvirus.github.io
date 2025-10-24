@@ -1,21 +1,76 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>C&#43;&#43; on </title>
-    <link>https://posvirus.github.io/tags/c&#43;&#43;/</link>
-    <description>Recent content in C&#43;&#43; on </description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <managingEditor>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</managingEditor>
-    <webMaster>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</webMaster>
-    <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://posvirus.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>浅析Verilator的wrapper文件写法</title>
-      <link>https://posvirus.github.io/post/ysyx-verilator/</link>
-      <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate><author>chenwy24@mails.tsinghua.edu.cn (Posvirus&#39; Blog)</author>
-      <guid>https://posvirus.github.io/post/ysyx-verilator/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Created by posvirus, July 22nd, 2025&lt;/strong&gt;&lt;/p&gt;</description>
-    </item>
-  </channel>
+    <channel>
+        <title>C&#43;&#43; on Posvirus的博客</title>
+        <link>https://posvirus.github.io/tags/c&#43;&#43;/</link>
+        <description>Recent content in C&#43;&#43; on Posvirus的博客</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Chen Wenyao</copyright>
+        <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>浅析Verilator的wrapper文件写法</title>
+        <link>https://posvirus.github.io/p/verilator/</link>
+        <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/p/verilator/</guid>
+        <description>&lt;p&gt;在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并&lt;code&gt;eval()&lt;/code&gt;，而在传统RTL代码编写的Testbench中，仿真步长通常是通过&lt;code&gt;timescale&lt;/code&gt;声明的，EDA会识别并自动设置仿真步长。&lt;/p&gt;
+&lt;p&gt;这种原理上的差异会造成Verilator与传统EDA在仿真时存在两方面的区别：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;性能上的差异：&lt;/strong&gt; Verilator的仿真原理其实可概括为“当用户需要时，才对某个时间点采样与&lt;code&gt;eval()&lt;/code&gt;”，而传统EDA的仿真原理则可简单理解为“定步长对每个时间点都进行采样与&lt;code&gt;eval()&lt;/code&gt;“。因此，Verilator相对而言可以较敏捷地完成仿真，因为在仿真过程中，其实并没有对所有时间点均进行采样与&lt;code&gt;eval()&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;波形质量上的差异：&lt;/strong&gt; 传统EDA的定步长仿真使得其仿真获得的波形具有相当高的可信度，基本可以与实测波形等同。但Verilator的波形质量高度依赖于wrapper文件的写法，一个低质量或写法错误的wrapper文件完全有可能生成与实际情况完全不同的波形，举一个简单的例子，假设我们一直仅对模块进行激励而不调用&lt;code&gt;eval()&lt;/code&gt;，那么波形不会有任何有效信息，更具体一些，如果我们改变某个端口的激励值而未及时进行&lt;code&gt;eval()&lt;/code&gt;，可能导致某个信号值在波形中被错误地延迟一个或多个时钟周期。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，有必要探究有效的wrapper文件写法，因为当我们需要通过波形对模块进行debug时，我们自然不希望最后发现是wrapper文件的写法导致生成不符合预期的波形。&lt;/p&gt;
+&lt;p&gt;首先，我们需要明确，在wrapper文件中，其主要实现了两类操作，第一是&lt;strong&gt;实现激励信号的变化并重新对被测模块进行&lt;code&gt;eval()&lt;/code&gt;&lt;/strong&gt;，第二则是&lt;strong&gt;实现波形中时间的推移&lt;/strong&gt;，为此，我们给出一个模式化的wrapper文件写法：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define Vtop Vysyx_25070184_top &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// nickname
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;#define CLK_NAME clk &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// clock name
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;#define CLK_HALF_PERIOD 5 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// clock period / 2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在文件开头，我们实现了几个宏定义，将被测顶层模块名统一为&lt;code&gt;top&lt;/code&gt;，将时钟名称统一为&lt;code&gt;CLK_NAME&lt;/code&gt;，并定义仿真时的半时钟周期长度&lt;code&gt;CLK_HALF_PERIOD&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define EDGE_TRG_EVENT(top, event) do { top-&amp;gt;CLK_NAME = !top-&amp;gt;CLK_NAME; top-&amp;gt;eval(); event; top-&amp;gt;eval(); } while (0)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define EDGE_TRG(top) EDGE_TRG_EVENT(top, )
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其次，我们实现了另外两个宏定义，用于实现激励信号的变化，&lt;code&gt;EDGE_TRG_EVENT&lt;/code&gt;宏用于实现一个被时钟边沿驱动的事件&lt;code&gt;event&lt;/code&gt;，其主要会进行如下两个操作：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;翻转当前时钟取值，进行&lt;code&gt;eval()&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;执行事件&lt;code&gt;event&lt;/code&gt;，再次进行&lt;code&gt;eval()&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这个宏定义其实相当于传统RTL实现的Testbench中的&lt;code&gt;@(posedge/negedge clk) event;&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;另外一个宏定义&lt;code&gt;EDGE_TRG&lt;/code&gt;则相当于仅对时钟进行翻转并&lt;code&gt;eval()&lt;/code&gt;，而不存在其他事件的执行。&lt;/p&gt;
+&lt;p&gt;最后，我们定义另外一个函数&lt;code&gt;half_cycle()&lt;/code&gt;实现波形时间的推移：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;half_cycle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Vtop&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;top&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;VerilatedContext&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;contextp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;VerilatedFstC&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tfp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;top&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;eval&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;contextp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;timeInc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CLK_HALF_PERIOD&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;tfp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dump&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;contextp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;该函数会在波形中产生半时钟周期的时间推移，因为在狭义的同步时序电路中，半时钟周期相当于一个最小的时间步长，在这一时间间隔内不应当有任何信号存在变化。&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
 </rss>

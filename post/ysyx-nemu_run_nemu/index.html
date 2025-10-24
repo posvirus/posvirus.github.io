@@ -1,139 +1,589 @@
-<!DOCTYPE html>
-<html lang="en-us">
+<!doctype html>
+<html
+  lang="en"
+  dir="ltr"
+  class="scroll-smooth"
+  data-default-appearance="light"
+  data-auto-appearance="true"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  
+    <meta http-equiv="content-language" content="en">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color">
 
-<head>
-    <title>
-使用RV32E架构的NEMU运行NEMU | Posvirus&#39; Blog
-</title>
+  
+  
+    <title>使用RV32E架构的NEMU运行NEMU &middot; Blowfish</title>
+    <meta name="title" content="使用RV32E架构的NEMU运行NEMU &middot; Blowfish">
+  
 
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="YSYX学习笔记：使用RV32E架构的NEMU运行NEMU">
+  
+  
+    <meta name="description" content="YSYX学习笔记：使用RV32E架构的NEMU运行NEMU">
+  
+  
+    <meta name="keywords" content="Makefile,NEMU,">
+  
+  
+  
+  <link rel="canonical" href="http://localhost:1313/post/ysyx-nemu_run_nemu/">
+  
 
-<meta name="generator" content="Hugo 0.148.1">
+  
+  
+    <meta name="author" content="Posvirus&#39; Blog">
+  
+  
+
+  
+  <meta property="og:url" content="http://localhost:1313/post/ysyx-nemu_run_nemu/">
+  <meta property="og:site_name" content="Blowfish">
+  <meta property="og:title" content="使用RV32E架构的NEMU运行NEMU">
+  <meta property="og:description" content="YSYX学习笔记：使用RV32E架构的NEMU运行NEMU">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2025-10-11T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-10-11T00:00:00+00:00">
+    <meta property="article:tag" content="Makefile">
+    <meta property="article:tag" content="NEMU">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="使用RV32E架构的NEMU运行NEMU">
+  <meta name="twitter:description" content="YSYX学习笔记：使用RV32E架构的NEMU运行NEMU">
+
+  
+  
+  
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+  
+    
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <link
+    type="text/css"
+    rel="stylesheet"
+    href="/css/main.bundle.min.eb7802c3fa6cdc17c6a435b3b33e39e40f6de4716fb67fe64caa1b893e767f7cd1eb028cbd3754eecea5abb0d52cb40ff00e0db6d493f6d4219f4af529e61a7a.css"
+    integrity="sha512-63gCw/ps3BfGpDWzsz455A9t5HFvtn/mTKobiT52f3zR6wKMvTdU7s6lq7DVLLQP8A4NttST9tQhn0r1KeYaeg==">
+
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/appearance.min.6f41174b3a05b680820fe08cadbfa5fb7a7ca347b76a0955cdc68b9d8aca1ce24f0547e138cea33bcc7904d551a90afcb1cc7f2d9fe8557075d501419046c08c.js"
+    integrity="sha512-b0EXSzoFtoCCD&#43;CMrb&#43;l&#43;3p8o0e3aglVzcaLnYrKHOJPBUfhOM6jO8x5BNVRqQr8scx/LZ/oVXB11QFBkEbAjA=="></script>
+  
+  
+  
+  
+  
+  
+    
+    <script src="/lib/zoom/zoom.min.umd.a527109b68c082a70f3697716dd72a9d5aa8b545cf800cecbbc7399f2ca6f6e0ce3e431f2062b48bbfa47c9ea42822714060bef309be073f49b9c0e30d318d7b.js" integrity="sha512-pScQm2jAgqcPNpdxbdcqnVqotUXPgAzsu8c5nyym9uDOPkMfIGK0i7&#43;kfJ6kKCJxQGC&#43;8wm&#43;Bz9JucDjDTGNew=="></script>
+  
+
+  
+  
+  
+    
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+    
+    <script
+      defer
+      type="text/javascript"
+      id="script-bundle"
+      src="/js/main.bundle.min.9df4fc14d50efcc9aa4cfc2b6f348e365f421f5ad491278f8f48c0360cf2f93f08882fda6da162d7ace8e5add57c2df4ac46bd3861306b1d4c452cd31f448d64.js"
+      integrity="sha512-nfT8FNUO/MmqTPwrbzSONl9CH1rUkSePj0jANgzy&#43;T8IiC/abaFi16zo5a3VfC30rEa9OGEwax1MRSzTH0SNZA=="
+      data-copy="Copy"
+      data-copied="Copied"></script>
+  
+
+  
+  
+
+<script src="/lib/jquery/jquery.slim.min.b0dca576e87d7eaa5850ae4e61759c065786cdb6489d68fcc82240539eebd5da522bdb4fda085ffd245808c8fe2acb2516408eb774ef26b5f6015fc6737c0ea8.js" integrity="sha512-sNylduh9fqpYUK5OYXWcBleGzbZInWj8yCJAU57r1dpSK9tP2ghf/SRYCMj&#43;KsslFkCOt3TvJrX2AV/Gc3wOqA=="></script>
 
 
-<link rel="canonical" href="https://posvirus.github.io/post/ysyx-nemu_run_nemu/" >
 
 
 
 
-<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+  
+  
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+  
+
+  
+  <script type="application/ld+json">
+  [{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "articleSection": "Posts",
+    "name": "使用RV32E架构的NEMU运行NEMU",
+    "headline": "使用RV32E架构的NEMU运行NEMU",
+    "description": "YSYX学习笔记：使用RV32E架构的NEMU运行NEMU",
+    "abstract": "\u003cp\u003e\u003cstrong\u003eCreated by posvirus, October 11st, 2025\u003c\/strong\u003e\u003c\/p\u003e",
+    "inLanguage": "en",
+    "url" : "http:\/\/localhost:1313\/post\/ysyx-nemu_run_nemu\/",
+    "author" : {
+      "@type": "Person",
+      "name": "Posvirus\u0027 Blog"
+    },
+    "copyrightYear": "2025",
+    "dateCreated": "2025-10-11T00:00:00\u002b00:00",
+    "datePublished": "2025-10-11T00:00:00\u002b00:00",
+    
+    "dateModified": "2025-10-11T00:00:00\u002b00:00",
+    
+    "keywords": ["Makefile","NEMU"],
+    
+    "mainEntityOfPage": "true",
+    "wordCount": "150"
+  }]
+  </script>
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
 </head>
 
-<body>
 
-    <div class="flexWrapper">
-        <header class="headerWrapper">
-    <div class="header">
-        <div>
-            <a class="terminal" href="/">
-                <span>posvirus@github.io ~ $</span>
-            </a>
-        </div>
-        <input class="side-menu" type="checkbox" id="side-menu">
-        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
-        <nav class="headerLinks">
-            <ul>
-                
-                <li>
-                    <a href="https://posvirus.github.io/about" title="" >
-                        ~/about</a>
-                </li>
-                
-                <li>
-                    <a href="https://posvirus.github.io/blog" title="" >
-                        ~/blog</a>
-                </li>
-                
-            </ul>
-        </nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <body class="flex flex-col h-screen m-auto leading-7 max-w-7xl px-6 sm:px-14 md:px-24 lg:px-32 text-lg bg-neutral text-neutral-900 dark:bg-neutral-800 dark:text-neutral scrollbar-thin scrollbar-track-neutral-200 scrollbar-thumb-neutral-400 dark:scrollbar-track-neutral-800 dark:scrollbar-thumb-neutral-600">
+    <div id="the-top" class="absolute flex self-center">
+      <a
+        class="px-3 py-1 text-sm -translate-y-8 rounded-b-lg bg-primary-200 focus:translate-y-0 dark:bg-neutral-600"
+        href="#main-content">
+        <span class="font-bold text-primary-600 pe-2 dark:text-primary-400">&darr;</span>
+        Skip to main content
+      </a>
     </div>
-</header>
+    
+    
+      
 
 
-        <div class="content">
-            <main class="main">
-                
-<div class="postWrapper">
-    <h1>使用RV32E架构的NEMU运行NEMU</h1>
+
+
+
+
+
+
+
+
+
+
+
+<div
+  class="main-menu flex items-center justify-between py-6 md:justify-start gap-x-3 pt-[2px] pr-2 md:pr-4 pb-[3px] pl-0">
+  
+  
+
+  <div class="flex flex-1 items-center justify-between">
+    <nav class="flex space-x-3">
+      
+        <a href="/" class="text-base font-medium">
+          Blowfish
+        </a>
+      
+    </nav>
     
-    	<p>YSYX学习笔记：使用RV32E架构的NEMU运行NEMU</p>
+  <nav class="hidden md:flex items-center gap-x-5 md:ml-12 h-12">
+    
+
+    
+
+    
+
+    
+      <button
+        id="search-button"
+        aria-label="Search"
+        class="text-base hover:text-primary-600 dark:hover:text-primary-400"
+        title="Search (/)">
+        <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+      </button>
+    
+
+    
+      <div class=" flex items-center">
+        <button
+          id="appearance-switcher"
+          aria-label="Dark mode switcher"
+          type="button"
+          class="text-base hover:text-primary-600 dark:hover:text-primary-400">
+          <div class="flex items-center justify-center dark:hidden">
+            <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>
+</span>
+          </div>
+          <div class="items-center justify-center hidden dark:flex">
+            <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>
+</span>
+          </div>
+        </button>
+      </div>
+    
+  </nav>
+
+    
+  <div class="flex md:hidden items-center gap-x-5 md:ml-12 h-12">
+    <span></span>
+
+    
+
+    
+
+    
+      <button
+        id="search-button-mobile"
+        aria-label="Search"
+        class="text-base hover:text-primary-600 dark:hover:text-primary-400"
+        title="Search (/)">
+        <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+      </button>
+    
+
+    
+      <button
+        id="appearance-switcher-mobile"
+        aria-label="Dark mode switcher"
+        type="button"
+        class="text-base hover:text-primary-600 dark:hover:text-primary-400 me-1">
+        <div class="flex items-center justify-center dark:hidden">
+          <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>
+</span>
+        </div>
+        <div class="items-center justify-center hidden dark:flex">
+          <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>
+</span>
+        </div>
+      </button>
+    
+  </div>
+
+  </div>
+  
+  <div class="-my-2 md:hidden">
+    <div id="menu-button" class="block">
+      
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+    
+    <div class="relative flex flex-col grow">
+      <main id="main-content" class="grow">
+        
+  
+  <article>
     
     
-    <section class="postMetadata">
-        <dl>
-            
-                
-<dt>tags</dt>
-<dd><span></span>
-    <a href="/tags/makefile/">#Makefile</a><span></span>
-    <a href="/tags/nemu/">#NEMU</a></dd>
-            
-            
-            
-                
-<dt>categories</dt>
-<dd><span></span>
-    <a href="/categories/ysyx/">YSYX</a></dd>
-            
-            
-                <dt>published</dt>
-                
-                <dd><time datetime="2025-10-11">October 11, 2025</time></dd>
-            
-            
-                <dt>reading time</dt>
-                <dd>1 minute</dd>
-            
-        </dl>
-    </section>
+
     
-    <div>
-        <p><strong>Created by posvirus, October 11st, 2025</strong></p>
-<h3 id="1-nemu对rv32e架构的适配">1. NEMU对RV32E架构的适配</h3>
+    <header id="single_header" class="mt-5 max-w-prose">
+      
+      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+        使用RV32E架构的NEMU运行NEMU
+      </h1>
+      <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
+        
+
+
+
+
+
+  
+  
+
+
+
+  
+
+  
+  
+  
+
+  
+  
+    
+  
+
+  
+    
+  
+
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <div class="flex flex-row flex-wrap items-center">
+    
+    
+      <time datetime="2025-10-11T00:00:00&#43;00:00">11 October 2025</time><span class="px-2 text-primary-500">&middot;</span><span>150 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">1 min</span>
+    
+
+    
+    
+  </div>
+
+  
+
+  
+  
+
+  
+  
+
+
+
+      </div>
+      
+        
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+    
+    
+<div class="flex author">
+  
+  <div class="place-self-center">
+    
+      <div class="text-[0.6rem] uppercase leading-3 text-neutral-500 dark:text-neutral-400">
+        Author
+      </div>
+      <div class="font-semibold leading-6 text-neutral-800 dark:text-neutral-300">
+        Posvirus&rsquo; Blog
+      </div>
+    
+    
+    <div class="text-2xl sm:text-lg">
+</div>
+  </div>
+</div>
+
+  
+
+  
+
+  
+    <div class="mb-5"></div>
+  
+
+      
+    </header>
+
+    
+    <section class="flex flex-col max-w-full mt-0 prose dark:prose-invert lg:flex-row">
+      
+      
+      
+      
+      
+
+
+      <div class="min-w-0 min-h-0 max-w-fit">
+        
+
+        <div class="article-content max-w-prose mb-20">
+          <p><strong>Created by posvirus, October 11st, 2025</strong></p>
+
+<h3 class="relative group">1. NEMU对RV32E架构的适配
+    <div id="1-nemu对rv32e架构的适配" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#1-nemu%e5%af%b9rv32e%e6%9e%b6%e6%9e%84%e7%9a%84%e9%80%82%e9%85%8d" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
 <p>在原始的NEMU中，如果尝试使用RV32E架构的NEMU运行NEMU，会直接报错，为修复这一问题，我们需要对NEMU做如下修改：</p>
 <p>首先，在<code>am-kernels/kernels/nemu</code>文件夹中的Makefile中，我们通过<code>build_am</code>目标构建可在AM上运行的NEMU：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">build_am</span><span style="color:#f92672">:</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span>-am_defconfig
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> ARCH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span> mainargs<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>mainargs<span style="color:#66d9ef">)</span> <span style="color:#f92672">||</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#f92672">(</span><span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> restore_config; false<span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">build_am</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>NEMU_HOME<span class="k">)</span> <span class="k">$(</span>ISA<span class="k">)</span>-am_defconfig
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>NEMU_HOME<span class="k">)</span> <span class="nv">ARCH</span><span class="o">=</span><span class="k">$(</span>ARCH<span class="k">)</span> <span class="nv">mainargs</span><span class="o">=</span><span class="k">$(</span>mainargs<span class="k">)</span> <span class="o">||</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="o">(</span><span class="k">$(</span>MAKE<span class="k">)</span> restore_config<span class="p">;</span> <span class="nb">false</span><span class="o">)</span>
 </span></span></code></pre></div><p>而这一依赖项会查找NEMU项目中的<code>$(ISA)-am_defconfig</code>文件，而目前NEMU项目的<code>configs</code>目录下缺少<code>riscv32e-am_defconfig</code>文件，需要予以补充：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>CONFIG_TARGET_AM<span style="color:#f92672">=</span>y
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># CONFIG_TRACE is not set
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>CONFIG_MSIZE<span style="color:#f92672">=</span><span style="color:#ae81ff">0x2000000</span>
-</span></span><span style="display:flex;"><span>CONFIG_DEVICE<span style="color:#f92672">=</span>y
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">CONFIG_TARGET_AM</span><span class="o">=</span><span class="n">y</span>
+</span></span><span class="line"><span class="cl"><span class="cp"># CONFIG_TRACE is not set
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="n">CONFIG_MSIZE</span><span class="o">=</span><span class="mh">0x2000000</span>
+</span></span><span class="line"><span class="cl"><span class="n">CONFIG_DEVICE</span><span class="o">=</span><span class="n">y</span>
 </span></span></code></pre></div><p>随后，对于NEMU而言，其构建的可执行文件的名称，是通过NEMU项目根目录下Makefile的如下代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>GUEST_ISA <span style="color:#f92672">?=</span> <span style="color:#66d9ef">$(</span>call remove_quote,<span style="color:#66d9ef">$(</span>CONFIG_ISA<span style="color:#66d9ef">))</span>
-</span></span><span style="display:flex;"><span>ENGINE <span style="color:#f92672">?=</span> <span style="color:#66d9ef">$(</span>call remove_quote,<span style="color:#66d9ef">$(</span>CONFIG_ENGINE<span style="color:#66d9ef">))</span>
-</span></span><span style="display:flex;"><span>NAME    <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>GUEST_ISA<span style="color:#66d9ef">)</span>-nemu-<span style="color:#66d9ef">$(</span>ENGINE<span style="color:#66d9ef">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">GUEST_ISA</span> <span class="o">?=</span> <span class="k">$(</span>call remove_quote,<span class="k">$(</span>CONFIG_ISA<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ENGINE</span> <span class="o">?=</span> <span class="k">$(</span>call remove_quote,<span class="k">$(</span>CONFIG_ENGINE<span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">NAME</span>    <span class="o">=</span> <span class="k">$(</span>GUEST_ISA<span class="k">)</span>-nemu-<span class="k">$(</span>ENGINE<span class="k">)</span>
 </span></span></code></pre></div><p>以及AM项目根目录下Makefile的如下代码联合指定的：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span>IMAGE_REL <span style="color:#f92672">=</span> build/<span style="color:#66d9ef">$(</span>NAME<span style="color:#66d9ef">)</span>-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>
-</span></span><span style="display:flex;"><span>IMAGE     <span style="color:#f92672">=</span> <span style="color:#66d9ef">$(</span>abspath <span style="color:#66d9ef">$(</span>IMAGE_REL<span style="color:#66d9ef">))</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">IMAGE_REL</span> <span class="o">=</span> build/<span class="k">$(</span>NAME<span class="k">)</span>-<span class="k">$(</span>ARCH<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">IMAGE</span>     <span class="o">=</span> <span class="k">$(</span>abspath <span class="k">$(</span>IMAGE_REL<span class="k">))</span>
 </span></span></code></pre></div><p>这里的<code>CONFIG_ISA</code>在Kconfig中只会被配置为<code>riscv32</code>，而使用该架构的E扩展是通过<code>CONFIG_RVE</code>来配置的，这就导致，在NEMU项目的<code>build</code>目录下，生成的可执行文件为<code>riscv32-nemu-interpreter-riscv32e-nemu.bin</code>，随后我们会通过：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">all</span><span style="color:#f92672">:</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> save_config
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> build_am
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> restore_config
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> run IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span>/build/<span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span>-nemu-interpreter-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.bin
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> save_config
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> build_am
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> restore_config
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>NEMU_HOME<span class="k">)</span> run <span class="nv">IMG</span><span class="o">=</span><span class="k">$(</span>NEMU_HOME<span class="k">)</span>/build/<span class="k">$(</span>ISA<span class="k">)</span>-nemu-interpreter-<span class="k">$(</span>ARCH<span class="k">)</span>.bin
 </span></span></code></pre></div><p>在NEMU上运行NEMU，但这里存在一个问题，这里指定的可执行文件中，<code>ISA</code>是在<code>ARCH</code>中提取的，因此如果我们输入<code>ARCH=riscv32e-nemu</code>的话，实际提取的<code>ISA=riscv32e</code>，这就导致<code>riscv32e-nemu-interpreter-riscv32e-nemu.bin</code>并不存在，因此，我们可以对该Makefile稍作修改，使其可以正常执行功能：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">all</span><span style="color:#f92672">:</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> save_config
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> build_am
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> restore_config
-</span></span><span style="display:flex;"><span>	@if <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;riscv32e&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> run IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span>/build/riscv32-nemu-interpreter-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.bin; <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	<span style="color:#66d9ef">else</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>		<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> run IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span>/build/<span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span>-nemu-interpreter-<span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span>.bin; <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	<span style="color:#66d9ef">fi</span>
-</span></span></code></pre></div><h3 id="2-am程序的运行逻辑">2. AM程序的运行逻辑</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> save_config
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> build_am
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> restore_config
+</span></span><span class="line"><span class="cl">	@if <span class="o">[</span> <span class="s2">&#34;</span><span class="k">$(</span>ISA<span class="k">)</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;riscv32e&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>NEMU_HOME<span class="k">)</span> run <span class="nv">IMG</span><span class="o">=</span><span class="k">$(</span>NEMU_HOME<span class="k">)</span>/build/riscv32-nemu-interpreter-<span class="k">$(</span>ARCH<span class="k">)</span>.bin<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">else</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>NEMU_HOME<span class="k">)</span> run <span class="nv">IMG</span><span class="o">=</span><span class="k">$(</span>NEMU_HOME<span class="k">)</span>/build/<span class="k">$(</span>ISA<span class="k">)</span>-nemu-interpreter-<span class="k">$(</span>ARCH<span class="k">)</span>.bin<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">fi</span>
+</span></span></code></pre></div>
+<h3 class="relative group">2. AM程序的运行逻辑
+    <div id="2-am程序的运行逻辑" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#2-am%e7%a8%8b%e5%ba%8f%e7%9a%84%e8%bf%90%e8%a1%8c%e9%80%bb%e8%be%91" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
 <p>如果我们在<code>am-kernels/kernels/nemu/</code>目录下，执行</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>make ARCH<span style="color:#f92672">=</span>$ISA-nemu mainargs<span style="color:#f92672">=</span>$executable_file_path
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="nv">ARCH</span><span class="o">=</span><span class="nv">$ISA</span>-nemu <span class="nv">mainargs</span><span class="o">=</span><span class="nv">$executable_file_path</span>
 </span></span></code></pre></div><p>这会让我们在NEMU上运行一个载入可执行程序镜像的NEMU，假设我们利用此方法运行<code>am-kernels/kernels</code>目录下的打字游戏，那么打字游戏是如何实现配置外层NEMU的设备进行读取按键/刷新屏幕的呢？此处将简单进行说明：</p>
 <p>首先，此时整个系统的层次如下：</p>
 <pre tabindex="0"><code>[OUTER NEMU]--&gt;[INNER NEMU]--&gt;[TYPING-GAME]
@@ -141,32 +591,195 @@
 <p>因此，当打字游戏首先调用IOE API实现设备配置时，由于其运行在内层NEMU上，因此其会调用内层NEMU设备的回调函数：</p>
 <pre tabindex="0"><code>[OUTER NEMU DEVICE] ??? [INNER NEMU DEVICE]&lt;--[IOE API]&lt;--[TYPING-GAME]
 </code></pre><p>但是，内层NEMU设备是如何将配置传递给外层NEMU的呢？这就涉及到当定义<code>CONFIG_TARGET_AM</code>时，内存NEMU设备的回调函数行为会重新被定义，比如，对于VGA而言，其更新屏幕的逻辑如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">init_screen</span>() {}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">update_screen</span>() {
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">io_write</span>(AM_GPU_FBDRAW, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, vmem, <span style="color:#a6e22e">screen_width</span>(), <span style="color:#a6e22e">screen_height</span>(), true);
-</span></span><span style="display:flex;"><span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">init_screen</span><span class="p">()</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">update_screen</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">io_write</span><span class="p">(</span><span class="n">AM_GPU_FBDRAW</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vmem</span><span class="p">,</span> <span class="nf">screen_width</span><span class="p">(),</span> <span class="nf">screen_height</span><span class="p">(),</span> <span class="nb">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>可知，内层NEMU此时也调用了IOE API，而由于其运行在外层NEMU上，此处的IOE API便会调用外层设备的回调函数，而此时API的作用也是将自身设备的配置传递给外层NEMU的设备，比如这里的<code>update_screen()</code>函数，其行为即是将整个页面按照<code>vmem</code>的取值更新。</p>
 <pre tabindex="0"><code>[OUTER NEMU DEVICE]&lt;--[IOE API]&lt;--[INNER NEMU DEVICE]&lt;--[IOE API]&lt;--[TYPING-GAME]
 </code></pre>
+          
+          
+          
+        </div>
+        
+        
+
+        
+
+        
+
+      </div>
+
+      
+      
+        
+        
+          
+          
+        
+        
+        
+        <script
+          type="text/javascript"
+          src="/js/page.min.54b6f4371722649edbe871e431d8670d670878c22be8f36e229fe53cc9b786fe25a834def5e6de621f7a3e37b72bc8cd73839aa5ed907ed6cbd45cd3e1b0fa20.js"
+          integrity="sha512-VLb0NxciZJ7b6HHkMdhnDWcIeMIr6PNuIp/lPMm3hv4lqDTe9ebeYh96Pje3K8jNc4Oape2QftbL1FzT4bD6IA=="
+          data-oid="views_post/YSYX-NEMU_run_NEMU.md"
+          data-oid-likes="likes_post/YSYX-NEMU_run_NEMU.md"></script>
+      
+    </section>
+
+    
+    <footer class="pt-8 max-w-prose print:hidden">
+      
+  
+    
+    
+    
+    <div class="pt-8">
+      <hr class="border-dotted border-neutral-300 dark:border-neutral-600">
+      <div class="flex justify-between pt-3">
+        <span class="flex flex-col">
+          
+            <a
+              class="flex text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="/post/ysyx-rtc_and_sprintf/">
+              <span class="leading-6">
+                <span class="inline-block rtl:rotate-180">&larr;</span>&ensp;设备实时时钟与更强大的sprintf()函数
+              </span>
+            </a>
+            
+              <span class="ms-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <time datetime="2025-10-05T00:00:00&#43;00:00">5 October 2025</time>
+              </span>
+            
+          
+        </span>
+        <span class="flex flex-col items-end">
+          
+            <a
+              class="flex text-right text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="/post/ysyx-yield/">
+              <span class="leading-6">
+                NEMU异常响应机制的实现&ensp;<span class="inline-block rtl:rotate-180">&rarr;</span>
+              </span>
+            </a>
+            
+              <span class="me-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <time datetime="2025-10-14T00:00:00&#43;00:00">14 October 2025</time>
+              </span>
+            
+          
+        </span>
+      </div>
     </div>
+  
+
+
+      
+    </footer>
+  </article>
+
+        
+
+
+
+
+
+<div
+  id="scroll-to-top"
+  class="fixed bottom-24 end-6 z-50 transform translate-y-4 opacity-0 duration-200">
+  <a
+    href="#the-top"
+    class="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-neutral/50 text-xl text-neutral-700 hover:text-primary-600 dark:bg-neutral-800/50 dark:text-neutral dark:hover:text-primary-400"
+    aria-label="Scroll to top"
+    title="Scroll to top">
+    &uarr;
+  </a>
 </div>
 
-            </main>
-        </div>
-
-
-        <footer class="footer">
+      </main><footer id="site-footer" class="py-10 print:hidden">
+  
+  
     
-        <span>
-            © 2025 Posvirus&#39; Blog, Built with
-            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
-            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
-        </span>
+  
+  <div class="flex items-center justify-between">
     
+    
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">
+          &copy;
+          2025
+          Posvirus&rsquo; Blog
+      </p>
+    
+
+    
+    
+      <p class="text-xs text-neutral-500 dark:text-neutral-400">
+        
+        
+        Powered by <a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://gohugo.io/" target="_blank" rel="noopener noreferrer">Hugo</a> &amp; <a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://blowfish.page/" target="_blank" rel="noopener noreferrer">Blowfish</a>
+      </p>
+    
+  </div>
+  
+    <script>
+      mediumZoom(document.querySelectorAll("img:not(.nozoom)"), {
+        margin: 24,
+        background: "rgba(0,0,0,0.5)",
+        scrollOffset: 0,
+      });
+    </script>
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/process.min.ee03488f19c93c2efb199e2e3014ea5f3cb2ce7d45154adb3399a158cac27ca52831db249ede5bb602700ef87eb02434139de0858af1818ab0fb4182472204a4.js"
+    integrity="sha512-7gNIjxnJPC77GZ4uMBTqXzyyzn1FFUrbM5mhWMrCfKUoMdsknt5btgJwDvh&#43;sCQ0E53ghYrxgYqw&#43;0GCRyIEpA=="></script>
+  
+  
 </footer>
+<div
+  id="search-wrapper"
+  class="invisible fixed inset-0 flex h-screen w-screen cursor-default flex-col bg-neutral-500/50 p-4 backdrop-blur-sm dark:bg-neutral-900/50 sm:p-6 md:p-[10vh] lg:p-[12vh] z-500"
+  data-url="http://localhost:1313/">
+  <div
+    id="search-modal"
+    class="flex flex-col w-full max-w-3xl min-h-0 mx-auto border rounded-md shadow-lg top-20 border-neutral-200 bg-neutral dark:border-neutral-700 dark:bg-neutral-800">
+    <header class="relative z-10 flex items-center justify-between flex-none px-2">
+      <form class="flex items-center flex-auto min-w-0">
+        <div class="flex items-center justify-center w-8 h-8 text-neutral-400">
+          <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+        </div>
+        <input
+          type="search"
+          id="search-query"
+          class="flex flex-auto h-12 mx-1 bg-transparent appearance-none focus:outline-dotted focus:outline-2 focus:outline-transparent"
+          placeholder="Search"
+          tabindex="0">
+      </form>
+      <button
+        id="close-search-button"
+        class="flex items-center justify-center w-8 h-8 text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+        title="Close (Esc)">
+        <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
+</span>
+      </button>
+    </header>
+    <section class="flex-auto px-2 overflow-auto">
+      <ul id="search-results">
+        
+      </ul>
+    </section>
+  </div>
+</div>
+
     </div>
-
-</body>
-
+  </body>
+  
 </html>

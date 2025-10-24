@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：功能更强大的sprintf()函数">
+<title>功能更强大的sprintf()函数</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/sprintf/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="功能更强大的sprintf()函数">
+<meta property='og:description' content="YSYX学习笔记：功能更强大的sprintf()函数">
+<meta property='og:url' content='https://posvirus.github.io/p/sprintf/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Clang' /><meta property='article:tag' content='stdio' /><meta property='article:tag' content='AM' /><meta property='article:published_time' content='2025-07-27T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-07-27T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="功能更强大的sprintf()函数">
+<meta name="twitter:description" content="YSYX学习笔记：功能更强大的sprintf()函数">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/sprintf/">功能更强大的sprintf()函数</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：功能更强大的sprintf()函数
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 27, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 6 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>在PA2中，笔者被要求实现一个简单的<code>sprintf()</code>函数，其目前仅需实现对<code>%s</code>与<code>%d</code>标识符的支持即可。此处，笔者对其进行了进一步增强，使其可支持更多种标识符，并具有扩展实现更多标识符的能力，其目前可支持的标识符列举如下：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>标识符</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>%d</code></td>
+          <td>位宽不限的十进制有符号数</td>
+      </tr>
+      <tr>
+          <td><code>%u</code></td>
+          <td>位宽不限的十进制无符号数</td>
+      </tr>
+      <tr>
+          <td><code>%o</code></td>
+          <td>位宽不限的八进制无符号数</td>
+      </tr>
+      <tr>
+          <td><code>%x</code></td>
+          <td>位宽不限的十六进制无符号数（字母小写）</td>
+      </tr>
+      <tr>
+          <td><code>%X</code></td>
+          <td>位宽不限的十六进制无符号数（字母小写）</td>
+      </tr>
+      <tr>
+          <td><code>%lu</code></td>
+          <td>位宽不限的无符号整型</td>
+      </tr>
+      <tr>
+          <td><code>%llu</code></td>
+          <td>位宽不限的无符号长整型</td>
+      </tr>
+      <tr>
+          <td><code>%s</code></td>
+          <td>字符串</td>
+      </tr>
+      <tr>
+          <td><code>%c</code></td>
+          <td>单个字符</td>
+      </tr>
+      <tr>
+          <td><code>%p</code></td>
+          <td>指针地址</td>
+      </tr>
+      <tr>
+          <td><code>%%</code></td>
+          <td>字符<code>%</code></td>
+      </tr>
+  </tbody>
+</table></div>
+<p>此处，为保证<code>sprintf()</code>函数具有识别更多标识符的扩展性，在编写<code>sprint()</code>函数时采用了模块化设计，其设计原理类似于NEMU表达式求值中对表达式中token的提取，以下是具体实现：</p>
+<p><code>sprintf()</code>函数分三个阶段，第一阶段是对含标识符字符串的解析，第二阶段是对标识符对应参数的转换，第三阶段则是目标字符串的生成。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* sprintf arguments */</span>
+</span></span><span class="line"><span class="cl"><span class="k">enum</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">SP_CHAR</span><span class="p">,</span> <span class="n">SP_UDEC</span><span class="p">,</span> <span class="n">SP_UUSG</span><span class="p">,</span> <span class="n">SP_UOCT</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">SP_Uhex</span><span class="p">,</span> <span class="n">SP_UHEX</span><span class="p">,</span> <span class="n">SP_ULOU</span><span class="p">,</span> <span class="n">SP_ULLU</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">  <span class="n">SP_USTR</span><span class="p">,</span> <span class="n">SP_USCH</span><span class="p">,</span> <span class="n">SP_UPTR</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* sprintf tokens */</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">sp_token</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">SP_Token</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在第一阶段，我们首先定义了若干枚举变量，用于代表各种标识符类型（以及普通单字符），其次，我们定义结构体<code>SP_Token</code>，该结构体用于存储对含标识符字符串的解析结果，每个结构体代表从含标识符字符串解析出的一个token，包含该token的类型<code>type</code>（属于枚举变量中的一者）与<code>token</code>对应转换后的字符串<code>str</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">SP_Token</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">SP_NR_MAX</span><span class="p">]</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="n">used</span><span class="p">))</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="n">nr_sp_token</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="n">used</span><span class="p">))</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时，我们在<code>stdio.c</code>中定义全局静态<code>SP_Token</code>数组<code>sp_tokens</code>，用于存储每次对含标识符字符串的解析结果，同时定义<code>nr_sp_token</code>指示当前解析结果的token数量。</p>
+<p>以下，我们定义静态函数<code>sp_make_token()</code>完成对含标识符字符串的解析：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">bool</span> <span class="nf">sp_make_token</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* Try all types one by one */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;%&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// basic char
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_CHAR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>      
+</span></span><span class="line"><span class="cl">      <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %d, unlimited length decimal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;d&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_UDEC</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %u, unlimited length unsign
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;u&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_UUSG</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %o, unlimited length octal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;o&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_UOCT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %x, unlimited length hexadecimal (lower)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;x&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_Uhex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %X, unlimited length hexadecimal (upper)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;X&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_UHEX</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span><span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;l&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// %lu, unlimited length uint32_t
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;u&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_ULOU</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;l&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// %llu, unlimited length uint64_t
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;u&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_ULLU</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %s, unlimited length string
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;s&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_USTR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">      <span class="c1">// %c, single char
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;c&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_USCH</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %p, value of a pointer
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;p&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_UPTR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// %%, char &#39;%&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;%&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_CHAR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      
+</span></span><span class="line"><span class="cl">        <span class="n">nr_sp_token</span> <span class="o">=</span> <span class="n">nr_sp_token</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>      
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// EOL token (to make sure)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">type</span> <span class="o">=</span> <span class="n">SP_CHAR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">[</span><span class="n">position</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sp_tokens</span><span class="p">[</span><span class="n">nr_sp_token</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此处的解析逻辑与表达式求值中的token解析逻辑类似，只是此处我们实现的是基本的库函数，因此无法使用正则表达式进行快速匹配，需要逐字符进行判断。在该函数中，我们会将含标识符字符串顺序转换为token数组，同时指明各token类型<code>type</code>。对普通字符，我们在该函数中还会指明其token在标识符转换后的字符串<code>str</code>（因其无需转换，但是需要在普通字符后追加<code>'\0'</code>）。</p>
+<p>完成token解析逻辑后，我们可在<code>sprintf()</code>函数中调用该函数，并进行第二、三阶段的实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">sprintf</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// detect invalid behavior
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">sp_make_token</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// va-args initialization
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">va_list</span> <span class="n">args</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">va_start</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">fmt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// args-to-string convert
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nr_sp_token</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">switch</span> <span class="p">(</span><span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_CHAR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// directly skip
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_UDEC</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str-to-dec convert
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2sig</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">int</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_UUSG</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str-to-unsign convert
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2u</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_UOCT</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str-to-oct convert
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2sig</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">int</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_Uhex</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str-to-hex convert (lower)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2sig</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">int</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_UHEX</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str-to-hex convert (upper)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2sig</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">int</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_ULOU</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str-to-long-unsign convert
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2lu</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">size_t</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_ULLU</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str-to-long-long-unsign convert
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2llu</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_USTR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// str copy
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">strcpy</span><span class="p">(</span><span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">,</span> <span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_USCH</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// char copy
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="p">)</span> <span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">SP_UPTR</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// pointer value
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nf">str2ptr</span><span class="p">(</span><span class="nf">va_arg</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="p">),</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// do nothing
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// end of args extraction
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">va_end</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// str-cat to result str
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">strcpy</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nr_sp_token</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">strcat</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">sp_tokens</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">out</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先，我们会进行含标识符字符串的解析，并判断解析结果是否成功，若不成功，则返回一个负值（<code>sprintf()</code>函数的逻辑是，当函数执行成功，会返回打印字符串的长度，反之会返回一个负值）。</p>
+<p>其次，我们使用<code>stdarg.h</code>库中的相关函数，逐个解析标识符对应的参数并转换成字符串，赋值给对应token的<code>str</code>变量。此处需要实现多个数据类型向字符串转换的函数，由于笔者并不希望实现标准库中功能较复杂的转换函数，因此此处的函数均自由命名，并被声明为静态函数防止外部调用。</p>
+<p>我们可以简单以指针向字符串的转换函数为例进行说明：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">str2ptr</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">num</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">re</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// avoid illegal input
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nf">assert</span><span class="p">(</span><span class="n">re</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="n">re</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">char</span> <span class="n">num_buf</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="c1">// number buffer (fixed width)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kt">int</span> <span class="n">ptr</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">size_t</span> <span class="n">unum</span> <span class="o">=</span> <span class="p">(</span><span class="kt">size_t</span><span class="p">)</span> <span class="n">num</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">size_t</span> <span class="n">udiv</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// NULL pointer
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="n">num</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;(&#39;</span><span class="p">;</span> <span class="n">pre</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;n&#39;</span><span class="p">;</span> <span class="n">pre</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;i&#39;</span><span class="p">;</span> <span class="n">pre</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;l&#39;</span><span class="p">;</span> <span class="n">pre</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;)&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">re</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">unum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span> <span class="n">re</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;x&#39;</span><span class="p">;</span> <span class="n">re</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span> <span class="n">re</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span> <span class="k">return</span> <span class="n">re</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span> <span class="n">pre</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;x&#39;</span><span class="p">;</span> <span class="n">pre</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// loop for conversion
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">while</span> <span class="p">(</span><span class="n">unum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">udiv</span> <span class="o">=</span> <span class="n">unum</span> <span class="o">%</span> <span class="mi">16</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">udiv</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">num_buf</span><span class="p">[</span><span class="n">ptr</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">udiv</span> <span class="o">+</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">num_buf</span><span class="p">[</span><span class="n">ptr</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">udiv</span> <span class="o">-</span> <span class="mi">10</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">unum</span> <span class="o">=</span> <span class="n">unum</span> <span class="o">/</span> <span class="mi">16</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// number order inversion
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ptr</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="n">num_buf</span><span class="p">[</span><span class="n">ptr</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span> <span class="n">pre</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// add EOL
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="o">*</span><span class="n">pre</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">re</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>该函数接收指针<code>num</code>，并将字符串转换结果赋值给<code>re</code>，为此，首先我们需要判断指针<code>num</code>是否为<code>NULL</code>，如是，则按标准形式直接返回字符串<code>(nil)</code>；其次，我们将指针<code>num</code>强制类型转换为<code>uint32_t</code>类型变量<code>unum</code>（因为目前实现的处理器是32位地址）；最后，我们仅需将<code>unum</code>转换为字符串即可，这在实现上是简单的。同时需注意，指针地址为<code>0x...</code>的形式，以十六进制（小写）打印，在实现时需要额外增加逻辑。</p>
+<p>在第三阶段，我们仅需通过循环，使用<code>strcat()</code>函数将所有的token对应的字符串进行拼接即可（当然，对第一个token，我们需要使用<code>strcpy()</code>）。</p>
+<p>另外，我们额外编写了用于测试<code>sprintf()</code>函数的客户程序，其在native与NEMU下均可通过测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;trap.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// basic string
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;%s&#34;</span><span class="p">,</span> <span class="s">&#34;Hello world!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Hello world!&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// decimal format
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;%d + %d = %d&#34;</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="mi">12806</span><span class="p">,</span> <span class="mi">12923</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;117 + 12806 = 12923&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;%d + %d = %d&#34;</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="o">-</span><span class="mi">12806</span><span class="p">,</span> <span class="o">-</span><span class="mi">12689</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;117 + -12806 = -12689&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;0x%x in hex is %d&#34;</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;0xff in hex is 255&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// unsigned
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;%u&#34;</span><span class="p">,</span> <span class="mi">4294967295U</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;4294967295&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// octal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Octal: %o&#34;</span><span class="p">,</span> <span class="mi">63</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Octal: 77&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// hexadecimal (case specify)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Hex lower: %x&#34;</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Hex lower: ff&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Hex upper: %X&#34;</span><span class="p">,</span> <span class="mh">0xBCDAABCD</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Hex upper: BCDAABCD&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// unsigned long
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Long: %lu&#34;</span><span class="p">,</span> <span class="mi">123456789UL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Long: 123456789&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// unsigned long long
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Long long: %llu&#34;</span><span class="p">,</span> <span class="mi">1234567890123456ULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Long long: 1234567890123456&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// char
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Char: %c&#34;</span><span class="p">,</span> <span class="sc">&#39;A&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Char: A&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// pointer
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">volatile</span> <span class="kt">int</span> <span class="o">*</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="k">volatile</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x0061fe1c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Pointer: %p&#34;</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Pointer: 0x61fe1c&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// NULL pointer
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Null ptr: %p&#34;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Null ptr: (nil)&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// mixed format
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Mixed: %d %s %c 0x%x&#34;</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="s">&#34;test&#34;</span><span class="p">,</span> <span class="sc">&#39;Z&#39;</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Mixed: 42 test Z 0xff&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// boundary value
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Min int: %d, Max uint: %u&#34;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2147483647</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4294967295U</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Min int: -2147483648, Max uint: 4294967295&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// special string
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Newline: %s&#34;</span><span class="p">,</span> <span class="s">&#34;a</span><span class="se">\n</span><span class="s">b&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;Newline: a</span><span class="se">\n</span><span class="s">b&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// char &#39;%&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;100%% guaranteed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">check</span><span class="p">(</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&#34;100% guaranteed&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在测试指针的程序段中，我们对指针进行直接赋值，并通过<code>volatile</code>关键字防止编译器优化。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/clang/">Clang</a>
+        
+            <a href="/tags/stdio/">Stdio</a>
+        
+            <a href="/tags/am/">AM</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Jul 27, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/rtc-and-sprintf/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">设备实时时钟与更强大的sprintf()函数</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/rt-thread/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">RT-Thread的上下文</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/am-makefile-2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">AM Makefile解读（2）</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

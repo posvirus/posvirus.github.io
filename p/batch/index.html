@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="如何让NEMU以批处理模式运行？">
+<title>如何让NEMU以批处理模式运行？</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/batch/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="如何让NEMU以批处理模式运行？">
+<meta property='og:description' content="如何让NEMU以批处理模式运行？">
+<meta property='og:url' content='https://posvirus.github.io/p/batch/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='NEMU' /><meta property='article:tag' content='Makefile' /><meta property='article:tag' content='Clang' /><meta property='article:published_time' content='2025-07-24T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-07-24T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="如何让NEMU以批处理模式运行？">
+<meta name="twitter:description" content="如何让NEMU以批处理模式运行？">
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">👁️</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/batch/">如何让NEMU以批处理模式运行？</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            如何让NEMU以批处理模式运行？
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 24, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 3 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>首先，通过RTFSC，我们发现NEMU的批处理模式是通过<code>sdb.c</code>中的一个变量<code>is_batch_mode</code>控制的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">sdb_mainloop</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">is_batch_mode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">cmd_c</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="cm">/* other logic */</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在sdb的主循环中，当这个变量为<code>true</code>时，会直接通过调用<code>cmd_c()</code>执行用户程序并返回，不再启动sdb。但是这个变量在当前文件声明的默认值为<code>false</code>，如何将其变为<code>true</code>呢？我们很快又会发现<code>sdb_set_batch_mode()</code>这个函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">sdb_set_batch_mode</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">is_batch_mode</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>不难发现，通过调用这个函数就可以让NEMU进入批处理模式！此时我们只需要寻找NEMU在什么位置调用了这个函数，不难发现它的调用位置在<code>monitor.c</code>的<code>parse_args()</code>函数中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">parse_args</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">const</span> <span class="k">struct</span> <span class="n">option</span> <span class="n">table</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="s">&#34;batch&#34;</span>    <span class="p">,</span> <span class="n">no_argument</span>      <span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="sc">&#39;b&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="s">&#34;log&#34;</span>      <span class="p">,</span> <span class="n">required_argument</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="sc">&#39;l&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="s">&#34;diff&#34;</span>     <span class="p">,</span> <span class="n">required_argument</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="sc">&#39;d&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="s">&#34;port&#34;</span>     <span class="p">,</span> <span class="n">required_argument</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="sc">&#39;p&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="s">&#34;help&#34;</span>     <span class="p">,</span> <span class="n">no_argument</span>      <span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="sc">&#39;h&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="mi">0</span>          <span class="p">,</span> <span class="mi">0</span>                <span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span>  <span class="mi">0</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span> <span class="p">(</span><span class="n">o</span> <span class="o">=</span> <span class="nf">getopt_long</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="s">&#34;-bhl:d:p:&#34;</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">switch</span> <span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="sc">&#39;b&#39;</span><span class="o">:</span> <span class="nf">sdb_set_batch_mode</span><span class="p">();</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="sc">&#39;p&#39;</span><span class="o">:</span> <span class="nf">sscanf</span><span class="p">(</span><span class="n">optarg</span><span class="p">,</span> <span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">difftest_port</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="sc">&#39;l&#39;</span><span class="o">:</span> <span class="n">log_file</span> <span class="o">=</span> <span class="n">optarg</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="sc">&#39;d&#39;</span><span class="o">:</span> <span class="n">diff_so_file</span> <span class="o">=</span> <span class="n">optarg</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="n">img_file</span> <span class="o">=</span> <span class="n">optarg</span><span class="p">;</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Usage: %s [OPTION...] IMAGE [args]</span><span class="se">\n\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\t</span><span class="s">-b,--batch              run with batch mode</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\t</span><span class="s">-l,--log=FILE           output log to FILE</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\t</span><span class="s">-d,--diff=REF_SO        run DiffTest with reference REF_SO</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\t</span><span class="s">-p,--port=PORT          run DiffTest with port PORT</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这段代码是用于解析<code>init_monitor()</code>函数传入的<code>argc</code>与<code>argv</code>参数的，而<code>init_monitor()</code>的<code>argc</code>与<code>argv</code>参数又是通过<code>main()</code>函数传递的，不难发现，当参数中包括<code>-b</code>一项时，就会使得NEMU进入批处理模式。</p>
+<p>那么，我们可以回忆一下，我们是如何运行NEMU的？似乎是通过Makefile构建一个<code>run</code>的目标实现的，因此，我们需要进一步去寻找<code>run</code>对应的构建规则，它在<code>nemu/scripts/native.mk</code>下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">IMG</span> <span class="o">?=</span>
+</span></span><span class="line"><span class="cl"><span class="nv">NEMU_EXEC</span> <span class="o">:=</span> <span class="k">$(</span>BINARY<span class="k">)</span> <span class="k">$(</span>ARGS<span class="k">)</span> <span class="k">$(</span>IMG<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">run-env</span><span class="o">:</span> <span class="k">$(</span><span class="nv">BINARY</span><span class="k">)</span> <span class="k">$(</span><span class="nv">DIFF_REF_SO</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">run</span><span class="o">:</span> <span class="n">run</span>-<span class="n">env</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>call git_commit, <span class="s2">&#34;run NEMU&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>NEMU_EXEC<span class="k">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>不难发现，当构建<code>run</code>这个目标时，会使用<code>NEMU_EXEC</code>构建NEMU，而参数又是通过<code>ARGS</code>来传递的，那么，当我们运行AM时，是通过什么方式传递<code>ARGS</code>参数的呢？在AM的<code>scripts/platform/nemu.mk</code>中，我们不难发现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">NEMUFLAGS</span> <span class="o">+=</span> -l <span class="k">$(</span>shell dirname <span class="k">$(</span>IMAGE<span class="k">)</span>.elf<span class="k">)</span>/nemu-log.txt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">/*</span> <span class="err">other</span> <span class="err">logic</span> <span class="err">*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">run</span><span class="o">:</span> <span class="n">insert</span>-<span class="n">arg</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>NEMU_HOME<span class="k">)</span> <span class="nv">ISA</span><span class="o">=</span><span class="k">$(</span>ISA<span class="k">)</span> run <span class="nv">ARGS</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span>NEMUFLAGS<span class="k">)</span><span class="s2">&#34;</span> <span class="nv">IMG</span><span class="o">=</span><span class="k">$(</span>IMAGE<span class="k">)</span>.bin
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因此，当AM运行NEMU时，会通过命令行直接传递<code>ARGS</code>参数，而对应需要传递的参数由<code>NEMUFLAGS</code>指定，因此，我们最终只需添加：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">NEMUFLAGS</span> <span class="o">+=</span> -b
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>即可实现默认以批处理模式运行NEMU。在<code>cpu-tests</code>路径下重新运行一遍全部测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="nv">ARCH</span><span class="o">=</span>riscv32-nemu run
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>发现确实在运行NEMU时不会再启用sdb了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Building recursion-run [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Building am-archive [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Building klib-archive [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl">+ CC tests/recursion.c
+</span></span><span class="line"><span class="cl"><span class="c1"># Creating image [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl">+ LD -&gt; build/recursion-riscv32-nemu.elf
+</span></span><span class="line"><span class="cl">+ OBJCOPY -&gt; build/recursion-riscv32-nemu.bin
+</span></span><span class="line"><span class="cl"><span class="nv">mainargs</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/utils/log.c:30 init_log<span class="o">]</span> Log is written to /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/nemu-log.txt
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/memory/paddr.c:50 init_mem<span class="o">]</span> physical memory area <span class="o">[</span>0x80000000, 0x87ffffff<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:61 load_img<span class="o">]</span> The image is /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/recursion-riscv32-nemu.bin, <span class="nv">size</span> <span class="o">=</span> <span class="m">728</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:28 welcome<span class="o">]</span> Trace: ON
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:29 welcome<span class="o">]</span> If trace is enabled, a log file will be generated to record the trace. This may lead to a large log file. If it is not necessary, you can disable it in menuconfig
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:32 welcome<span class="o">]</span> Build time: 20:17:19, Jul <span class="m">24</span> <span class="m">2025</span>
+</span></span><span class="line"><span class="cl">Welcome to riscv32-NEMU!
+</span></span><span class="line"><span class="cl">For help, <span class="nb">type</span> <span class="s2">&#34;help&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:124 cpu_exec<span class="o">]</span> nemu: HIT GOOD TRAP at <span class="nv">pc</span> <span class="o">=</span> 0x8000026c
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:92 statistic<span class="o">]</span> host <span class="nb">time</span> <span class="nv">spent</span> <span class="o">=</span> 4,025 us
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:93 statistic<span class="o">]</span> total guest <span class="nv">instructions</span> <span class="o">=</span> 4,545
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:94 statistic<span class="o">]</span> simulation <span class="nv">frequency</span> <span class="o">=</span> 1,129,192 inst/s
+</span></span><span class="line"><span class="cl"><span class="c1"># Building div-run [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Building am-archive [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Building klib-archive [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl">+ CC tests/div.c
+</span></span><span class="line"><span class="cl"><span class="c1"># Creating image [riscv32-nemu]</span>
+</span></span><span class="line"><span class="cl">+ LD -&gt; build/div-riscv32-nemu.elf
+</span></span><span class="line"><span class="cl">+ OBJCOPY -&gt; build/div-riscv32-nemu.bin
+</span></span><span class="line"><span class="cl"><span class="nv">mainargs</span><span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/utils/log.c:30 init_log<span class="o">]</span> Log is written to /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/nemu-log.txt
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/memory/paddr.c:50 init_mem<span class="o">]</span> physical memory area <span class="o">[</span>0x80000000, 0x87ffffff<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:61 load_img<span class="o">]</span> The image is /home/chenwy/ysyx-workbench/am-kernels/tests/cpu-tests/build/div-riscv32-nemu.bin, <span class="nv">size</span> <span class="o">=</span> <span class="m">404</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:28 welcome<span class="o">]</span> Trace: ON
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:29 welcome<span class="o">]</span> If trace is enabled, a log file will be generated to record the trace. This may lead to a large log file. If it is not necessary, you can disable it in menuconfig
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/monitor/monitor.c:32 welcome<span class="o">]</span> Build time: 20:17:19, Jul <span class="m">24</span> <span class="m">2025</span>
+</span></span><span class="line"><span class="cl">Welcome to riscv32-NEMU!
+</span></span><span class="line"><span class="cl">For help, <span class="nb">type</span> <span class="s2">&#34;help&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:124 cpu_exec<span class="o">]</span> nemu: HIT GOOD TRAP at <span class="nv">pc</span> <span class="o">=</span> 0x80000124
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:92 statistic<span class="o">]</span> host <span class="nb">time</span> <span class="nv">spent</span> <span class="o">=</span> <span class="m">877</span> us
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:93 statistic<span class="o">]</span> total guest <span class="nv">instructions</span> <span class="o">=</span> <span class="m">868</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>src/cpu/cpu-exec.c:94 statistic<span class="o">]</span> simulation <span class="nv">frequency</span> <span class="o">=</span> 989,737 inst/s
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/nemu/">NEMU</a>
+        
+            <a href="/tags/makefile/">Makefile</a>
+        
+            <a href="/tags/clang/">Clang</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Jul 24, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/device-note/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU的设备实现注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/yield/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/nemu-run-nemu/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用RV32E架构的NEMU运行NEMU</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/ftrace/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ftrace实现的注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/mtrace/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">mtrace实现的注意事项</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

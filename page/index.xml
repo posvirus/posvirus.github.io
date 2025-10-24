@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Pages on Posvirus的博客</title>
+        <link>https://posvirus.github.io/page/</link>
+        <description>Recent content in Pages on Posvirus的博客</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Chen Wenyao</copyright>
+        <lastBuildDate>Sun, 06 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/page/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Archives</title>
+        <link>https://posvirus.github.io/archives/</link>
+        <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/archives/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>About</title>
+        <link>https://posvirus.github.io/about/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/about/</guid>
+        <description>&lt;h2 id=&#34;about-me&#34;&gt;About Me
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Chen Wenyao&lt;/strong&gt; is pursuing the M.Eng. degree in Integrated Circuit Engineering at Tsinghua University, Beijing, China, since 2024. He received the B.Eng. degree in Microelectronic Science and Engineering from Shanghai Jiao Tong University (SJTU), Shanghai, China, in 2024.&lt;/p&gt;
+&lt;p&gt;He is currently conducting research at the Institute of Integrated Circuit Design and Electronic Design Automation, School of Integrated Circuits, Tsinghua University. His research focuses on &lt;strong&gt;Chiplet interconnect technology&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;His academic achievements include:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Youth Impact Award&lt;/strong&gt; in the 1st Douyin AI Innovation Accelerator Contest (2025).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Fourth Place&lt;/strong&gt; (Digital AI Track) in the 6th &amp;ldquo;Fudan Micro. Cup&amp;rdquo; National Electronic Design Contest (2024).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;National Scholarship&lt;/strong&gt; (2022-2023) .&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Shanghai Scholarship&lt;/strong&gt; (2021-2022).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;National Grand Prize&lt;/strong&gt; in the 11th National Underwater Robot Design Competition (2022).&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;about-hugo&#34;&gt;About Hugo
+&lt;/h2&gt;&lt;p&gt;Written in Go, Hugo is an open source static site generator available under the &lt;a class=&#34;link&#34; href=&#34;https://github.com/gohugoio/hugo/blob/master/LICENSE&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Apache Licence 2.0.&lt;/a&gt; Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.&lt;/p&gt;
+&lt;p&gt;Hugo makes use of a variety of open source projects including:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/yuin/goldmark&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/yuin/goldmark&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/alecthomas/chroma&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/alecthomas/chroma&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/muesli/smartcrop&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/muesli/smartcrop&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/spf13/cobra&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/spf13/cobra&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/spf13/viper&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://github.com/spf13/viper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Hugo is ideal for blogs, corporate websites, creative portfolios, online magazines, single page applications or even a website with thousands of pages.&lt;/p&gt;
+&lt;p&gt;Hugo is for people who want to hand code their own website without worrying about setting up complicated runtimes, dependencies and databases.&lt;/p&gt;
+&lt;p&gt;Websites built with Hugo are extremely fast, secure and can be deployed anywhere including, AWS, GitHub Pages, Heroku, Netlify and any other hosting provider.&lt;/p&gt;
+&lt;p&gt;Learn more and contribute on &lt;a class=&#34;link&#34; href=&#34;https://github.com/gohugoio&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;contact-info&#34;&gt;Contact Info
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Email:&lt;/strong&gt; &lt;a class=&#34;link&#34; href=&#34;mailto:chenwy24@mails.tsinghua.edu.cn&#34; &gt;chenwy24@mails.tsinghua.edu.cn&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Phone:&lt;/strong&gt; (+86) 18105621975&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;GitHub:&lt;/strong&gt; &lt;a class=&#34;link&#34; href=&#34;https://github.com/posvirus&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;github.com/posvirus&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Please feel free to share any questions or information.&lt;/p&gt;
+&lt;p style=&#39;text-align: right;&#39;&gt;Chen Wenyao&lt;/p&gt;
+&lt;p style=&#39;text-align: right;&#39;&gt;updated at October 14th, 2025&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>Search</title>
+        <link>https://posvirus.github.io/search/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/search/</guid>
+        <description></description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,129 +1,570 @@
-<!DOCTYPE html>
-<html lang="en-us">
+<!doctype html>
+<html
+  lang="en"
+  dir="ltr"
+  class="scroll-smooth"
+  data-default-appearance="light"
+  data-auto-appearance="true"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  
+    <meta http-equiv="content-language" content="en">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color">
 
-<head>
-    <title>
-NEMU的设备实现注意事项 | Posvirus&#39; Blog
-</title>
+  
+  
+    <title>NEMU的设备实现注意事项 &middot; Blowfish</title>
+    <meta name="title" content="NEMU的设备实现注意事项 &middot; Blowfish">
+  
 
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="YSYX学习笔记：NEMU的设备实现注意事项">
+  
+  
+    <meta name="description" content="YSYX学习笔记：NEMU的设备实现注意事项">
+  
+  
+    <meta name="keywords" content="NEMU,Makefile,AM,Device,Clang,">
+  
+  
+  
+  <link rel="canonical" href="http://localhost:1313/post/ysyx-device-note/">
+  
 
-<meta name="generator" content="Hugo 0.148.1">
+  
+  
+    <meta name="author" content="Posvirus&#39; Blog">
+  
+  
+
+  
+  <meta property="og:url" content="http://localhost:1313/post/ysyx-device-note/">
+  <meta property="og:site_name" content="Blowfish">
+  <meta property="og:title" content="NEMU的设备实现注意事项">
+  <meta property="og:description" content="YSYX学习笔记：NEMU的设备实现注意事项">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2025-10-04T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-10-04T00:00:00+00:00">
+    <meta property="article:tag" content="NEMU">
+    <meta property="article:tag" content="Makefile">
+    <meta property="article:tag" content="AM">
+    <meta property="article:tag" content="Device">
+    <meta property="article:tag" content="Clang">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="NEMU的设备实现注意事项">
+  <meta name="twitter:description" content="YSYX学习笔记：NEMU的设备实现注意事项">
+
+  
+  
+  
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+  
+    
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <link
+    type="text/css"
+    rel="stylesheet"
+    href="/css/main.bundle.min.eb7802c3fa6cdc17c6a435b3b33e39e40f6de4716fb67fe64caa1b893e767f7cd1eb028cbd3754eecea5abb0d52cb40ff00e0db6d493f6d4219f4af529e61a7a.css"
+    integrity="sha512-63gCw/ps3BfGpDWzsz455A9t5HFvtn/mTKobiT52f3zR6wKMvTdU7s6lq7DVLLQP8A4NttST9tQhn0r1KeYaeg==">
+
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/appearance.min.6f41174b3a05b680820fe08cadbfa5fb7a7ca347b76a0955cdc68b9d8aca1ce24f0547e138cea33bcc7904d551a90afcb1cc7f2d9fe8557075d501419046c08c.js"
+    integrity="sha512-b0EXSzoFtoCCD&#43;CMrb&#43;l&#43;3p8o0e3aglVzcaLnYrKHOJPBUfhOM6jO8x5BNVRqQr8scx/LZ/oVXB11QFBkEbAjA=="></script>
+  
+  
+  
+  
+  
+  
+    
+    <script src="/lib/zoom/zoom.min.umd.a527109b68c082a70f3697716dd72a9d5aa8b545cf800cecbbc7399f2ca6f6e0ce3e431f2062b48bbfa47c9ea42822714060bef309be073f49b9c0e30d318d7b.js" integrity="sha512-pScQm2jAgqcPNpdxbdcqnVqotUXPgAzsu8c5nyym9uDOPkMfIGK0i7&#43;kfJ6kKCJxQGC&#43;8wm&#43;Bz9JucDjDTGNew=="></script>
+  
+
+  
+  
+  
+    
+  
+  
+    
+  
+  
+  
+  
+  
+  
+  
+    
+    <script
+      defer
+      type="text/javascript"
+      id="script-bundle"
+      src="/js/main.bundle.min.9df4fc14d50efcc9aa4cfc2b6f348e365f421f5ad491278f8f48c0360cf2f93f08882fda6da162d7ace8e5add57c2df4ac46bd3861306b1d4c452cd31f448d64.js"
+      integrity="sha512-nfT8FNUO/MmqTPwrbzSONl9CH1rUkSePj0jANgzy&#43;T8IiC/abaFi16zo5a3VfC30rEa9OGEwax1MRSzTH0SNZA=="
+      data-copy="Copy"
+      data-copied="Copied"></script>
+  
+
+  
+  
+
+<script src="/lib/jquery/jquery.slim.min.b0dca576e87d7eaa5850ae4e61759c065786cdb6489d68fcc82240539eebd5da522bdb4fda085ffd245808c8fe2acb2516408eb774ef26b5f6015fc6737c0ea8.js" integrity="sha512-sNylduh9fqpYUK5OYXWcBleGzbZInWj8yCJAU57r1dpSK9tP2ghf/SRYCMj&#43;KsslFkCOt3TvJrX2AV/Gc3wOqA=="></script>
 
 
-<link rel="canonical" href="https://posvirus.github.io/post/ysyx-device-note/" >
 
 
 
 
-<link href="/css/style.min.bd4aca9b9a5f6ce86d9d6ab6e6757498b0a0c742d1963f144557e59ca9d2da00.css" rel="stylesheet">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+  
+  
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+  
+
+  
+  <script type="application/ld+json">
+  [{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "articleSection": "Posts",
+    "name": "NEMU的设备实现注意事项",
+    "headline": "NEMU的设备实现注意事项",
+    "description": "YSYX学习笔记：NEMU的设备实现注意事项",
+    "abstract": "\u003cp\u003e\u003cstrong\u003eCreated by posvirus, October 4th, 2025\u003c\/strong\u003e\u003c\/p\u003e",
+    "inLanguage": "en",
+    "url" : "http:\/\/localhost:1313\/post\/ysyx-device-note\/",
+    "author" : {
+      "@type": "Person",
+      "name": "Posvirus\u0027 Blog"
+    },
+    "copyrightYear": "2025",
+    "dateCreated": "2025-10-04T00:00:00\u002b00:00",
+    "datePublished": "2025-10-04T00:00:00\u002b00:00",
+    
+    "dateModified": "2025-10-04T00:00:00\u002b00:00",
+    
+    "keywords": ["NEMU","Makefile","AM","Device","Clang"],
+    
+    "mainEntityOfPage": "true",
+    "wordCount": "510"
+  }]
+  </script>
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
 </head>
 
-<body>
 
-    <div class="flexWrapper">
-        <header class="headerWrapper">
-    <div class="header">
-        <div>
-            <a class="terminal" href="/">
-                <span>posvirus@github.io ~ $</span>
-            </a>
-        </div>
-        <input class="side-menu" type="checkbox" id="side-menu">
-        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
-        <nav class="headerLinks">
-            <ul>
-                
-                <li>
-                    <a href="https://posvirus.github.io/about" title="" >
-                        ~/about</a>
-                </li>
-                
-                <li>
-                    <a href="https://posvirus.github.io/blog" title="" >
-                        ~/blog</a>
-                </li>
-                
-            </ul>
-        </nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <body class="flex flex-col h-screen m-auto leading-7 max-w-7xl px-6 sm:px-14 md:px-24 lg:px-32 text-lg bg-neutral text-neutral-900 dark:bg-neutral-800 dark:text-neutral scrollbar-thin scrollbar-track-neutral-200 scrollbar-thumb-neutral-400 dark:scrollbar-track-neutral-800 dark:scrollbar-thumb-neutral-600">
+    <div id="the-top" class="absolute flex self-center">
+      <a
+        class="px-3 py-1 text-sm -translate-y-8 rounded-b-lg bg-primary-200 focus:translate-y-0 dark:bg-neutral-600"
+        href="#main-content">
+        <span class="font-bold text-primary-600 pe-2 dark:text-primary-400">&darr;</span>
+        Skip to main content
+      </a>
     </div>
-</header>
+    
+    
+      
 
 
-        <div class="content">
-            <main class="main">
-                
-<div class="postWrapper">
-    <h1>NEMU的设备实现注意事项</h1>
+
+
+
+
+
+
+
+
+
+
+
+<div
+  class="main-menu flex items-center justify-between py-6 md:justify-start gap-x-3 pt-[2px] pr-2 md:pr-4 pb-[3px] pl-0">
+  
+  
+
+  <div class="flex flex-1 items-center justify-between">
+    <nav class="flex space-x-3">
+      
+        <a href="/" class="text-base font-medium">
+          Blowfish
+        </a>
+      
+    </nav>
     
-    	<p>YSYX学习笔记：NEMU的设备实现注意事项</p>
+  <nav class="hidden md:flex items-center gap-x-5 md:ml-12 h-12">
+    
+
+    
+
+    
+
+    
+      <button
+        id="search-button"
+        aria-label="Search"
+        class="text-base hover:text-primary-600 dark:hover:text-primary-400"
+        title="Search (/)">
+        <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+      </button>
+    
+
+    
+      <div class=" flex items-center">
+        <button
+          id="appearance-switcher"
+          aria-label="Dark mode switcher"
+          type="button"
+          class="text-base hover:text-primary-600 dark:hover:text-primary-400">
+          <div class="flex items-center justify-center dark:hidden">
+            <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>
+</span>
+          </div>
+          <div class="items-center justify-center hidden dark:flex">
+            <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>
+</span>
+          </div>
+        </button>
+      </div>
+    
+  </nav>
+
+    
+  <div class="flex md:hidden items-center gap-x-5 md:ml-12 h-12">
+    <span></span>
+
+    
+
+    
+
+    
+      <button
+        id="search-button-mobile"
+        aria-label="Search"
+        class="text-base hover:text-primary-600 dark:hover:text-primary-400"
+        title="Search (/)">
+        <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+      </button>
+    
+
+    
+      <button
+        id="appearance-switcher-mobile"
+        aria-label="Dark mode switcher"
+        type="button"
+        class="text-base hover:text-primary-600 dark:hover:text-primary-400 me-1">
+        <div class="flex items-center justify-center dark:hidden">
+          <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>
+</span>
+        </div>
+        <div class="items-center justify-center hidden dark:flex">
+          <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>
+</span>
+        </div>
+      </button>
+    
+  </div>
+
+  </div>
+  
+  <div class="-my-2 md:hidden">
+    <div id="menu-button" class="block">
+      
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+    
+    <div class="relative flex flex-col grow">
+      <main id="main-content" class="grow">
+        
+  
+  <article>
     
     
-    <section class="postMetadata">
-        <dl>
-            
-                
-<dt>tags</dt>
-<dd><span></span>
-    <a href="/tags/nemu/">#NEMU</a><span></span>
-    <a href="/tags/makefile/">#Makefile</a><span></span>
-    <a href="/tags/am/">#AM</a><span></span>
-    <a href="/tags/device/">#Device</a><span></span>
-    <a href="/tags/clang/">#Clang</a></dd>
-            
-            
-            
-                
-<dt>categories</dt>
-<dd><span></span>
-    <a href="/categories/ysyx/">YSYX</a></dd>
-            
-            
-                <dt>published</dt>
-                
-                <dd><time datetime="2025-10-04">October 4, 2025</time></dd>
-            
-            
-                <dt>reading time</dt>
-                <dd>3 minutes</dd>
-            
-        </dl>
-    </section>
+
     
-    <div>
-        <p><strong>Created by posvirus, October 4th, 2025</strong></p>
-<h3 id="1-nemu中设备初始化的流程">1. NEMU中设备初始化的流程</h3>
+    <header id="single_header" class="mt-5 max-w-prose">
+      
+      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+        NEMU的设备实现注意事项
+      </h1>
+      <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
+        
+
+
+
+
+
+  
+  
+
+
+
+  
+
+  
+  
+  
+
+  
+  
+    
+  
+
+  
+    
+  
+
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <div class="flex flex-row flex-wrap items-center">
+    
+    
+      <time datetime="2025-10-04T00:00:00&#43;00:00">4 October 2025</time><span class="px-2 text-primary-500">&middot;</span><span>510 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">3 mins</span>
+    
+
+    
+    
+  </div>
+
+  
+
+  
+  
+
+  
+  
+
+
+
+      </div>
+      
+        
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+    
+    
+<div class="flex author">
+  
+  <div class="place-self-center">
+    
+      <div class="text-[0.6rem] uppercase leading-3 text-neutral-500 dark:text-neutral-400">
+        Author
+      </div>
+      <div class="font-semibold leading-6 text-neutral-800 dark:text-neutral-300">
+        Posvirus&rsquo; Blog
+      </div>
+    
+    
+    <div class="text-2xl sm:text-lg">
+</div>
+  </div>
+</div>
+
+  
+
+  
+
+  
+    <div class="mb-5"></div>
+  
+
+      
+    </header>
+
+    
+    <section class="flex flex-col max-w-full mt-0 prose dark:prose-invert lg:flex-row">
+      
+      
+      
+      
+      
+
+
+      <div class="min-w-0 min-h-0 max-w-fit">
+        
+
+        <div class="article-content max-w-prose mb-20">
+          <p><strong>Created by posvirus, October 4th, 2025</strong></p>
+
+<h3 class="relative group">1. NEMU中设备初始化的流程
+    <div id="1-nemu中设备初始化的流程" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#1-nemu%e4%b8%ad%e8%ae%be%e5%a4%87%e5%88%9d%e5%a7%8b%e5%8c%96%e7%9a%84%e6%b5%81%e7%a8%8b" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
 <p>NEMU中各设备的初始化遵循一个统一的流程，以下将作简要说明：</p>
 <p>首先，设备会调用<code>new_space()</code>函数，这会从I/O地址空间中分配指定大小的空间给该设备，该函数在<code>map.c</code>中实现：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>io_space <span style="color:#f92672">=</span> NULL;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>p_space <span style="color:#f92672">=</span> NULL;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">new_space</span>(<span style="color:#66d9ef">int</span> size) {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span>p <span style="color:#f92672">=</span> p_space;
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// page aligned;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  size <span style="color:#f92672">=</span> (size <span style="color:#f92672">+</span> (PAGE_SIZE <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span>PAGE_MASK;
-</span></span><span style="display:flex;"><span>  p_space <span style="color:#f92672">+=</span> size;
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">assert</span>(p_space <span style="color:#f92672">-</span> io_space <span style="color:#f92672">&lt;</span> IO_SPACE_MAX);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> p;
-</span></span><span style="display:flex;"><span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">io_space</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">p_space</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">uint8_t</span><span class="o">*</span> <span class="nf">new_space</span><span class="p">(</span><span class="kt">int</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">p_space</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// page aligned;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="n">PAGE_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">PAGE_MASK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p_space</span> <span class="o">+=</span> <span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">assert</span><span class="p">(</span><span class="n">p_space</span> <span class="o">-</span> <span class="n">io_space</span> <span class="o">&lt;</span> <span class="n">IO_SPACE_MAX</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>为解释该函数的作用，我们首先需要明确<code>map.c</code>中另一个函数<code>init_map()</code>的作用，该函数在<code>device.c</code>中的<code>init_device()</code>函数中被调用，用于初始化I/O地址空间，在完成初始化后才会调用各设备的初始化函数，将地址空间分配给各个设备。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">init_map</span>() {
-</span></span><span style="display:flex;"><span>  io_space <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(IO_SPACE_MAX);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">assert</span>(io_space);
-</span></span><span style="display:flex;"><span>  p_space <span style="color:#f92672">=</span> io_space;
-</span></span><span style="display:flex;"><span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">init_map</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">io_space</span> <span class="o">=</span> <span class="nf">malloc</span><span class="p">(</span><span class="n">IO_SPACE_MAX</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">assert</span><span class="p">(</span><span class="n">io_space</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p_space</span> <span class="o">=</span> <span class="n">io_space</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>这里<code>init_map()</code>函数通过<code>malloc()</code>函数创建了一个大小为<code>IO_SPACE_MAX</code>的空间，并将<code>p_space</code>与<code>io_space</code>均指向该空间起始位置。这里<code>p_space</code>实际用于指示当前未分配空间的起始位置，<code>io_space</code>则始终执行I/O地址空间的起始位置。</p>
 <blockquote>
 <p>注意，I/O地址空间在NEMU整个生命周期中都需要存在，且当NEMU退出时，操作系统会自动回收所有分配的内存，所以我们无需手动释放动态分配的空间。</p></blockquote>
 <p>随后在设备初始化中调用<code>new_space()</code>函数，它会首先将<code>p_space</code>赋值给指针<code>p</code>，即将<code>p</code>指向当前未分配空间的起始位置，也是即将分配给该设备空间的初始位置。随后，我们对<code>size</code>进行向上取整的操作，使<code>size</code>变为<code>PAGE_SIZE</code>的整数倍：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>size <span style="color:#f92672">=</span> (size <span style="color:#f92672">+</span> (PAGE_SIZE <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span>PAGE_MASK;
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="n">PAGE_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">PAGE_MASK</span><span class="p">;</span>
 </span></span></code></pre></div><p>我们可以结合实际简要理解这段代码，假设<code>PAGE_SIZE</code>取<code>1ul &lt;&lt; 12</code>（即4096），这里<code>size + (PAGE_SIZE - 1)</code>的操作确保了：</p>
 <ul>
 <li>当<code>size</code>为<code>PAGE_SIZE</code>整数倍时，<code>size + (PAGE_SIZE - 1)</code>仍在当前页的范围内。</li>
@@ -132,44 +573,44 @@ NEMU的设备实现注意事项 | Posvirus&#39; Blog
 <p>随后，利用<code>PAGE_MASK</code>，我们可以将<code>size + (PAGE_SIZE - 1)</code>二进制表示中的低若干位清零，从而实现取整的操作，比如<code>PAGE_SIZE</code>取<code>1ul &lt;&lt; 12</code>时，<code>PAGE_MASK</code>可取<code>(1ul &lt;&lt; 12) - 1</code>，该数二进制表示的低12位均为0，从而与该数按位与后一定是<code>PAGE_SIZE</code>的倍数，且<code>size + (PAGE_SIZE - 1)</code>的操作保证最终分配的空间大小一定不小于原始请求的大小。</p>
 <p>完成对齐后，我们可以移动<code>p_space</code>指针，将<code>size</code>大小的空间标记为已分配，同时检查是否有足够的空间可以分配，如有，则返回指针<code>p</code>，代表空间分配完成。</p>
 <p>随后，设备会调用<code>add_mmio_map()</code>函数（这里我们只考虑MMIO），这一函数在<code>mmio.c</code>中实现：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> IOMap maps[NR_MAP] <span style="color:#f92672">=</span> {};
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> nr_map <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">report_mmio_overlap</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name1, <span style="color:#66d9ef">paddr_t</span> l1, <span style="color:#66d9ef">paddr_t</span> r1,
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name2, <span style="color:#66d9ef">paddr_t</span> l2, <span style="color:#66d9ef">paddr_t</span> r2) {
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">panic</span>(<span style="color:#e6db74">&#34;MMIO region %s@[&#34;</span> FMT_PADDR <span style="color:#e6db74">&#34;, &#34;</span> FMT_PADDR <span style="color:#e6db74">&#34;] is overlapped &#34;</span>
-</span></span><span style="display:flex;"><span>               <span style="color:#e6db74">&#34;with %s@[&#34;</span> FMT_PADDR <span style="color:#e6db74">&#34;, &#34;</span> FMT_PADDR <span style="color:#e6db74">&#34;]&#34;</span>, name1, l1, r1, name2, l2, r2);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">/* device interface */</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">add_mmio_map</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name, <span style="color:#66d9ef">paddr_t</span> addr, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>space, <span style="color:#66d9ef">uint32_t</span> len, <span style="color:#66d9ef">io_callback_t</span> callback) {
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">assert</span>(nr_map <span style="color:#f92672">&lt;</span> NR_MAP);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">paddr_t</span> left <span style="color:#f92672">=</span> addr, right <span style="color:#f92672">=</span> addr <span style="color:#f92672">+</span> len <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">in_pmem</span>(left) <span style="color:#f92672">||</span> <span style="color:#a6e22e">in_pmem</span>(right)) {
-</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">report_mmio_overlap</span>(name, left, right, <span style="color:#e6db74">&#34;pmem&#34;</span>, PMEM_LEFT, PMEM_RIGHT);
-</span></span><span style="display:flex;"><span>  }
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> nr_map; i<span style="color:#f92672">++</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (left <span style="color:#f92672">&lt;=</span> maps[i].high <span style="color:#f92672">&amp;&amp;</span> right <span style="color:#f92672">&gt;=</span> maps[i].low) {
-</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">report_mmio_overlap</span>(name, left, right, maps[i].name, maps[i].low, maps[i].high);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>  }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  maps[nr_map] <span style="color:#f92672">=</span> (IOMap){ .name <span style="color:#f92672">=</span> name, .low <span style="color:#f92672">=</span> addr, .high <span style="color:#f92672">=</span> addr <span style="color:#f92672">+</span> len <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>,
-</span></span><span style="display:flex;"><span>    .space <span style="color:#f92672">=</span> space, .callback <span style="color:#f92672">=</span> callback };
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Log</span>(<span style="color:#e6db74">&#34;Add mmio map &#39;%s&#39; at [&#34;</span> FMT_PADDR <span style="color:#e6db74">&#34;, &#34;</span> FMT_PADDR <span style="color:#e6db74">&#34;]&#34;</span>,
-</span></span><span style="display:flex;"><span>      maps[nr_map].name, maps[nr_map].low, maps[nr_map].high);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  nr_map <span style="color:#f92672">++</span>;
-</span></span><span style="display:flex;"><span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">IOMap</span> <span class="n">maps</span><span class="p">[</span><span class="n">NR_MAP</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="n">nr_map</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">report_mmio_overlap</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name1</span><span class="p">,</span> <span class="kt">paddr_t</span> <span class="n">l1</span><span class="p">,</span> <span class="kt">paddr_t</span> <span class="n">r1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name2</span><span class="p">,</span> <span class="kt">paddr_t</span> <span class="n">l2</span><span class="p">,</span> <span class="kt">paddr_t</span> <span class="n">r2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;MMIO region %s@[&#34;</span> <span class="n">FMT_PADDR</span> <span class="s">&#34;, &#34;</span> <span class="n">FMT_PADDR</span> <span class="s">&#34;] is overlapped &#34;</span>
+</span></span><span class="line"><span class="cl">               <span class="s">&#34;with %s@[&#34;</span> <span class="n">FMT_PADDR</span> <span class="s">&#34;, &#34;</span> <span class="n">FMT_PADDR</span> <span class="s">&#34;]&#34;</span><span class="p">,</span> <span class="n">name1</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">name2</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">r2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* device interface */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">add_mmio_map</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">paddr_t</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">space</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">len</span><span class="p">,</span> <span class="kt">io_callback_t</span> <span class="n">callback</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">assert</span><span class="p">(</span><span class="n">nr_map</span> <span class="o">&lt;</span> <span class="n">NR_MAP</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">paddr_t</span> <span class="n">left</span> <span class="o">=</span> <span class="n">addr</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nf">in_pmem</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">||</span> <span class="nf">in_pmem</span><span class="p">(</span><span class="n">right</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">report_mmio_overlap</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="s">&#34;pmem&#34;</span><span class="p">,</span> <span class="n">PMEM_LEFT</span><span class="p">,</span> <span class="n">PMEM_RIGHT</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nr_map</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">left</span> <span class="o">&lt;=</span> <span class="n">maps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">high</span> <span class="o">&amp;&amp;</span> <span class="n">right</span> <span class="o">&gt;=</span> <span class="n">maps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">low</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">report_mmio_overlap</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">maps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">name</span><span class="p">,</span> <span class="n">maps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">low</span><span class="p">,</span> <span class="n">maps</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">high</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">maps</span><span class="p">[</span><span class="n">nr_map</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">IOMap</span><span class="p">){</span> <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="p">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">addr</span><span class="p">,</span> <span class="p">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">addr</span> <span class="o">+</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">space</span> <span class="o">=</span> <span class="n">space</span><span class="p">,</span> <span class="p">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">Log</span><span class="p">(</span><span class="s">&#34;Add mmio map &#39;%s&#39; at [&#34;</span> <span class="n">FMT_PADDR</span> <span class="s">&#34;, &#34;</span> <span class="n">FMT_PADDR</span> <span class="s">&#34;]&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">maps</span><span class="p">[</span><span class="n">nr_map</span><span class="p">].</span><span class="n">name</span><span class="p">,</span> <span class="n">maps</span><span class="p">[</span><span class="n">nr_map</span><span class="p">].</span><span class="n">low</span><span class="p">,</span> <span class="n">maps</span><span class="p">[</span><span class="n">nr_map</span><span class="p">].</span><span class="n">high</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">nr_map</span> <span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>这一函数主要创建一个<code>IOMap</code>结构体，该结构体存储了内存地址空间与I/O地址空间的映射关系，它的定义在<code>map.h</code>中：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
-</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// we treat ioaddr_t as paddr_t here
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">paddr_t</span> low;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">paddr_t</span> high;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>space;
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">io_callback_t</span> callback;
-</span></span><span style="display:flex;"><span>} IOMap;
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// we treat ioaddr_t as paddr_t here
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kt">paddr_t</span> <span class="n">low</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">paddr_t</span> <span class="n">high</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="o">*</span><span class="n">space</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">io_callback_t</span> <span class="n">callback</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">IOMap</span><span class="p">;</span>
 </span></span></code></pre></div><p>主要包括以下字段：</p>
 <ul>
 <li><code>name</code>：设备名称。</li>
@@ -179,88 +620,260 @@ NEMU的设备实现注意事项 | Posvirus&#39; Blog
 </ul>
 <p>了解<code>IOMap</code>的定义后，<code>add_mmio_map()</code>函数本身的实现是简单的，首先需要判断映射的内存地址空间与物理内存地址空间、已注册的设备内存地址空间是否重叠，如果不重叠，创建结构体即可。</p>
 <p>有了<code>IOMap</code>结构体后，我们便可在NEMU中使用<code>map_read()</code>函数与<code>map_write()</code>函数来访问设备并调用各设备的回调函数：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">word_t</span> <span style="color:#a6e22e">map_read</span>(<span style="color:#66d9ef">paddr_t</span> addr, <span style="color:#66d9ef">int</span> len, IOMap <span style="color:#f92672">*</span>map) {
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">assert</span>(len <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> len <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">8</span>);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">check_bound</span>(map, addr);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">paddr_t</span> offset <span style="color:#f92672">=</span> addr <span style="color:#f92672">-</span> map<span style="color:#f92672">-&gt;</span>low;
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">invoke_callback</span>(map<span style="color:#f92672">-&gt;</span>callback, offset, len, false); <span style="color:#75715e">// prepare data to read
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">word_t</span> ret <span style="color:#f92672">=</span> <span style="color:#a6e22e">host_read</span>(map<span style="color:#f92672">-&gt;</span>space <span style="color:#f92672">+</span> offset, len);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> ret;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">map_write</span>(<span style="color:#66d9ef">paddr_t</span> addr, <span style="color:#66d9ef">int</span> len, <span style="color:#66d9ef">word_t</span> data, IOMap <span style="color:#f92672">*</span>map) {
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">assert</span>(len <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> len <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">8</span>);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">check_bound</span>(map, addr);
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">paddr_t</span> offset <span style="color:#f92672">=</span> addr <span style="color:#f92672">-</span> map<span style="color:#f92672">-&gt;</span>low;
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">host_write</span>(map<span style="color:#f92672">-&gt;</span>space <span style="color:#f92672">+</span> offset, len, data);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">invoke_callback</span>(map<span style="color:#f92672">-&gt;</span>callback, offset, len, true);
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h3 id="2-mainargs的传递">2. mainargs的传递</h3>
-<p>当我们在测试程序目录下输入<code>mainargs</code>参数时，测试程序目录下的Makefile会先包含<code>AM_HOME</code>目录下（<code>abstract-machine</code>）的主Makefile，而这一主Makefile又会使用以下语句包含特定架构的Makefile：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#75715e">### Paste in arch-specific configurations (e.g., from `scripts/x86_64-qemu.mk`)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">-include</span> <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">/scripts/</span><span style="color:#66d9ef">$(</span>ARCH<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">.mk</span>
-</span></span></code></pre></div><p>特定架构的Makefile又会包含其所运行平台（<code>nemu</code>/<code>npc</code>/<code>native</code>）的Makefile，以<code>riscv32-nemu.mk</code>为例，其包含：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">include</span> <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span><span style="color:#960050;background-color:#1e0010">/scripts/platform/nemu.mk</span>
-</span></span></code></pre></div><p>最终，当我们使用<code>make run</code>时，<code>mainargs</code>会被传递到运行平台（<code>nemu</code>/<code>npc</code>/<code>native</code>）的Makefile中，以NEMU为例：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-makefile" data-lang="makefile"><span style="display:flex;"><span><span style="color:#a6e22e">insert-arg</span><span style="color:#f92672">:</span> image
-</span></span><span style="display:flex;"><span>	@python <span style="color:#66d9ef">$(</span>AM_HOME<span style="color:#66d9ef">)</span>/tools/insert-arg.py <span style="color:#66d9ef">$(</span>IMAGE<span style="color:#66d9ef">)</span>.bin <span style="color:#66d9ef">$(</span>MAINARGS_MAX_LEN<span style="color:#66d9ef">)</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>MAINARGS_PLACEHOLDER<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mainargs<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">run</span><span style="color:#f92672">:</span> insert-arg
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">$(</span>MAKE<span style="color:#66d9ef">)</span> -C <span style="color:#66d9ef">$(</span>NEMU_HOME<span style="color:#66d9ef">)</span> ISA<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>ISA<span style="color:#66d9ef">)</span> run ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>NEMUFLAGS<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> IMG<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>IMAGE<span style="color:#66d9ef">)</span>.bin
-</span></span></code></pre></div><p>此时，<code>run</code>目标会依赖<code>insert-arg</code>目标，而<code>insert-arg</code>目标会调用Python程序<code>insert-arg.py</code>，<code>mainargs</code>便作为该Python程序的输入参数，那么，这段Python程序主要在做什么呢？</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python3</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sys <span style="color:#f92672">import</span> argv
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>bin <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">1</span>]
-</span></span><span style="display:flex;"><span>max_len <span style="color:#f92672">=</span> int(argv[<span style="color:#ae81ff">2</span>])
-</span></span><span style="display:flex;"><span>placeholder <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">3</span>]
-</span></span><span style="display:flex;"><span>mainargs <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">4</span>]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> len(mainargs) <span style="color:#f92672">&gt;=</span> max_len:
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Error: mainargs should not be longer than </span><span style="color:#e6db74">{0}</span><span style="color:#e6db74"> bytes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format( max_len))
-</span></span><span style="display:flex;"><span>    exit(<span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;mainargs=</span><span style="color:#e6db74">{0}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(mainargs))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>fp <span style="color:#f92672">=</span> open(bin, <span style="color:#e6db74">&#39;r+b&#39;</span>)
-</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> fp<span style="color:#f92672">.</span>read()
-</span></span><span style="display:flex;"><span>idx <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>find(str<span style="color:#f92672">.</span>encode(placeholder))
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> idx <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>:
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Error: placeholder not found!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
-</span></span><span style="display:flex;"><span>    exit(<span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span>fp<span style="color:#f92672">.</span>seek(idx)
-</span></span><span style="display:flex;"><span>mainargs_pad <span style="color:#f92672">=</span> str<span style="color:#f92672">.</span>encode(mainargs)<span style="color:#f92672">+</span> ((max_len <span style="color:#f92672">-</span> len(mainargs)) <span style="color:#f92672">*</span> str<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\0</span><span style="color:#e6db74">&#34;</span>))
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> len(mainargs_pad) <span style="color:#f92672">!=</span> max_len:
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Error: len(mainargs_pad) != max_len</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>)
-</span></span><span style="display:flex;"><span>    exit(<span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span>fp<span style="color:#f92672">.</span>write(mainargs_pad)
-</span></span><span style="display:flex;"><span>fp<span style="color:#f92672">.</span>close()
-</span></span></code></pre></div><p>首先，它会将<code>mainargs</code>打印出来（但这个打印并对应<code>hello</code>程序中输出<code>mainargs</code>的打印行为，后者所<code>hello</code>程序本身内置的），同时向编译后的可执行文件注入<code>mainargs</code>参数。随后，在<code>trm.c</code>中，我们便可将<code>mainargs</code>参数通过<code>_trm_init()</code>函数注入到<code>main</code>函数中：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> mainargs[MAINARGS_MAX_LEN] <span style="color:#f92672">=</span> MAINARGS_PLACEHOLDER; <span style="color:#75715e">// defined in CFLAGS
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">_trm_init</span>() {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> <span style="color:#a6e22e">main</span>(mainargs);
-</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">halt</span>(ret);
-</span></span><span style="display:flex;"><span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">word_t</span> <span class="nf">map_read</span><span class="p">(</span><span class="kt">paddr_t</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">,</span> <span class="n">IOMap</span> <span class="o">*</span><span class="n">map</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">assert</span><span class="p">(</span><span class="n">len</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">len</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">check_bound</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">paddr_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">addr</span> <span class="o">-</span> <span class="n">map</span><span class="o">-&gt;</span><span class="n">low</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">invoke_callback</span><span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span> <span class="c1">// prepare data to read
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kt">word_t</span> <span class="n">ret</span> <span class="o">=</span> <span class="nf">host_read</span><span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">space</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">map_write</span><span class="p">(</span><span class="kt">paddr_t</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">,</span> <span class="kt">word_t</span> <span class="n">data</span><span class="p">,</span> <span class="n">IOMap</span> <span class="o">*</span><span class="n">map</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">assert</span><span class="p">(</span><span class="n">len</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">len</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">check_bound</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">paddr_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">addr</span> <span class="o">-</span> <span class="n">map</span><span class="o">-&gt;</span><span class="n">low</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">host_write</span><span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">space</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">invoke_callback</span><span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div>
+<h3 class="relative group">2. mainargs的传递
+    <div id="2-mainargs的传递" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#2-mainargs%e7%9a%84%e4%bc%a0%e9%80%92" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>当我们在测试程序目录下输入<code>mainargs</code>参数时，测试程序目录下的Makefile会先包含<code>AM_HOME</code>目录下（<code>abstract-machine</code>）的主Makefile，而这一主Makefile又会使用以下语句包含特定架构的Makefile：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c">### Paste in arch-specific configurations (e.g., from `scripts/x86_64-qemu.mk`)
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="err">-include</span> <span class="k">$(</span><span class="nv">AM_HOME</span><span class="k">)</span><span class="err">/scripts/</span><span class="k">$(</span><span class="nv">ARCH</span><span class="k">)</span><span class="err">.mk</span>
+</span></span></code></pre></div><p>特定架构的Makefile又会包含其所运行平台（<code>nemu</code>/<code>npc</code>/<code>native</code>）的Makefile，以<code>riscv32-nemu.mk</code>为例，其包含：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">include</span> <span class="k">$(</span><span class="nv">AM_HOME</span><span class="k">)</span><span class="err">/scripts/platform/nemu.mk</span>
+</span></span></code></pre></div><p>最终，当我们使用<code>make run</code>时，<code>mainargs</code>会被传递到运行平台（<code>nemu</code>/<code>npc</code>/<code>native</code>）的Makefile中，以NEMU为例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">insert-arg</span><span class="o">:</span> <span class="n">image</span>
+</span></span><span class="line"><span class="cl">	@python <span class="k">$(</span>AM_HOME<span class="k">)</span>/tools/insert-arg.py <span class="k">$(</span>IMAGE<span class="k">)</span>.bin <span class="k">$(</span>MAINARGS_MAX_LEN<span class="k">)</span> <span class="s2">&#34;</span><span class="k">$(</span>MAINARGS_PLACEHOLDER<span class="k">)</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="k">$(</span>mainargs<span class="k">)</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">run</span><span class="o">:</span> <span class="n">insert</span>-<span class="n">arg</span>
+</span></span><span class="line"><span class="cl">	<span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>NEMU_HOME<span class="k">)</span> <span class="nv">ISA</span><span class="o">=</span><span class="k">$(</span>ISA<span class="k">)</span> run <span class="nv">ARGS</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span>NEMUFLAGS<span class="k">)</span><span class="s2">&#34;</span> <span class="nv">IMG</span><span class="o">=</span><span class="k">$(</span>IMAGE<span class="k">)</span>.bin
+</span></span></code></pre></div><p>此时，<code>run</code>目标会依赖<code>insert-arg</code>目标，而<code>insert-arg</code>目标会调用Python程序<code>insert-arg.py</code>，<code>mainargs</code>便作为该Python程序的输入参数，那么，这段Python程序主要在做什么呢？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">argv</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">bin</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">max_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">placeholder</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">mainargs</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mainargs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_len</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Error: mainargs should not be longer than </span><span class="si">{0}</span><span class="s2"> bytes</span><span class="se">\n</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">max_len</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;mainargs=</span><span class="si">{0}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mainargs</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="nb">bin</span><span class="p">,</span> <span class="s1">&#39;r+b&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">idx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">placeholder</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Error: placeholder not found!</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mainargs_pad</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">mainargs</span><span class="p">)</span><span class="o">+</span> <span class="p">((</span><span class="n">max_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">mainargs</span><span class="p">))</span> <span class="o">*</span> <span class="nb">str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\0</span><span class="s2">&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mainargs_pad</span><span class="p">)</span> <span class="o">!=</span> <span class="n">max_len</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Error: len(mainargs_pad) != max_len</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mainargs_pad</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span></code></pre></div><p>首先，它会将<code>mainargs</code>打印出来（但这个打印并对应<code>hello</code>程序中输出<code>mainargs</code>的打印行为，后者所<code>hello</code>程序本身内置的），同时向编译后的可执行文件注入<code>mainargs</code>参数。随后，在<code>trm.c</code>中，我们便可将<code>mainargs</code>参数通过<code>_trm_init()</code>函数注入到<code>main</code>函数中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">mainargs</span><span class="p">[</span><span class="n">MAINARGS_MAX_LEN</span><span class="p">]</span> <span class="o">=</span> <span class="n">MAINARGS_PLACEHOLDER</span><span class="p">;</span> <span class="c1">// defined in CFLAGS
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">_trm_init</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="nf">main</span><span class="p">(</span><span class="n">mainargs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">halt</span><span class="p">(</span><span class="n">ret</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div>
+          
+          
+          
+        </div>
+        
+        
+
+        
+
+        
+
+      </div>
+
+      
+      
+        
+        
+          
+          
+        
+        
+        
+        <script
+          type="text/javascript"
+          src="/js/page.min.54b6f4371722649edbe871e431d8670d670878c22be8f36e229fe53cc9b786fe25a834def5e6de621f7a3e37b72bc8cd73839aa5ed907ed6cbd45cd3e1b0fa20.js"
+          integrity="sha512-VLb0NxciZJ7b6HHkMdhnDWcIeMIr6PNuIp/lPMm3hv4lqDTe9ebeYh96Pje3K8jNc4Oape2QftbL1FzT4bD6IA=="
+          data-oid="views_post/YSYX-device-note.md"
+          data-oid-likes="likes_post/YSYX-device-note.md"></script>
+      
+    </section>
+
+    
+    <footer class="pt-8 max-w-prose print:hidden">
+      
+  
+    
+    
+    
+    <div class="pt-8">
+      <hr class="border-dotted border-neutral-300 dark:border-neutral-600">
+      <div class="flex justify-between pt-3">
+        <span class="flex flex-col">
+          
+            <a
+              class="flex text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="/post/ysyx-npc-note2/">
+              <span class="leading-6">
+                <span class="inline-block rtl:rotate-180">&larr;</span>&ensp;NPC实现时的注意事项（2）
+              </span>
+            </a>
+            
+              <span class="ms-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <time datetime="2025-09-30T00:00:00&#43;00:00">30 September 2025</time>
+              </span>
+            
+          
+        </span>
+        <span class="flex flex-col items-end">
+          
+            <a
+              class="flex text-right text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="/post/ysyx-rtc_and_sprintf/">
+              <span class="leading-6">
+                设备实时时钟与更强大的sprintf()函数&ensp;<span class="inline-block rtl:rotate-180">&rarr;</span>
+              </span>
+            </a>
+            
+              <span class="me-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <time datetime="2025-10-05T00:00:00&#43;00:00">5 October 2025</time>
+              </span>
+            
+          
+        </span>
+      </div>
     </div>
+  
+
+
+      
+    </footer>
+  </article>
+
+        
+
+
+
+
+
+<div
+  id="scroll-to-top"
+  class="fixed bottom-24 end-6 z-50 transform translate-y-4 opacity-0 duration-200">
+  <a
+    href="#the-top"
+    class="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-neutral/50 text-xl text-neutral-700 hover:text-primary-600 dark:bg-neutral-800/50 dark:text-neutral dark:hover:text-primary-400"
+    aria-label="Scroll to top"
+    title="Scroll to top">
+    &uarr;
+  </a>
 </div>
 
-            </main>
-        </div>
-
-
-        <footer class="footer">
+      </main><footer id="site-footer" class="py-10 print:hidden">
+  
+  
     
-        <span>
-            © 2025 Posvirus&#39; Blog, Built with
-            <a href="https://gohugo.io" class="footerLink">Hugo</a> and
-            <a href="https://github.com/LordMathis/hugo-theme-nightfall" class="footerLink">Nightfall</a> theme
-        </span>
+  
+  <div class="flex items-center justify-between">
     
+    
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">
+          &copy;
+          2025
+          Posvirus&rsquo; Blog
+      </p>
+    
+
+    
+    
+      <p class="text-xs text-neutral-500 dark:text-neutral-400">
+        
+        
+        Powered by <a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://gohugo.io/" target="_blank" rel="noopener noreferrer">Hugo</a> &amp; <a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://blowfish.page/" target="_blank" rel="noopener noreferrer">Blowfish</a>
+      </p>
+    
+  </div>
+  
+    <script>
+      mediumZoom(document.querySelectorAll("img:not(.nozoom)"), {
+        margin: 24,
+        background: "rgba(0,0,0,0.5)",
+        scrollOffset: 0,
+      });
+    </script>
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/process.min.ee03488f19c93c2efb199e2e3014ea5f3cb2ce7d45154adb3399a158cac27ca52831db249ede5bb602700ef87eb02434139de0858af1818ab0fb4182472204a4.js"
+    integrity="sha512-7gNIjxnJPC77GZ4uMBTqXzyyzn1FFUrbM5mhWMrCfKUoMdsknt5btgJwDvh&#43;sCQ0E53ghYrxgYqw&#43;0GCRyIEpA=="></script>
+  
+  
 </footer>
+<div
+  id="search-wrapper"
+  class="invisible fixed inset-0 flex h-screen w-screen cursor-default flex-col bg-neutral-500/50 p-4 backdrop-blur-sm dark:bg-neutral-900/50 sm:p-6 md:p-[10vh] lg:p-[12vh] z-500"
+  data-url="http://localhost:1313/">
+  <div
+    id="search-modal"
+    class="flex flex-col w-full max-w-3xl min-h-0 mx-auto border rounded-md shadow-lg top-20 border-neutral-200 bg-neutral dark:border-neutral-700 dark:bg-neutral-800">
+    <header class="relative z-10 flex items-center justify-between flex-none px-2">
+      <form class="flex items-center flex-auto min-w-0">
+        <div class="flex items-center justify-center w-8 h-8 text-neutral-400">
+          <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+        </div>
+        <input
+          type="search"
+          id="search-query"
+          class="flex flex-auto h-12 mx-1 bg-transparent appearance-none focus:outline-dotted focus:outline-2 focus:outline-transparent"
+          placeholder="Search"
+          tabindex="0">
+      </form>
+      <button
+        id="close-search-button"
+        class="flex items-center justify-center w-8 h-8 text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+        title="Close (Esc)">
+        <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
+</span>
+      </button>
+    </header>
+    <section class="flex-auto px-2 overflow-auto">
+      <ul id="search-results">
+        
+      </ul>
+    </section>
+  </div>
+</div>
+
     </div>
-
-</body>
-
+  </body>
+  
 </html>
