@@ -13,7 +13,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/verilator/</guid>
-        <description>&lt;p&gt;在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并&lt;code&gt;eval()&lt;/code&gt;，而在传统RTL代码编写的Testbench中，仿真步长通常是通过&lt;code&gt;timescale&lt;/code&gt;声明的，EDA会识别并自动设置仿真步长。&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/verilator/ysyx.png" alt="Featured image of post 浅析Verilator的wrapper文件写法" /&gt;&lt;p&gt;在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并&lt;code&gt;eval()&lt;/code&gt;，而在传统RTL代码编写的Testbench中，仿真步长通常是通过&lt;code&gt;timescale&lt;/code&gt;声明的，EDA会识别并自动设置仿真步长。&lt;/p&gt;
 &lt;p&gt;这种原理上的差异会造成Verilator与传统EDA在仿真时存在两方面的区别：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;性能上的差异：&lt;/strong&gt; Verilator的仿真原理其实可概括为“当用户需要时，才对某个时间点采样与&lt;code&gt;eval()&lt;/code&gt;”，而传统EDA的仿真原理则可简单理解为“定步长对每个时间点都进行采样与&lt;code&gt;eval()&lt;/code&gt;“。因此，Verilator相对而言可以较敏捷地完成仿真，因为在仿真过程中，其实并没有对所有时间点均进行采样与&lt;code&gt;eval()&lt;/code&gt;。&lt;/li&gt;

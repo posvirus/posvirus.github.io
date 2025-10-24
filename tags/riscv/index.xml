@@ -13,7 +13,7 @@
         <pubDate>Tue, 14 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/yield/</guid>
-        <description>&lt;h2 id=&#34;特权级与异常响应机制的关系&#34;&gt;特权级与异常响应机制的关系
+        <description>&lt;img src="https://posvirus.github.io/p/yield/ysyx.png" alt="Featured image of post NEMU异常响应机制的实现" /&gt;&lt;h2 id=&#34;特权级与异常响应机制的关系&#34;&gt;特权级与异常响应机制的关系
 &lt;/h2&gt;&lt;p&gt;在PA3中，讲义同时引入了特权级与异常响应机制这两个概念，以下将简单阐述这两者之间的关系：&lt;/p&gt;
 &lt;p&gt;以RISC-V架构为例：首先，RISC-V 定义了多个特权级（如&lt;strong&gt;Machine模式&lt;/strong&gt;、&lt;strong&gt;Supervisor模式&lt;/strong&gt;、&lt;strong&gt;User模式&lt;/strong&gt;），权限逐级降低。用户程序通常在最低特权级（U模式）运行，无法直接访问关键系统资源，而当用户程序试图执行非法操作（如访问受保护内存、执行特权指令）时，会触发一个&lt;strong&gt;异常&lt;/strong&gt;或&lt;strong&gt;中断&lt;/strong&gt;。而此时，&lt;strong&gt;异常作为进入高特权级的入口&lt;/strong&gt;，CPU会自动从当前特权级&lt;strong&gt;陷入&lt;/strong&gt;（Trap）到一个预定义的更高特权级（通常是&lt;strong&gt;S模式&lt;/strong&gt;或&lt;strong&gt;M模式&lt;/strong&gt;）。&lt;/p&gt;
 &lt;p&gt;其次，在更高特权级下，操作系统拥有足够的权限来分析异常原因、采取相应措施（如终止非法程序、调度其他任务等）。处理完毕后，操作系统通过特殊的返回指令（如 &lt;code&gt;sret&lt;/code&gt; 或 &lt;code&gt;mret&lt;/code&gt;）将控制权交还给用户程序，并返回到原来的特权级和程序断点继续执行。&lt;/p&gt;
@@ -440,7 +440,7 @@
         <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/difftest-gpr/</guid>
-        <description>&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/difftest-gpr/ysyx.png" alt="Featured image of post DiffTest中的寄存器一致性" /&gt;&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
 &lt;p&gt;首先，对于NEMU，RISCV32架构的寄存器顺序在&lt;code&gt;reg.c&lt;/code&gt;中定义：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -525,7 +525,7 @@
         <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/ftrace/</guid>
-        <description>&lt;p&gt;此处说明ftrace实现的一些相关注意事项：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/ftrace/ysyx.png" alt="Featured image of post ftrace实现的注意事项" /&gt;&lt;p&gt;此处说明ftrace实现的一些相关注意事项：&lt;/p&gt;
 &lt;h3 id=&#34;1-elf文件的解析&#34;&gt;1. ELF文件的解析
 &lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/ftrace/ELF.png&#34;
 	width=&#34;4677&#34;
@@ -688,7 +688,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/riscv32m/</guid>
-        <description>&lt;h2 id=&#34;div指令&#34;&gt;&lt;code&gt;div&lt;/code&gt;指令
+        <description>&lt;img src="https://posvirus.github.io/p/riscv32m/ysyx.png" alt="Featured image of post RV32M扩展指令的执行逻辑" /&gt;&lt;h2 id=&#34;div指令&#34;&gt;&lt;code&gt;div&lt;/code&gt;指令
 &lt;/h2&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -836,7 +836,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/div/</guid>
-        <description>&lt;p&gt;在使用&lt;code&gt;-march=rv32im_zicsr&lt;/code&gt;对测试程序进行编译时，会发现测试对应的除法与取余操作（有符号/无符号）不能被正确编译至&lt;code&gt;div&lt;/code&gt;等RV32M扩展指令，原以为是指令集架构选择错误，后续发现是因为当除数是常量时，（如&lt;code&gt;a / 10&lt;/code&gt;），编译器可能用更高效的移位/乘法序列替代除法指令或取余指令，为防止该优化，可以在变量声明前加入&lt;code&gt;volatile&lt;/code&gt;关键字，指示该变量随时可变，从而限制其优化。&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/div/ysyx.png" alt="Featured image of post 关于div等RV32M指令无法编译的问题" /&gt;&lt;p&gt;在使用&lt;code&gt;-march=rv32im_zicsr&lt;/code&gt;对测试程序进行编译时，会发现测试对应的除法与取余操作（有符号/无符号）不能被正确编译至&lt;code&gt;div&lt;/code&gt;等RV32M扩展指令，原以为是指令集架构选择错误，后续发现是因为当除数是常量时，（如&lt;code&gt;a / 10&lt;/code&gt;），编译器可能用更高效的移位/乘法序列替代除法指令或取余指令，为防止该优化，可以在变量声明前加入&lt;code&gt;volatile&lt;/code&gt;关键字，指示该变量随时可变，从而限制其优化。&lt;/p&gt;
 &lt;p&gt;以下给出一个可以正确编译出RV32M扩展指令的测试程序：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

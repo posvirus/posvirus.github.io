@@ -13,7 +13,7 @@
         <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/difftest-gpr/</guid>
-        <description>&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/difftest-gpr/ysyx.png" alt="Featured image of post DiffTest中的寄存器一致性" /&gt;&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
 &lt;p&gt;首先，对于NEMU，RISCV32架构的寄存器顺序在&lt;code&gt;reg.c&lt;/code&gt;中定义：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

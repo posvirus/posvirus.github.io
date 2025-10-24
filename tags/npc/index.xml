@@ -13,7 +13,7 @@
         <pubDate>Tue, 30 Sep 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/npc-note2/</guid>
-        <description>&lt;p&gt;此处，我们主要关注向NPC中集成DiffTest时的一些注意事项：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/npc-note2/ysyx.png" alt="Featured image of post NPC实现时的注意事项（2）" /&gt;&lt;p&gt;此处，我们主要关注向NPC中集成DiffTest时的一些注意事项：&lt;/p&gt;
 &lt;h2 id=&#34;cpu状态的存储&#34;&gt;CPU状态的存储
 &lt;/h2&gt;&lt;p&gt;在运行DiffTest时，我们需要比较REF与DUT的CPU的状态是否一致，而NPC先前未定义存储CPU状态的结构体（因为CPU的状态实际存储在RTL代码中），为方便DiffTest的传参，我们补充定义存储CPU状态的结构体&lt;code&gt;CPU_state&lt;/code&gt;，以及它对应的初始化函数与状态同步函数：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -463,7 +463,7 @@
         <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/npc-note1/</guid>
-        <description>&lt;h2 id=&#34;npc指令的反汇编&#34;&gt;NPC指令的反汇编
+        <description>&lt;img src="https://posvirus.github.io/p/npc-note1/ysyx.png" alt="Featured image of post NPC实现时的注意事项（1）" /&gt;&lt;h2 id=&#34;npc指令的反汇编&#34;&gt;NPC指令的反汇编
 &lt;/h2&gt;&lt;p&gt;当直接在NPC中使用&lt;a class=&#34;link&#34; href=&#34;https://github.com/capstone-engine/capstone/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;capstone项目&lt;/a&gt;提供的反汇编功能，并将NEMU中的&lt;code&gt;disasm.c&lt;/code&gt;复制到NPC中，会出现报错。具体而言，我们需要对&lt;code&gt;disasm.c&lt;/code&gt;中的几个函数指针进行显示强制类型转换：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;

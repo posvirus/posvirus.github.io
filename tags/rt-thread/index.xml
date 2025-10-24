@@ -13,7 +13,7 @@
         <pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/rt-thread/</guid>
-        <description>&lt;h2 id=&#34;rt-thread上下文创建&#34;&gt;RT-Thread上下文创建
+        <description>&lt;img src="https://posvirus.github.io/p/rt-thread/ysyx.png" alt="Featured image of post RT-Thread的上下文" /&gt;&lt;h2 id=&#34;rt-thread上下文创建&#34;&gt;RT-Thread上下文创建
 &lt;/h2&gt;&lt;p&gt;首先，我们考虑RT-Thread中的上下文创建函数&lt;code&gt;rt_hw_stack_init()&lt;/code&gt;的实现，观察其参数列表：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

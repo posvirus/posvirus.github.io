@@ -13,7 +13,7 @@
         <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/difftest-gpr/</guid>
-        <description>&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/difftest-gpr/ysyx.png" alt="Featured image of post DiffTest中的寄存器一致性" /&gt;&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
 &lt;p&gt;首先，对于NEMU，RISCV32架构的寄存器顺序在&lt;code&gt;reg.c&lt;/code&gt;中定义：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -98,7 +98,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/exec-once/</guid>
-        <description>&lt;p&gt;首先，&lt;code&gt;exec_once()&lt;/code&gt;会接收&lt;code&gt;Decode&lt;/code&gt;结构体指针&lt;code&gt; s&lt;/code&gt;，以及当前的PC值&lt;code&gt;pc&lt;/code&gt;，&lt;code&gt;pc&lt;/code&gt;比较好理解，它通常是通过&lt;code&gt;CPU_state&lt;/code&gt;结构体&lt;code&gt;cpu&lt;/code&gt;中的&lt;code&gt;pc&lt;/code&gt;成员传递的，RV32 ISA的&lt;code&gt;CPU_state&lt;/code&gt;结构体定义在&lt;code&gt;isa-def.h&lt;/code&gt;中：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/exec-once/ysyx.png" alt="Featured image of post exec_once()函数执行逻辑" /&gt;&lt;p&gt;首先，&lt;code&gt;exec_once()&lt;/code&gt;会接收&lt;code&gt;Decode&lt;/code&gt;结构体指针&lt;code&gt; s&lt;/code&gt;，以及当前的PC值&lt;code&gt;pc&lt;/code&gt;，&lt;code&gt;pc&lt;/code&gt;比较好理解，它通常是通过&lt;code&gt;CPU_state&lt;/code&gt;结构体&lt;code&gt;cpu&lt;/code&gt;中的&lt;code&gt;pc&lt;/code&gt;成员传递的，RV32 ISA的&lt;code&gt;CPU_state&lt;/code&gt;结构体定义在&lt;code&gt;isa-def.h&lt;/code&gt;中：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -204,7 +204,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/riscv32m/</guid>
-        <description>&lt;h2 id=&#34;div指令&#34;&gt;&lt;code&gt;div&lt;/code&gt;指令
+        <description>&lt;img src="https://posvirus.github.io/p/riscv32m/ysyx.png" alt="Featured image of post RV32M扩展指令的执行逻辑" /&gt;&lt;h2 id=&#34;div指令&#34;&gt;&lt;code&gt;div&lt;/code&gt;指令
 &lt;/h2&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -352,7 +352,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/div/</guid>
-        <description>&lt;p&gt;在使用&lt;code&gt;-march=rv32im_zicsr&lt;/code&gt;对测试程序进行编译时，会发现测试对应的除法与取余操作（有符号/无符号）不能被正确编译至&lt;code&gt;div&lt;/code&gt;等RV32M扩展指令，原以为是指令集架构选择错误，后续发现是因为当除数是常量时，（如&lt;code&gt;a / 10&lt;/code&gt;），编译器可能用更高效的移位/乘法序列替代除法指令或取余指令，为防止该优化，可以在变量声明前加入&lt;code&gt;volatile&lt;/code&gt;关键字，指示该变量随时可变，从而限制其优化。&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/div/ysyx.png" alt="Featured image of post 关于div等RV32M指令无法编译的问题" /&gt;&lt;p&gt;在使用&lt;code&gt;-march=rv32im_zicsr&lt;/code&gt;对测试程序进行编译时，会发现测试对应的除法与取余操作（有符号/无符号）不能被正确编译至&lt;code&gt;div&lt;/code&gt;等RV32M扩展指令，原以为是指令集架构选择错误，后续发现是因为当除数是常量时，（如&lt;code&gt;a / 10&lt;/code&gt;），编译器可能用更高效的移位/乘法序列替代除法指令或取余指令，为防止该优化，可以在变量声明前加入&lt;code&gt;volatile&lt;/code&gt;关键字，指示该变量随时可变，从而限制其优化。&lt;/p&gt;
 &lt;p&gt;以下给出一个可以正确编译出RV32M扩展指令的测试程序：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -773,7 +773,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/nemu-memory/</guid>
-        <description>&lt;p&gt;在NPC中使用C++实现存储器时，对NEMU中的存储器写入/读出函数有了一些新的认识，现总结如下：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/nemu-memory/ysyx.png" alt="Featured image of post 关于NEMU存储器访问的细节" /&gt;&lt;p&gt;在NPC中使用C++实现存储器时，对NEMU中的存储器写入/读出函数有了一些新的认识，现总结如下：&lt;/p&gt;
 &lt;p&gt;此处我们为方便说明，仅考查与物理存储器直接交互的函数，即&lt;code&gt;pmem&lt;/code&gt;，NEMU首先在&lt;code&gt;paddr.c&lt;/code&gt;中定义了两个&lt;code&gt;static&lt;/code&gt;函数，分别为&lt;code&gt;pmem_read()&lt;/code&gt;与&lt;code&gt;pmem_write()&lt;/code&gt;，用于对&lt;code&gt;pmem&lt;/code&gt;进行直接读写。&lt;/p&gt;
 &lt;p&gt;同时，因为这两个函数被声明为&lt;code&gt;static&lt;/code&gt;，其无法通过其他文件访问/调用，因此&lt;code&gt;paddr.c&lt;/code&gt;中还定义了外部访问的接口&lt;code&gt;paddr_read()&lt;/code&gt;与&lt;code&gt;paddr_write()&lt;/code&gt;，这两个函数会对输入的地址进行有效性检测，随后再通过调用&lt;code&gt;pmem_read()&lt;/code&gt;与&lt;code&gt;pmem_write()&lt;/code&gt;实现存储器访问。&lt;/p&gt;
 &lt;p&gt;我们再看&lt;code&gt;pmem_read()&lt;/code&gt;与&lt;code&gt;pmem_write()&lt;/code&gt;的具体实现：&lt;/p&gt;

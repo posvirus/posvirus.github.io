@@ -13,7 +13,7 @@
         <pubDate>Tue, 14 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/yield/</guid>
-        <description>&lt;h2 id=&#34;特权级与异常响应机制的关系&#34;&gt;特权级与异常响应机制的关系
+        <description>&lt;img src="https://posvirus.github.io/p/yield/ysyx.png" alt="Featured image of post NEMU异常响应机制的实现" /&gt;&lt;h2 id=&#34;特权级与异常响应机制的关系&#34;&gt;特权级与异常响应机制的关系
 &lt;/h2&gt;&lt;p&gt;在PA3中，讲义同时引入了特权级与异常响应机制这两个概念，以下将简单阐述这两者之间的关系：&lt;/p&gt;
 &lt;p&gt;以RISC-V架构为例：首先，RISC-V 定义了多个特权级（如&lt;strong&gt;Machine模式&lt;/strong&gt;、&lt;strong&gt;Supervisor模式&lt;/strong&gt;、&lt;strong&gt;User模式&lt;/strong&gt;），权限逐级降低。用户程序通常在最低特权级（U模式）运行，无法直接访问关键系统资源，而当用户程序试图执行非法操作（如访问受保护内存、执行特权指令）时，会触发一个&lt;strong&gt;异常&lt;/strong&gt;或&lt;strong&gt;中断&lt;/strong&gt;。而此时，&lt;strong&gt;异常作为进入高特权级的入口&lt;/strong&gt;，CPU会自动从当前特权级&lt;strong&gt;陷入&lt;/strong&gt;（Trap）到一个预定义的更高特权级（通常是&lt;strong&gt;S模式&lt;/strong&gt;或&lt;strong&gt;M模式&lt;/strong&gt;）。&lt;/p&gt;
 &lt;p&gt;其次，在更高特权级下，操作系统拥有足够的权限来分析异常原因、采取相应措施（如终止非法程序、调度其他任务等）。处理完毕后，操作系统通过特殊的返回指令（如 &lt;code&gt;sret&lt;/code&gt; 或 &lt;code&gt;mret&lt;/code&gt;）将控制权交还给用户程序，并返回到原来的特权级和程序断点继续执行。&lt;/p&gt;
@@ -440,7 +440,7 @@
         <pubDate>Sat, 11 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/nemu-run-nemu/</guid>
-        <description>&lt;h2 id=&#34;nemu对rv32e架构的适配&#34;&gt;NEMU对RV32E架构的适配
+        <description>&lt;img src="https://posvirus.github.io/p/nemu-run-nemu/ysyx.png" alt="Featured image of post 使用RV32E架构的NEMU运行NEMU" /&gt;&lt;h2 id=&#34;nemu对rv32e架构的适配&#34;&gt;NEMU对RV32E架构的适配
 &lt;/h2&gt;&lt;p&gt;在原始的NEMU中，如果尝试使用RV32E架构的NEMU运行NEMU，会直接报错，为修复这一问题，我们需要对NEMU做如下修改：&lt;/p&gt;
 &lt;p&gt;首先，在&lt;code&gt;am-kernels/kernels/nemu&lt;/code&gt;文件夹中的Makefile中，我们通过&lt;code&gt;build_am&lt;/code&gt;目标构建可在AM上运行的NEMU：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -602,7 +602,7 @@
         <pubDate>Sat, 04 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/device-note/</guid>
-        <description>&lt;h2 id=&#34;nemu中设备初始化的流程&#34;&gt;NEMU中设备初始化的流程
+        <description>&lt;img src="https://posvirus.github.io/p/device-note/ysyx.png" alt="Featured image of post NEMU的设备实现注意事项" /&gt;&lt;h2 id=&#34;nemu中设备初始化的流程&#34;&gt;NEMU中设备初始化的流程
 &lt;/h2&gt;&lt;p&gt;NEMU中各设备的初始化遵循一个统一的流程，以下将作简要说明：&lt;/p&gt;
 &lt;p&gt;首先，设备会调用&lt;code&gt;new_space()&lt;/code&gt;函数，这会从I/O地址空间中分配指定大小的空间给该设备，该函数在&lt;code&gt;map.c&lt;/code&gt;中实现：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -931,7 +931,7 @@
         <pubDate>Tue, 30 Sep 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/npc-note2/</guid>
-        <description>&lt;p&gt;此处，我们主要关注向NPC中集成DiffTest时的一些注意事项：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/npc-note2/ysyx.png" alt="Featured image of post NPC实现时的注意事项（2）" /&gt;&lt;p&gt;此处，我们主要关注向NPC中集成DiffTest时的一些注意事项：&lt;/p&gt;
 &lt;h2 id=&#34;cpu状态的存储&#34;&gt;CPU状态的存储
 &lt;/h2&gt;&lt;p&gt;在运行DiffTest时，我们需要比较REF与DUT的CPU的状态是否一致，而NPC先前未定义存储CPU状态的结构体（因为CPU的状态实际存储在RTL代码中），为方便DiffTest的传参，我们补充定义存储CPU状态的结构体&lt;code&gt;CPU_state&lt;/code&gt;，以及它对应的初始化函数与状态同步函数：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -1381,7 +1381,7 @@
         <pubDate>Thu, 25 Sep 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/npc-note1/</guid>
-        <description>&lt;h2 id=&#34;npc指令的反汇编&#34;&gt;NPC指令的反汇编
+        <description>&lt;img src="https://posvirus.github.io/p/npc-note1/ysyx.png" alt="Featured image of post NPC实现时的注意事项（1）" /&gt;&lt;h2 id=&#34;npc指令的反汇编&#34;&gt;NPC指令的反汇编
 &lt;/h2&gt;&lt;p&gt;当直接在NPC中使用&lt;a class=&#34;link&#34; href=&#34;https://github.com/capstone-engine/capstone/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;capstone项目&lt;/a&gt;提供的反汇编功能，并将NEMU中的&lt;code&gt;disasm.c&lt;/code&gt;复制到NPC中，会出现报错。具体而言，我们需要对&lt;code&gt;disasm.c&lt;/code&gt;中的几个函数指针进行显示强制类型转换：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -1621,7 +1621,7 @@
         <pubDate>Sun, 24 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/difftest-gpr/</guid>
-        <description>&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/difftest-gpr/ysyx.png" alt="Featured image of post DiffTest中的寄存器一致性" /&gt;&lt;p&gt;在讲义中提到，当使用&lt;code&gt;difftest_regcpy()&lt;/code&gt;传递DUT与REF的寄存器状态时，需要DUT的寄存器顺序与REF保持一致。此处我将说明如何检查这一点：&lt;/p&gt;
 &lt;p&gt;首先，对于NEMU，RISCV32架构的寄存器顺序在&lt;code&gt;reg.c&lt;/code&gt;中定义：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1706,7 +1706,7 @@
         <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/ftrace/</guid>
-        <description>&lt;p&gt;此处说明ftrace实现的一些相关注意事项：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/ftrace/ysyx.png" alt="Featured image of post ftrace实现的注意事项" /&gt;&lt;p&gt;此处说明ftrace实现的一些相关注意事项：&lt;/p&gt;
 &lt;h3 id=&#34;1-elf文件的解析&#34;&gt;1. ELF文件的解析
 &lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/ftrace/ELF.png&#34;
 	width=&#34;4677&#34;
@@ -1869,7 +1869,7 @@
         <pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/mtrace/</guid>
-        <description>&lt;p&gt;mtrace本身实现非常简单，此处仅列举在实现过程中遇到的若干细节：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/mtrace/ysyx.png" alt="Featured image of post mtrace实现的注意事项" /&gt;&lt;p&gt;mtrace本身实现非常简单，此处仅列举在实现过程中遇到的若干细节：&lt;/p&gt;
 &lt;h2 id=&#34;mtrace写入nemu-log文件&#34;&gt;mtrace写入NEMU Log文件
 &lt;/h2&gt;&lt;p&gt;对于mtrace这种大规模输出，我们不能仅通过&lt;code&gt;printf()&lt;/code&gt;函数将其打印在终端上，而要将其写入NEMU的Log文件中，NEMU提供了一个&lt;code&gt;log_write()&lt;/code&gt;函数用于实现这一点，它可将指定字符串写入NEMU的Log文件&lt;code&gt;nemu-log.txt&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;这时我产生了一个疑问，在&lt;code&gt;log_write()&lt;/code&gt;函数中并没有指定写入文件的参数，NEMU是如何通过该函数写入指定的Log文件呢？于是，我自然需要去查看&lt;code&gt;log_write()&lt;/code&gt;的定义，在&lt;code&gt;utils.h&lt;/code&gt;中：&lt;/p&gt;
@@ -2040,7 +2040,7 @@
         <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/iringbuf/</guid>
-        <description>&lt;p&gt;指令环形缓冲器（Instruction Ring Buffer, 下文简称IRB）的实现基于一个简化的环形缓冲器结构，具体而言，其可基于一个仅具有循环（覆盖）写入的队列实现，且队列单次写入的数据量均为1（即单个指令对应的反汇编输出）。基于上述分析，我们可定义如下的IRB：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/iringbuf/ysyx.png" alt="Featured image of post 指令环形缓冲器实现" /&gt;&lt;p&gt;指令环形缓冲器（Instruction Ring Buffer, 下文简称IRB）的实现基于一个简化的环形缓冲器结构，具体而言，其可基于一个仅具有循环（覆盖）写入的队列实现，且队列单次写入的数据量均为1（即单个指令对应的反汇编输出）。基于上述分析，我们可定义如下的IRB：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -2274,7 +2274,7 @@
         <pubDate>Thu, 24 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/batch/</guid>
-        <description>&lt;p&gt;首先，通过RTFSC，我们发现NEMU的批处理模式是通过&lt;code&gt;sdb.c&lt;/code&gt;中的一个变量&lt;code&gt;is_batch_mode&lt;/code&gt;控制的：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/batch/ysyx.png" alt="Featured image of post 如何让NEMU以批处理模式运行？" /&gt;&lt;p&gt;首先，通过RTFSC，我们发现NEMU的批处理模式是通过&lt;code&gt;sdb.c&lt;/code&gt;中的一个变量&lt;code&gt;is_batch_mode&lt;/code&gt;控制的：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2529,7 +2529,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/exec-once/</guid>
-        <description>&lt;p&gt;首先，&lt;code&gt;exec_once()&lt;/code&gt;会接收&lt;code&gt;Decode&lt;/code&gt;结构体指针&lt;code&gt; s&lt;/code&gt;，以及当前的PC值&lt;code&gt;pc&lt;/code&gt;，&lt;code&gt;pc&lt;/code&gt;比较好理解，它通常是通过&lt;code&gt;CPU_state&lt;/code&gt;结构体&lt;code&gt;cpu&lt;/code&gt;中的&lt;code&gt;pc&lt;/code&gt;成员传递的，RV32 ISA的&lt;code&gt;CPU_state&lt;/code&gt;结构体定义在&lt;code&gt;isa-def.h&lt;/code&gt;中：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/exec-once/ysyx.png" alt="Featured image of post exec_once()函数执行逻辑" /&gt;&lt;p&gt;首先，&lt;code&gt;exec_once()&lt;/code&gt;会接收&lt;code&gt;Decode&lt;/code&gt;结构体指针&lt;code&gt; s&lt;/code&gt;，以及当前的PC值&lt;code&gt;pc&lt;/code&gt;，&lt;code&gt;pc&lt;/code&gt;比较好理解，它通常是通过&lt;code&gt;CPU_state&lt;/code&gt;结构体&lt;code&gt;cpu&lt;/code&gt;中的&lt;code&gt;pc&lt;/code&gt;成员传递的，RV32 ISA的&lt;code&gt;CPU_state&lt;/code&gt;结构体定义在&lt;code&gt;isa-def.h&lt;/code&gt;中：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2635,7 +2635,7 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/nemu-memory/</guid>
-        <description>&lt;p&gt;在NPC中使用C++实现存储器时，对NEMU中的存储器写入/读出函数有了一些新的认识，现总结如下：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/nemu-memory/ysyx.png" alt="Featured image of post 关于NEMU存储器访问的细节" /&gt;&lt;p&gt;在NPC中使用C++实现存储器时，对NEMU中的存储器写入/读出函数有了一些新的认识，现总结如下：&lt;/p&gt;
 &lt;p&gt;此处我们为方便说明，仅考查与物理存储器直接交互的函数，即&lt;code&gt;pmem&lt;/code&gt;，NEMU首先在&lt;code&gt;paddr.c&lt;/code&gt;中定义了两个&lt;code&gt;static&lt;/code&gt;函数，分别为&lt;code&gt;pmem_read()&lt;/code&gt;与&lt;code&gt;pmem_write()&lt;/code&gt;，用于对&lt;code&gt;pmem&lt;/code&gt;进行直接读写。&lt;/p&gt;
 &lt;p&gt;同时，因为这两个函数被声明为&lt;code&gt;static&lt;/code&gt;，其无法通过其他文件访问/调用，因此&lt;code&gt;paddr.c&lt;/code&gt;中还定义了外部访问的接口&lt;code&gt;paddr_read()&lt;/code&gt;与&lt;code&gt;paddr_write()&lt;/code&gt;，这两个函数会对输入的地址进行有效性检测，随后再通过调用&lt;code&gt;pmem_read()&lt;/code&gt;与&lt;code&gt;pmem_write()&lt;/code&gt;实现存储器访问。&lt;/p&gt;
 &lt;p&gt;我们再看&lt;code&gt;pmem_read()&lt;/code&gt;与&lt;code&gt;pmem_write()&lt;/code&gt;的具体实现：&lt;/p&gt;

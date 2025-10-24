@@ -13,7 +13,7 @@
         <pubDate>Sat, 11 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/nemu-run-nemu/</guid>
-        <description>&lt;h2 id=&#34;nemu对rv32e架构的适配&#34;&gt;NEMU对RV32E架构的适配
+        <description>&lt;img src="https://posvirus.github.io/p/nemu-run-nemu/ysyx.png" alt="Featured image of post 使用RV32E架构的NEMU运行NEMU" /&gt;&lt;h2 id=&#34;nemu对rv32e架构的适配&#34;&gt;NEMU对RV32E架构的适配
 &lt;/h2&gt;&lt;p&gt;在原始的NEMU中，如果尝试使用RV32E架构的NEMU运行NEMU，会直接报错，为修复这一问题，我们需要对NEMU做如下修改：&lt;/p&gt;
 &lt;p&gt;首先，在&lt;code&gt;am-kernels/kernels/nemu&lt;/code&gt;文件夹中的Makefile中，我们通过&lt;code&gt;build_am&lt;/code&gt;目标构建可在AM上运行的NEMU：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -175,7 +175,7 @@
         <pubDate>Sat, 04 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/device-note/</guid>
-        <description>&lt;h2 id=&#34;nemu中设备初始化的流程&#34;&gt;NEMU中设备初始化的流程
+        <description>&lt;img src="https://posvirus.github.io/p/device-note/ysyx.png" alt="Featured image of post NEMU的设备实现注意事项" /&gt;&lt;h2 id=&#34;nemu中设备初始化的流程&#34;&gt;NEMU中设备初始化的流程
 &lt;/h2&gt;&lt;p&gt;NEMU中各设备的初始化遵循一个统一的流程，以下将作简要说明：&lt;/p&gt;
 &lt;p&gt;首先，设备会调用&lt;code&gt;new_space()&lt;/code&gt;函数，这会从I/O地址空间中分配指定大小的空间给该设备，该函数在&lt;code&gt;map.c&lt;/code&gt;中实现：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -504,7 +504,7 @@
         <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/am-makefile-2/</guid>
-        <description>&lt;h2 id=&#34;native可执行文件的生成&#34;&gt;native可执行文件的生成
+        <description>&lt;img src="https://posvirus.github.io/p/am-makefile-2/ysyx.png" alt="Featured image of post AM Makefile解读（2）" /&gt;&lt;h2 id=&#34;native可执行文件的生成&#34;&gt;native可执行文件的生成
 &lt;/h2&gt;&lt;p&gt;在AM Makefile中，我们会通过：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -734,7 +734,7 @@
         <pubDate>Thu, 24 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/batch/</guid>
-        <description>&lt;p&gt;首先，通过RTFSC，我们发现NEMU的批处理模式是通过&lt;code&gt;sdb.c&lt;/code&gt;中的一个变量&lt;code&gt;is_batch_mode&lt;/code&gt;控制的：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/batch/ysyx.png" alt="Featured image of post 如何让NEMU以批处理模式运行？" /&gt;&lt;p&gt;首先，通过RTFSC，我们发现NEMU的批处理模式是通过&lt;code&gt;sdb.c&lt;/code&gt;中的一个变量&lt;code&gt;is_batch_mode&lt;/code&gt;控制的：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -989,7 +989,7 @@
         <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/am-makefile-1/</guid>
-        <description>&lt;h2 id=&#34;提供可读性更强的makefile版本&#34;&gt;提供可读性更强的Makefile版本
+        <description>&lt;img src="https://posvirus.github.io/p/am-makefile-1/ysyx.png" alt="Featured image of post AM Makefile解读（1）" /&gt;&lt;h2 id=&#34;提供可读性更强的makefile版本&#34;&gt;提供可读性更强的Makefile版本
 &lt;/h2&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1

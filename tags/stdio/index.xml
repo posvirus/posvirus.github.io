@@ -13,7 +13,7 @@
         <pubDate>Sun, 05 Oct 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/rtc-and-sprintf/</guid>
-        <description>&lt;h2 id=&#34;设备实时时钟的实现&#34;&gt;设备实时时钟的实现
+        <description>&lt;img src="https://posvirus.github.io/p/rtc-and-sprintf/ysyx.png" alt="Featured image of post 设备实时时钟与更强大的sprintf()函数" /&gt;&lt;h2 id=&#34;设备实时时钟的实现&#34;&gt;设备实时时钟的实现
 &lt;/h2&gt;&lt;p&gt;在PA2中，我们只被要求实现&lt;code&gt;AM_TIMER_UPTIME&lt;/code&gt;，即系统启动后的微秒数，而此处为了更好的展示效果，我们将实现&lt;code&gt;AM_TIMER_RTC&lt;/code&gt;，实现对当前真实时间的读取。&lt;/p&gt;
 &lt;p&gt;在AM的&lt;code&gt;timer.c&lt;/code&gt;中我们可以看到，&lt;code&gt;rtc&lt;/code&gt;共有&lt;code&gt;second&lt;/code&gt;、&lt;code&gt;minute&lt;/code&gt;、&lt;code&gt;hour&lt;/code&gt;、&lt;code&gt;day&lt;/code&gt;、&lt;code&gt;month&lt;/code&gt;与&lt;code&gt;year&lt;/code&gt;共6个字段，为此，我们需要在NEMU的中为这些字段分配相应的空间，但是，如果我们为每个字段都分配一个32位的空间，时钟设备的地址空间会与其它设备产生交叠，但我们又不希望修改整个地址空间映射，应该如何解决这个问题呢？&lt;/p&gt;
 &lt;p&gt;我们注意到，&lt;code&gt;second&lt;/code&gt;、&lt;code&gt;minute&lt;/code&gt;、&lt;code&gt;hour&lt;/code&gt;、&lt;code&gt;day&lt;/code&gt;、&lt;code&gt;month&lt;/code&gt;这些字段，它们的取值其实非常有限，以至于我们分配8位/16位的空间给它们就足够了，所以，我们通过下面这种方式，将这6个字段压缩至2个32位空间中：&lt;/p&gt;
@@ -499,7 +499,7 @@
         <pubDate>Sun, 27 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://posvirus.github.io/p/sprintf/</guid>
-        <description>&lt;p&gt;在PA2中，笔者被要求实现一个简单的&lt;code&gt;sprintf()&lt;/code&gt;函数，其目前仅需实现对&lt;code&gt;%s&lt;/code&gt;与&lt;code&gt;%d&lt;/code&gt;标识符的支持即可。此处，笔者对其进行了进一步增强，使其可支持更多种标识符，并具有扩展实现更多标识符的能力，其目前可支持的标识符列举如下：&lt;/p&gt;
+        <description>&lt;img src="https://posvirus.github.io/p/sprintf/ysyx.png" alt="Featured image of post 功能更强大的sprintf()函数" /&gt;&lt;p&gt;在PA2中，笔者被要求实现一个简单的&lt;code&gt;sprintf()&lt;/code&gt;函数，其目前仅需实现对&lt;code&gt;%s&lt;/code&gt;与&lt;code&gt;%d&lt;/code&gt;标识符的支持即可。此处，笔者对其进行了进一步增强，使其可支持更多种标识符，并具有扩展实现更多标识符的能力，其目前可支持的标识符列举如下：&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
