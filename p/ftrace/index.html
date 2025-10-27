@@ -229,13 +229,9 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li>
-      <ol>
-        <li><a href="#1-elf文件的解析">1. ELF文件的解析</a></li>
-        <li><a href="#2-函数调用与返回的判断">2. 函数调用与返回的判断</a></li>
-        <li><a href="#3-尾调用的处理">3. 尾调用的处理</a></li>
-      </ol>
-    </li>
+    <li><a href="#elf文件的解析">ELF文件的解析</a></li>
+    <li><a href="#函数调用与返回的判断">函数调用与返回的判断</a></li>
+    <li><a href="#尾调用的处理">尾调用的处理</a></li>
   </ol>
 </nav>
         </div>
@@ -332,8 +328,8 @@
     
     
     <p>此处说明ftrace实现的一些相关注意事项：</p>
-<h3 id="1-elf文件的解析">1. ELF文件的解析
-</h3><p><img src="/p/ftrace/ELF.png"
+<h2 id="elf文件的解析">ELF文件的解析
+</h2><p><img src="/p/ftrace/ELF.png"
 	width="4677"
 	height="3307"
 	srcset="/p/ftrace/ELF_hu_9ad5e7fad4b3b1d3.png 480w, /p/ftrace/ELF_hu_1f7ffcda13be1061.png 1024w"
@@ -372,8 +368,8 @@
 <li>同时，对于函数符号对应的表项，我们同样可以依据该表项的<code>st_name</code>字段，在符号名字表中定位并存储相应的函数名。</li>
 </ul>
 <p>基于上述流程，即可完成对ELF文件的解析。</p>
-<h3 id="2-函数调用与返回的判断">2. 函数调用与返回的判断
-</h3><p>函数调用与返回的判断需要参考RISCV的ABI（Application Binary Interface，应用程序二进制接口，它定义了应用程序之间或应用程序和操作系统之间进行二进制级交互时必须遵循的规则和约定）。具体而言，RISCV的函数调用与返回主要涉及使用<code>jal</code>与<code>jalr</code>指令对<code>ra</code>寄存器进行写入与读取，包括：</p>
+<h2 id="函数调用与返回的判断">函数调用与返回的判断
+</h2><p>函数调用与返回的判断需要参考RISCV的ABI（Application Binary Interface，应用程序二进制接口，它定义了应用程序之间或应用程序和操作系统之间进行二进制级交互时必须遵循的规则和约定）。具体而言，RISCV的函数调用与返回主要涉及使用<code>jal</code>与<code>jalr</code>指令对<code>ra</code>寄存器进行写入与读取，包括：</p>
 <ul>
 <li><strong>函数调用：</strong> 将当前发生函数调用的<code>pc</code>存储在<code>ra</code>中，主要分为两种情况：
 <ul>
@@ -395,8 +391,8 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>对应地，我们需要在ELF文件中的函数符号解析完成后，增加对应的函数调用与返回的打印函数。</p>
-<h3 id="3-尾调用的处理">3. 尾调用的处理
-</h3><p>单纯基于上述逻辑实现的ftrace无法处理函数的<a class="link" href="https://ruanyifeng.com/blog/2015/04/tail-call.html"  target="_blank" rel="noopener"
+<h2 id="尾调用的处理">尾调用的处理
+</h2><p>单纯基于上述逻辑实现的ftrace无法处理函数的<a class="link" href="https://ruanyifeng.com/blog/2015/04/tail-call.html"  target="_blank" rel="noopener"
     >尾调用</a>，因为函数发生尾调用时，不会将当前发生调用的<code>pc</code>存储在<code>ra</code>中，只会使用<code>jalr zero 0(rs1)</code>直接跳转至<code>func</code>。为实现对尾调用的追踪，我们需要增加以下三点功能：</p>
 <ul>
 <li>在NEMU ISA的<code>jalr</code>指令实现中增加对函数尾调用的判断：</li>

@@ -1569,8 +1569,8 @@
         
         <guid>https://posvirus.github.io/p/ftrace/</guid>
         <description>&lt;img src="https://posvirus.github.io/p/ftrace/ysyx.png" alt="Featured image of post ftrace实现的注意事项" /&gt;&lt;p&gt;此处说明ftrace实现的一些相关注意事项：&lt;/p&gt;
-&lt;h3 id=&#34;1-elf文件的解析&#34;&gt;1. ELF文件的解析
-&lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/ftrace/ELF.png&#34;
+&lt;h2 id=&#34;elf文件的解析&#34;&gt;ELF文件的解析
+&lt;/h2&gt;&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/ftrace/ELF.png&#34;
 	width=&#34;4677&#34;
 	height=&#34;3307&#34;
 	srcset=&#34;https://posvirus.github.io/p/ftrace/ELF_hu_9ad5e7fad4b3b1d3.png 480w, https://posvirus.github.io/p/ftrace/ELF_hu_1f7ffcda13be1061.png 1024w&#34;
@@ -1609,8 +1609,8 @@
 &lt;li&gt;同时，对于函数符号对应的表项，我们同样可以依据该表项的&lt;code&gt;st_name&lt;/code&gt;字段，在符号名字表中定位并存储相应的函数名。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;基于上述流程，即可完成对ELF文件的解析。&lt;/p&gt;
-&lt;h3 id=&#34;2-函数调用与返回的判断&#34;&gt;2. 函数调用与返回的判断
-&lt;/h3&gt;&lt;p&gt;函数调用与返回的判断需要参考RISCV的ABI（Application Binary Interface，应用程序二进制接口，它定义了应用程序之间或应用程序和操作系统之间进行二进制级交互时必须遵循的规则和约定）。具体而言，RISCV的函数调用与返回主要涉及使用&lt;code&gt;jal&lt;/code&gt;与&lt;code&gt;jalr&lt;/code&gt;指令对&lt;code&gt;ra&lt;/code&gt;寄存器进行写入与读取，包括：&lt;/p&gt;
+&lt;h2 id=&#34;函数调用与返回的判断&#34;&gt;函数调用与返回的判断
+&lt;/h2&gt;&lt;p&gt;函数调用与返回的判断需要参考RISCV的ABI（Application Binary Interface，应用程序二进制接口，它定义了应用程序之间或应用程序和操作系统之间进行二进制级交互时必须遵循的规则和约定）。具体而言，RISCV的函数调用与返回主要涉及使用&lt;code&gt;jal&lt;/code&gt;与&lt;code&gt;jalr&lt;/code&gt;指令对&lt;code&gt;ra&lt;/code&gt;寄存器进行写入与读取，包括：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;函数调用：&lt;/strong&gt; 将当前发生函数调用的&lt;code&gt;pc&lt;/code&gt;存储在&lt;code&gt;ra&lt;/code&gt;中，主要分为两种情况：
 &lt;ul&gt;
@@ -1632,8 +1632,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;对应地，我们需要在ELF文件中的函数符号解析完成后，增加对应的函数调用与返回的打印函数。&lt;/p&gt;
-&lt;h3 id=&#34;3-尾调用的处理&#34;&gt;3. 尾调用的处理
-&lt;/h3&gt;&lt;p&gt;单纯基于上述逻辑实现的ftrace无法处理函数的&lt;a class=&#34;link&#34; href=&#34;https://ruanyifeng.com/blog/2015/04/tail-call.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;h2 id=&#34;尾调用的处理&#34;&gt;尾调用的处理
+&lt;/h2&gt;&lt;p&gt;单纯基于上述逻辑实现的ftrace无法处理函数的&lt;a class=&#34;link&#34; href=&#34;https://ruanyifeng.com/blog/2015/04/tail-call.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;尾调用&lt;/a&gt;，因为函数发生尾调用时，不会将当前发生调用的&lt;code&gt;pc&lt;/code&gt;存储在&lt;code&gt;ra&lt;/code&gt;中，只会使用&lt;code&gt;jalr zero 0(rs1)&lt;/code&gt;直接跳转至&lt;code&gt;func&lt;/code&gt;。为实现对尾调用的追踪，我们需要增加以下三点功能：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;在NEMU ISA的&lt;code&gt;jalr&lt;/code&gt;指令实现中增加对函数尾调用的判断：&lt;/li&gt;
