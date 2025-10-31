@@ -15,13 +15,13 @@
         <guid>https://posvirus.github.io/p/rv32e-npc/</guid>
         <description>&lt;img src="https://posvirus.github.io/p/rv32e-npc/ysyx.png" alt="Featured image of post RV32E单周期CPU的实现说明" /&gt;&lt;h2 id=&#34;单周期cpu架构简介&#34;&gt;单周期CPU架构简介
 &lt;/h2&gt;&lt;img src=&#34;NPC.png&#34; align=&#34;middle&#34; alt=&#34;RV32E单周期CPU架构图&#34; style=&#34;zoom:80%;&#34; /&gt;
-&lt;p&gt;本节中，我们主要介绍在C阶段实现的支持RV32E ISA的单周期CPU，该CPU对应的架构图如上图所示，整体上分为&lt;strong&gt;取值（Instruction Fetch）&lt;/strong&gt;、**译码（Instruction Decode）&lt;strong&gt;与&lt;/strong&gt;执行（Instruction Excecution）**三个阶段。&lt;/p&gt;
+&lt;p&gt;本节中，我们主要介绍在C阶段实现的支持RV32E ISA的单周期CPU，该CPU对应的架构图如上图所示，整体上分为&lt;strong&gt;取值（Instruction Fetch）&lt;/strong&gt;、 &lt;strong&gt;译码（Instruction Decode）&lt;/strong&gt; 与 &lt;strong&gt;执行（Instruction Excecution）&lt;/strong&gt; 三个阶段。&lt;/p&gt;
 &lt;p&gt;该CPU的工作原理与一些经典教材中的CPU完全类似，此处我们主要介绍几个设计中的注意点：&lt;/p&gt;
 &lt;p&gt;第一是CPU的访存行为，该CPU通过&lt;strong&gt;DPI-C机制&lt;/strong&gt;实现访存，在一条指令的完整执行流程中，最多存在两次访存行为，第一次是&lt;strong&gt;取指&lt;/strong&gt;，第二次是&lt;strong&gt;访存指令的访存行为&lt;/strong&gt;。此处我们通过NPC中提供的统一接口&lt;code&gt;paddr_read()&lt;/code&gt;与&lt;code&gt;paddr_write()&lt;/code&gt;实现。同时，由于RV32E架构通过&lt;strong&gt;内存映射IO&lt;/strong&gt;实现CPU与外设的交互，因此CPU对外设的访问被统一抽象为访存指令。&lt;/p&gt;
 &lt;p&gt;第二是CPU的异常响应机制实现，此处主要需要实现的是CPU的若干个CSR，以及对应用于实现异常响应机制的若干指令。由于CSR的行为与异常响应机制指令的相关性很强，故此处我们统一进行说明，总体上，与异常响应机制相关的指令主要可分为两类：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;一类是&lt;code&gt;mret&lt;/code&gt;, &lt;code&gt;ecall&lt;/code&gt;这类直接实现异常响应的指令，这类指令涉及&lt;strong&gt;对多个CSR的配置&lt;/strong&gt;以及&lt;strong&gt;PC的跳转&lt;/strong&gt;。&lt;/li&gt;
-&lt;li&gt;一类是&lt;code&gt;csrrw&lt;/code&gt;, &lt;code&gt;csrrs&lt;/code&gt;这类单纯对CSR进行操作的CSR指令，这类指令涉及对某个CSR的&lt;strong&gt;原子性读写&lt;/strong&gt;（这里的**“原子性”&lt;strong&gt;指对CSR的读-写（Read-Write）操作是原子的，即整个操作在单条指令内完成，不会被其他操作打断），这通常包括对&lt;/strong&gt;CSR的读取**，对&lt;strong&gt;CSR的写回&lt;/strong&gt;与对&lt;strong&gt;通用寄存器&lt;/strong&gt;的写回三个子操作。&lt;/li&gt;
+&lt;li&gt;一类是&lt;code&gt;csrrw&lt;/code&gt;, &lt;code&gt;csrrs&lt;/code&gt;这类单纯对CSR进行操作的CSR指令，这类指令涉及对某个CSR的&lt;strong&gt;原子性读写&lt;/strong&gt;（这里的 &lt;strong&gt;“原子性”&lt;/strong&gt; 指对CSR的读-写（Read-Write）操作是原子的，即整个操作在单条指令内完成，不会被其他操作打断），这通常包括对&lt;strong&gt;CSR的读取&lt;/strong&gt;，对&lt;strong&gt;CSR的写回&lt;/strong&gt;与对&lt;strong&gt;通用寄存器&lt;/strong&gt;的写回三个子操作。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;综合上述说明，我们其实可以发现，对CSR实现本身而言，我们只需要将其实现为可读/写的寄存器堆即可：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -222,7 +222,7 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;alu的性能评估&#34;&gt;ALU的性能评估
 &lt;/h2&gt;&lt;img src=&#34;adder.png&#34; align=&#34;middle&#34; alt=&#34;32位ALU架构图&#34; style=&#34;zoom: 100%;&#34; /&gt;
-&lt;p&gt;单周期CPU中所使用的ALU架构如上图所示，其实现了加法器的复用，通过单个加法器实现了&lt;strong&gt;加法&lt;/strong&gt;、&lt;strong&gt;减法&lt;/strong&gt;、&lt;strong&gt;小于（有符号）&lt;/strong&gt;、**小于（无符号）**与等于共5种运算。此处，我们主要探讨一下ALU性能评估中的一个注意点，而不再赘述ALU的具体实现原理。&lt;/p&gt;
+&lt;p&gt;单周期CPU中所使用的ALU架构如上图所示，其实现了加法器的复用，通过单个加法器实现了&lt;strong&gt;加法&lt;/strong&gt;、&lt;strong&gt;减法&lt;/strong&gt;、&lt;strong&gt;小于（有符号）&lt;/strong&gt;、 &lt;strong&gt;小于（无符号）&lt;/strong&gt; 与&lt;strong&gt;等于&lt;/strong&gt;共5种运算。此处，我们主要探讨一下ALU性能评估中的一个注意点，而不再赘述ALU的具体实现原理。&lt;/p&gt;
 &lt;p&gt;由于ALU通过纯组合逻辑实现，因此在使用Yosys-STA进行性能评估时，我们无法获取其时序方面的相关性能指标（如最大工作频率）。而对于纯组合逻辑模块而言，我们主要关注&lt;strong&gt;端到端最大组合逻辑延时&lt;/strong&gt;这一性能指标，它可以评估当我们将该模块集成至存在时序逻辑的系统中时，该模块所能承载的最大工作频率。&lt;/p&gt;
 &lt;p&gt;而当我们单独对ALU进行性能评估时，我们可以通过寄存器&lt;strong&gt;将ALU的输入/输出打一拍&lt;/strong&gt;，将其转换为含时序逻辑的模块，从而实现对该性能指标的量化。&lt;/p&gt;
 </description>
