@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：RV32E单周期CPU的实现说明">
+<title>RV32E单周期CPU的实现说明</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/rv32e-npc/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="RV32E单周期CPU的实现说明">
+<meta property='og:description' content="YSYX学习笔记：RV32E单周期CPU的实现说明">
+<meta property='og:url' content='https://posvirus.github.io/p/rv32e-npc/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='RISCV' /><meta property='article:tag' content='CPU' /><meta property='article:tag' content='NPC' /><meta property='article:published_time' content='2025-10-31T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-10-31T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/rv32e-npc/ysyx.png' />
+<meta name="twitter:title" content="RV32E单周期CPU的实现说明">
+<meta name="twitter:description" content="YSYX学习笔记：RV32E单周期CPU的实现说明"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/rv32e-npc/ysyx.png' />
+    <link rel="shortcut icon" href="/favicon.jpeg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤗</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">Life is random.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#单周期cpu架构简介">单周期CPU架构简介</a></li>
+    <li><a href="#alu的性能评估">ALU的性能评估</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/rv32e-npc/">
+                <img src="/p/rv32e-npc/ysyx_hu_d316aaa241761636.png"
+                        srcset="/p/rv32e-npc/ysyx_hu_d316aaa241761636.png 800w, /p/rv32e-npc/ysyx_hu_c4d8a8547b521d7d.png 1600w"
+                        width="800" 
+                        height="234" 
+                        loading="lazy"
+                        alt="Featured image of post RV32E单周期CPU的实现说明" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ysyx/" >
+                YSYX
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/rv32e-npc/">RV32E单周期CPU的实现说明</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            YSYX学习笔记：RV32E单周期CPU的实现说明
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Oct 31, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 4 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="单周期cpu架构简介">单周期CPU架构简介
+</h2><img src="NPC.png" align="middle" alt="RV32E单周期CPU架构图" style="zoom:80%;" />
+<p>本节中，我们主要介绍在C阶段实现的支持RV32E ISA的单周期CPU，该CPU对应的架构图如上图所示，整体上分为<strong>取值（Instruction Fetch）</strong>、**译码（Instruction Decode）<strong>与</strong>执行（Instruction Excecution）**三个阶段。</p>
+<p>该CPU的工作原理与一些经典教材中的CPU完全类似，此处我们主要介绍几个设计中的注意点：</p>
+<p>第一是CPU的访存行为，该CPU通过<strong>DPI-C机制</strong>实现访存，在一条指令的完整执行流程中，最多存在两次访存行为，第一次是<strong>取指</strong>，第二次是<strong>访存指令的访存行为</strong>。此处我们通过NPC中提供的统一接口<code>paddr_read()</code>与<code>paddr_write()</code>实现。同时，由于RV32E架构通过<strong>内存映射IO</strong>实现CPU与外设的交互，因此CPU对外设的访问被统一抽象为访存指令。</p>
+<p>第二是CPU的异常响应机制实现，此处主要需要实现的是CPU的若干个CSR，以及对应用于实现异常响应机制的若干指令。由于CSR的行为与异常响应机制指令的相关性很强，故此处我们统一进行说明，总体上，与异常响应机制相关的指令主要可分为两类：</p>
+<ul>
+<li>一类是<code>mret</code>, <code>ecall</code>这类直接实现异常响应的指令，这类指令涉及<strong>对多个CSR的配置</strong>以及<strong>PC的跳转</strong>。</li>
+<li>一类是<code>csrrw</code>, <code>csrrs</code>这类单纯对CSR进行操作的CSR指令，这类指令涉及对某个CSR的<strong>原子性读写</strong>（这里的**“原子性”<strong>指对CSR的读-写（Read-Write）操作是原子的，即整个操作在单条指令内完成，不会被其他操作打断），这通常包括对</strong>CSR的读取**，对<strong>CSR的写回</strong>与对<strong>通用寄存器</strong>的写回三个子操作。</li>
+</ul>
+<p>综合上述说明，我们其实可以发现，对CSR实现本身而言，我们只需要将其实现为可读/写的寄存器堆即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">ysyx_25070184_Csr</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                                     <span class="n">clk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                                     <span class="n">rst</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="no">`ysyx_25070184_CSR_ADDR_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span> <span class="c1">// atomically operates one CSR
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="no">`ysyx_25070184_CSR_OPTYPE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">inst_type</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="no">`ysyx_25070184_ADDR_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">cur_pc</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">ecode</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">wdata</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">rdata</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// instantiate CSRs one by one
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mstatus</span><span class="p">;</span> <span class="c1">// machine status registers
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mcause</span><span class="p">;</span>  <span class="c1">// machine cause register
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mtvec</span><span class="p">;</span>   <span class="c1">// machine trap-vector base-address register
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mepc</span><span class="p">;</span>    <span class="c1">// machine exception program counter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在该模块中，CSR的写入由指令类型<code>inst_type</code>与CSR指令中的地址字段<code>addr</code>共同确定，同时<code>cur_pc</code>（当前的PC值）, <code>ecode</code>（异常号）, <code>wdata</code>（CSR指令的写回值）用于传递写入CSR的值（因为在<code>ecall</code>指令中，需要同时写入多个CSR）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="c1">// CSRs write
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">rst</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">mstatus</span> <span class="o">&lt;=</span> <span class="no">`ysyx_25070184_MSTATUS_RSTVAL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="p">(</span><span class="n">inst_type</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="no">`ysyx_25070184_CSR_ECALL</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mstatus</span><span class="p">[</span><span class="no">`ysyx_25070184_MPIE_LOCATE</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mstatus</span><span class="p">[</span><span class="no">`ysyx_25070184_MIE_LOCATE</span><span class="p">];</span> <span class="c1">// MPIE = MIE
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">mstatus</span><span class="p">[</span><span class="no">`ysyx_25070184_MIE_LOCATE</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span> <span class="c1">// reset MIE
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">mepc</span> <span class="o">&lt;=</span> <span class="n">cur_pc</span><span class="p">;</span> <span class="c1">// store current pc
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">mcause</span> <span class="o">&lt;=</span> <span class="n">ecode</span><span class="p">;</span> <span class="c1">// store exception code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="no">`ysyx_25070184_CSR_CSRRS</span><span class="p">,</span> <span class="no">`ysyx_25070184_CSR_CSRRW</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">case</span> <span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="no">`ysyx_25070184_MSTATUS_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">mstatus</span> <span class="o">&lt;=</span> <span class="n">wdata</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="no">`ysyx_25070184_MCAUSE_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">mcause</span> <span class="o">&lt;=</span> <span class="n">wdata</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="no">`ysyx_25070184_MTVEC_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">mtvec</span> <span class="o">&lt;=</span> <span class="n">wdata</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="no">`ysyx_25070184_MEPC_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">mepc</span> <span class="o">&lt;=</span> <span class="n">wdata</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// do nothing
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">endcase</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="no">`ysyx_25070184_CSR_MRET</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mstatus</span><span class="p">[</span><span class="no">`ysyx_25070184_MIE_LOCATE</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mstatus</span><span class="p">[</span><span class="no">`ysyx_25070184_MPIE_LOCATE</span><span class="p">];</span> <span class="c1">// MIE = MPIE
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// do nothing
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="k">endcase</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>CSR的读取同样由指令类型<code>inst_type</code>与CSR指令中的地址字段<code>addr</code>共同确定，对于CSR指令，读出的CSR在执行阶段被作为操作数；对于<code>mret</code>与<code>ecall</code>指令，读出的CSR在执行阶段被作为下一条指令的PC值：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="c1">// CSRs read
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">inst_type</span> <span class="o">==</span> <span class="no">`ysyx_25070184_CSR_ECALL</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rdata</span> <span class="o">=</span> <span class="n">mtvec</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">inst_type</span> <span class="o">==</span> <span class="no">`ysyx_25070184_CSR_MRET</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rdata</span> <span class="o">=</span> <span class="n">mepc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="no">`ysyx_25070184_MSTATUS_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rdata</span> <span class="o">=</span> <span class="n">mstatus</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="no">`ysyx_25070184_MCAUSE_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rdata</span> <span class="o">=</span> <span class="n">mcause</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="no">`ysyx_25070184_MTVEC_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rdata</span> <span class="o">=</span> <span class="n">mtvec</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="no">`ysyx_25070184_MEPC_ADDR</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rdata</span> <span class="o">=</span> <span class="n">mepc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rdata</span> <span class="o">=</span> <span class="p">{</span><span class="no">`ysyx_25070184_DATA_WIDTH</span><span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="k">endcase</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="alu的性能评估">ALU的性能评估
+</h2><img src="adder.png" align="middle" alt="32位ALU架构图" style="zoom: 100%;" />
+<p>单周期CPU中所使用的ALU架构如上图所示，其实现了加法器的复用，通过单个加法器实现了<strong>加法</strong>、<strong>减法</strong>、<strong>小于（有符号）</strong>、**小于（无符号）**与等于共5种运算。此处，我们主要探讨一下ALU性能评估中的一个注意点，而不再赘述ALU的具体实现原理。</p>
+<p>由于ALU通过纯组合逻辑实现，因此在使用Yosys-STA进行性能评估时，我们无法获取其时序方面的相关性能指标（如最大工作频率）。而对于纯组合逻辑模块而言，我们主要关注<strong>端到端最大组合逻辑延时</strong>这一性能指标，它可以评估当我们将该模块集成至存在时序逻辑的系统中时，该模块所能承载的最大工作频率。</p>
+<p>而当我们单独对ALU进行性能评估时，我们可以通过寄存器<strong>将ALU的输入/输出打一拍</strong>，将其转换为含时序逻辑的模块，从而实现对该性能指标的量化。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/riscv/">RISCV</a>
+        
+            <a href="/tags/cpu/">CPU</a>
+        
+            <a href="/tags/npc/">NPC</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Oct 31, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/difftest-gpr/">
+        
+        
+            <div class="article-image">
+                <img src="/p/difftest-gpr/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post DiffTest中的寄存器一致性"
+                        data-key="difftest-gpr" 
+                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DiffTest中的寄存器一致性</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/riscv32m/">
+        
+        
+            <div class="article-image">
+                <img src="/p/riscv32m/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post RV32M扩展指令的执行逻辑"
+                        data-key="riscv32m" 
+                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">RV32M扩展指令的执行逻辑</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/div/">
+        
+        
+            <div class="article-image">
+                <img src="/p/div/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 关于div等RV32M指令无法编译的问题"
+                        data-key="div" 
+                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">关于div等RV32M指令无法编译的问题</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/yield/">
+        
+        
+            <div class="article-image">
+                <img src="/p/yield/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post NEMU异常响应机制的实现"
+                        data-key="yield" 
+                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/npc-note2/">
+        
+        
+            <div class="article-image">
+                <img src="/p/npc-note2/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post NPC实现时的注意事项（2）"
+                        data-key="NPC-note2" 
+                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NPC实现时的注意事项（2）</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
