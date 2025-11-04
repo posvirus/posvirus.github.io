@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Verilog on Posvirus的博客</title>
+        <link>https://posvirus.github.io/tags/verilog/</link>
+        <description>Recent content in Verilog on Posvirus的博客</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Chen Wenyao</copyright>
+        <lastBuildDate>Tue, 04 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/tags/verilog/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Verilog中的有符号数</title>
+        <link>https://posvirus.github.io/p/dic-001/</link>
+        <pubDate>Tue, 04 Nov 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/p/dic-001/</guid>
+        <description>&lt;img src="https://posvirus.github.io/p/dic-001/cicc.png" alt="Featured image of post Verilog中的有符号数" /&gt;&lt;h2 id=&#34;写在前面&#34;&gt;写在前面
+&lt;/h2&gt;&lt;p&gt;这一系列博客主要用于记录我在 &lt;strong&gt;数字集成电路（Digital Integrated Circuit, DIC）&lt;/strong&gt; 中遇到或偶然想到的一些问题，以及日常在各个平台看到的面试八股，以期为明年的秋招做一些准备。集成电路的知识较为繁杂，想要构建清晰的分类体系会消耗太多不必要的精力，所以这里统一以&lt;code&gt;[DIC-XXX]&lt;/code&gt;为博客编号。&lt;/p&gt;
+&lt;p style=&#39;text-align: right;&#39;&gt;Chen Wenyao&lt;/p&gt;
+&lt;p style=&#39;text-align: right;&#39;&gt;updated at November 3rd, 2025&lt;/p&gt;
+&lt;h2 id=&#34;verilog中的有符号数&#34;&gt;Verilog中的有符号数
+&lt;/h2&gt;&lt;p&gt;前几天，我在编写一个ALU模块，它需要同时支持有符号数与无符号数大小比较的功能，但我对这部分内容的了解恰巧比较模糊，所以想借本篇博客系统地探讨一下Verilog语法中与有符号数有关的话题。&lt;/p&gt;
+&lt;p&gt;在写这篇博客之前，我试图在网上搜索相关的内容，但只找到了两类结果，一类是AI生成的💩，另一类倒是给出了一些简单结论，但是这些结论基本是作者在诸如Vivado之类的EDA上用几个简单的测试归纳总结得到的，所以每个作者得到的结论不尽相同，弄得我有些莫名奇妙，不知道该信谁。&lt;/p&gt;
+&lt;p&gt;这里我想提一句，我觉得上文提到的使用仿真器测试归纳Verilog语法特性是一种典型的错误行为（可以称之为DIC中的&lt;strong&gt;Spice Monkey&lt;/strong&gt;），因为仿真器所反应的Verilog语法特性本身是遵循&lt;strong&gt;Verilog标准&lt;/strong&gt;的，而这种行为其实是试图通过仿真器中的简单测试去 &lt;strong&gt;“逆向”&lt;/strong&gt; Verilog标准中所描述的特性，这样最终得到的结论无论是在全面性还是准确性上肯定都存在一定欠缺。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当然，这里可能有人会问，如果EDA本身对Verilog语法特性的支持与Verilog标准不一致怎么办呢，这就是EDA厂商需要考虑的事情了。作为IC设计人员，我觉得应该达成的一个共识是：&lt;strong&gt;我们应当面向标准设计，而不是面向EDA设计。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;所以，最好的方法是直接阅读Verilog标准，从标准中寻找答案。这里，我选择&lt;strong&gt;Verilog-2005标准（IEEE 1364-2005）&lt;/strong&gt;，它可以在&lt;a class=&#34;link&#34; href=&#34;https://ieeexplore.ieee.org/document/1620780&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;这里&lt;/a&gt;找到。&lt;/p&gt;
+&lt;p&gt;由于我主要关注的是在算数逻辑表达式中有符号数与无符号数的特性，因此以下我将主要选取 &lt;strong&gt;标准第5章（Expressions）&lt;/strong&gt; 的相关内容，进行翻译以及归纳：&lt;/p&gt;
+&lt;h3 id=&#34;表达式中的整型数&#34;&gt;表达式中的整型数
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;[5.1.3] A negative value for an integer with no base specifier shall be interpreted differently from an integer with a base specifier. An integer with no base specifier shall be interpreted as a signed value in twos-complement form. An integer with an unsigned base specifier shall be interpreted as an unsigned value.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;当整型数（&lt;code&gt;integer&lt;/code&gt;）出现在表达式中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果其没有&lt;strong&gt;基数标识符（base specifier, 如&lt;code&gt;&#39;d&lt;/code&gt;）&lt;/strong&gt;，则被视为&lt;strong&gt;有符号数&lt;/strong&gt;处理；&lt;/li&gt;
+&lt;li&gt;如果其有基数标识符，但没有指定为有符号数（如&lt;code&gt;&#39;sd&lt;/code&gt;代表指定该数为有符号数），则被视为&lt;strong&gt;无符号数&lt;/strong&gt;处理；&lt;/li&gt;
+&lt;li&gt;如果其有基数标识符，也被指定为有符号数，则被视为&lt;strong&gt;有符号数&lt;/strong&gt;处理。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;标准中给出了一些例子，用于辅助说明：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;integer&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IntA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;IntA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;      &lt;span class=&#34;c1&#34;&gt;// The result is -4.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IntA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;   &lt;span class=&#34;c1&#34;&gt;// The result is 1431655761.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IntA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sd&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;// The result is -4.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IntA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sd&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// -4&amp;#39;sd12 is the negative of the 4-bit
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                     &lt;span class=&#34;c1&#34;&gt;// quantity 1100, which is -4. -(-4) = 4.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                     &lt;span class=&#34;c1&#34;&gt;// The result is 1.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注意区分整型数与整型数变量，前者是一个常量，后者是使用&lt;code&gt;integer&lt;/code&gt;作为类型声明的变量，这一节说明的其实是表达式中的整型数（非变量）的符号处理规则，比如&lt;code&gt;-&#39;d 12&lt;/code&gt;为无符号数，&lt;code&gt;-&#39;sd 12&lt;/code&gt;为有符号数等。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;算数表达式中的变量&#34;&gt;算数表达式中的变量
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;[5.1.6] A value assigned to a reg variable or a net shall be treated as an unsigned value unless the reg variable or net has been explicitly declared to be signed. A value assigned to an integer, real or realtime variable shall be treated as signed. A value assigned to a time variable shall be treated as unsigned. Signed values, except for those assigned to real and realtime variables, shall use a twos-complement representation. Values assigned to real and realtime variables shall use a floating-point representation. Conversions between signed and unsigned values shall keep the same bit representation; only the interpretation changes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里主要给出了算数表达式（进行算数运算的表达式）中一些变量类型（如&lt;code&gt;wire&lt;/code&gt;, &lt;code&gt;reg&lt;/code&gt;等）的默认符号类型，其可以归纳为下表：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;Data Type&lt;/th&gt;
+          &lt;th&gt;Interpretation&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;[net]&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Unsigned&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;signed [net]&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Signed, 2&amp;rsquo;s complement&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;reg&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Unsigned&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;signed reg&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Signed, 2&amp;rsquo;s complement&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;integer&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Signed, 2&amp;rsquo;s complement&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;time&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Unsigned&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;real&lt;/code&gt;, &lt;code&gt;realtime&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Signed, floating point&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;我们同样可以结合例子进行辅助说明：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;integer&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;intA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;regA&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;signed&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;regS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;intA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;&amp;#39;d12&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;regA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;intA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;// expression result is -4,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                    &lt;span class=&#34;c1&#34;&gt;// intA is an integer data type, regA is 65532
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;regA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;&amp;#39;d12&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;intA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;regA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;// regA is 65524
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                    &lt;span class=&#34;c1&#34;&gt;// expression result is 21841,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                    &lt;span class=&#34;c1&#34;&gt;// regA is a reg data type
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;intA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;&amp;#39;d12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;// expression result is 1431655761.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                    &lt;span class=&#34;c1&#34;&gt;// -4&amp;#39;d12 is effectively a 32-bit reg data type
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;regA&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;     &lt;span class=&#34;c1&#34;&gt;// expression result is -4, -12 is effectively
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                    &lt;span class=&#34;c1&#34;&gt;// an integer data type. regA is 65532
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;regS&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;     &lt;span class=&#34;c1&#34;&gt;// expression result is -4. regS is a signed reg
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;regS&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sd12&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// expression result is 1. -4&amp;#39;sd12 is actually 4.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;                    &lt;span class=&#34;c1&#34;&gt;// The rules for integer division yield 4/3==1.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这里需要进行一些补充说明，以第一个例子为例，首先在&lt;code&gt;intA = -4&#39;d12;&lt;/code&gt;中，&lt;code&gt;-4&#39;d12&lt;/code&gt;为一个整型数，不涉及表达式运算，因此将其直接赋值给&lt;code&gt;intA&lt;/code&gt;后，&lt;code&gt;intA&lt;/code&gt;将其推断为有符号数&lt;code&gt;-12&lt;/code&gt;。而在&lt;code&gt;regA = intA / 3;&lt;/code&gt;中，&lt;code&gt;intA&lt;/code&gt;为有符号数&lt;code&gt;-12&lt;/code&gt;，因此其除以&lt;code&gt;3&lt;/code&gt;的结果是&lt;code&gt;-4&lt;/code&gt;（这里&lt;code&gt;3&lt;/code&gt;也是一个整型数，在表达式中参与运算，没有基数标识符，被推断为有符号数），而赋值给&lt;code&gt;regA&lt;/code&gt;后，由于&lt;code&gt;regA&lt;/code&gt;没有被声明为&lt;code&gt;signed reg&lt;/code&gt;，因此&lt;code&gt;-4&lt;/code&gt;被推断为无符号数，亦即&lt;code&gt;16&#39;hfffb=65532&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;再看最后一个例子，&lt;code&gt;-4&#39;sd12&lt;/code&gt;也是一个整型数，且参与表达式运算，由于其存在基数标识符，且被指定为有符号数，因此在参与表达式运算时被推断为有符号数&lt;code&gt;4&lt;/code&gt;（有符号数&lt;code&gt;-12&lt;/code&gt;截位得到），进而表达式的值为&lt;code&gt;1&lt;/code&gt;，而由于&lt;code&gt;regS&lt;/code&gt;被声明为&lt;code&gt;signed reg&lt;/code&gt;，因此&lt;code&gt;1&lt;/code&gt;被推断为有符号数，二进制表示为&lt;code&gt;16&#39;h0001&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;比较运算符&#34;&gt;比较运算符
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;[5.1.7] When one or both operands of a relational expression are unsigned, the expression shall be interpreted as a comparison between unsigned values. If the operands are of unequal bit lengths, the smaller operand shall be zero-extended to the size of the larger operand.&lt;/p&gt;
+&lt;p&gt;When both operands are signed, the expression shall be interpreted as a comparison between signed values. If the operands are of unequal bit lengths, the smaller operand shall be sign-extended to the size of the larger operand.&lt;/p&gt;
+&lt;p&gt;If either operand is a real operand, then the other operand shall be converted to an equivalent real value and the expression shall be interpreted as a comparison between real values.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里给出在进行比较运算（包括大于/小于/等于/不等于等运算）时，运算符两侧的运算数的推断规则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;只要比较运算符两侧的操作数&lt;strong&gt;有一个为无符号数&lt;/strong&gt;，则比较运算被推断为&lt;strong&gt;无符号数&lt;/strong&gt;间的比较，如果操作数位宽不匹配，则位宽较小者需要通过&lt;strong&gt;0位扩展&lt;/strong&gt;使其与位宽较大者匹配。&lt;/li&gt;
+&lt;li&gt;只有比较运算符两侧的操作数&lt;strong&gt;均为有符号数&lt;/strong&gt;，比较运算才被推断为&lt;strong&gt;有符号数&lt;/strong&gt;间的比较，如果操作数位宽不匹配，则位宽较小者需要通过&lt;strong&gt;符号位扩展&lt;/strong&gt;使其与位宽较大者匹配。&lt;/li&gt;
+&lt;li&gt;只要比较运算符两侧的操作数&lt;strong&gt;有一个为实数型（&lt;code&gt;real&lt;/code&gt;）&lt;/strong&gt;，则比较运算被推断为&lt;strong&gt;实数&lt;/strong&gt;间的比较，其余非实数操作数被转换为等价的实数。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;移位运算符&#34;&gt;移位运算符
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;[5.1.12] The logical right shift shall fill the vacated bit positions with zeroes. The arithmetic right shift shall fill the vacated bit positions with zeroes if the result type is unsigned. It shall fill the vacated bit positions with the value of the most significant (i.e., sign) bit of the left operand if the result type is signed. If the right operand has an x or z value, then the result shall be unknown. The right operand is always treated as an unsigned number and has no effect on the signedness of the result.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里给出在进行移位运算时，运算结果的推断规则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;运算符的右操作数始终被推断为&lt;strong&gt;无符号数&lt;/strong&gt;，且对运算结果无影响。&lt;/li&gt;
+&lt;li&gt;当使用&lt;strong&gt;逻辑右移（&lt;code&gt;&amp;gt;&amp;gt;&lt;/code&gt;）&lt;strong&gt;时，运算结果的空位需要进行&lt;/strong&gt;0位扩展&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;当使用&lt;strong&gt;算数右移（&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/code&gt;）&lt;strong&gt;时，如结果类型是&lt;/strong&gt;有符号数&lt;/strong&gt;，则空位需要进行&lt;strong&gt;符号位扩展&lt;/strong&gt;；如结果类型是&lt;strong&gt;无符号数&lt;/strong&gt;，则空位需要进行&lt;strong&gt;0位扩展&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;表达式的符号推断规则&#34;&gt;表达式的符号推断规则
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;[5.5.1] The following are the rules for determining the resulting type of an expression:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Expression type depends only on the operands. It does not depend on the left-hand side (if any).&lt;/li&gt;
+&lt;li&gt;Decimal numbers are signed.&lt;/li&gt;
+&lt;li&gt;Based_numbers are unsigned, except where the s notation is used in the base specifier (as in&amp;quot;&lt;code&gt;4&#39;sd12&lt;/code&gt;&amp;quot;).&lt;/li&gt;
+&lt;li&gt;Bit-select results are unsigned, regardless of the operands.&lt;/li&gt;
+&lt;li&gt;Part-select results are unsigned, regardless of the operands even if the part-select specifies the entire vector.&lt;/li&gt;
+&lt;li&gt;Concatenate results are unsigned, regardless of the operands.&lt;/li&gt;
+&lt;li&gt;Comparison results (1, 0) are unsigned, regardless of the operands.&lt;/li&gt;
+&lt;li&gt;Reals converted to integers by type coercion are signed&lt;/li&gt;
+&lt;li&gt;The sign and size of any self-determined operand are determined by the operand itself and independent of the                            remainder of the expression.&lt;/li&gt;
+&lt;li&gt;For nonself-determined operands, the following rules apply:
+&lt;ul&gt;
+&lt;li&gt;If any operand is real, the result is real.&lt;/li&gt;
+&lt;li&gt;If any operand is unsigned, the result is unsigned, regardless of the operator.&lt;/li&gt;
+&lt;li&gt;If all operands are signed, the result will be signed, regardless of operator, except when specified otherwise.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在前几节中，我们分别讨论了整型数常量，变量与特定运算符运算时的符号推断规则。综合来看，上述规则本质上约束的对象是&lt;strong&gt;操作数&lt;/strong&gt;（比如比较运算符中，我们实际上是在根据比较运算符两侧的操作数类型推断在进行比较时，操作数本身应该视为有符号数还是无符号数），而在本节中，我们主要聚焦于对于一个一般的表达式而言，其&lt;strong&gt;运算结果&lt;/strong&gt;的符号类型推断。标准中给出了如下的规则：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;表达式的符号类型只与&lt;strong&gt;操作数&lt;/strong&gt;有关，与 &lt;strong&gt;表达式赋值的对象（LHS）&lt;/strong&gt; 无关。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;十进制数&lt;/strong&gt;被推断为&lt;strong&gt;有符号数&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;含基数标识符的操作数&lt;/strong&gt;被推断为&lt;strong&gt;无符号数&lt;/strong&gt;，除非使用&lt;code&gt;s&lt;/code&gt;指定其为有符号数（如&lt;code&gt;4&#39;sd12&lt;/code&gt;）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;比特选择后的结果&lt;/strong&gt;被推断为&lt;strong&gt;无符号数&lt;/strong&gt;（如&lt;code&gt;a[1]&lt;/code&gt;）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;部分选择后的结果&lt;/strong&gt;被推断为&lt;strong&gt;无符号数&lt;/strong&gt;（如&lt;code&gt;b[4:2]&lt;/code&gt;）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;拼接运算后的结果&lt;/strong&gt;被推断为&lt;strong&gt;无符号数&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;比较运算的结果&lt;/strong&gt;被推断为&lt;strong&gt;无符号数&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;实数强制转换为整型数的结果&lt;/strong&gt;被推断为&lt;strong&gt;有符号数&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;对于&lt;strong&gt;自决操作数（self-determined operand）&lt;/strong&gt;，其符号类型只与操作数本身有关，与表达式其余部分独立。&lt;/li&gt;
+&lt;li&gt;对于&lt;strong&gt;非自决操作数&lt;/strong&gt;，其符号推断遵循如下规则：
+&lt;ul&gt;
+&lt;li&gt;如果操作数中有一者为&lt;strong&gt;实数&lt;/strong&gt;，则运算结果被推断为&lt;strong&gt;实数&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;如果操作数中有一者为&lt;strong&gt;无符号数&lt;/strong&gt;，则运算结果被推断为&lt;strong&gt;无符号数&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;如果所有操作数均为&lt;strong&gt;有符号数&lt;/strong&gt;，则运算结果被推断为&lt;strong&gt;有符号数&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;对于上述规则，我们需要说明以下几点：&lt;/p&gt;
+&lt;p&gt;首先，需要注意&lt;strong&gt;操作数&lt;/strong&gt;与&lt;strong&gt;表达式&lt;/strong&gt;是一个相对的概念，一个表达式可以作为一个更为复杂表达式中的操作数，比如&lt;code&gt;(1 + 2) * (3 % 4)&lt;/code&gt;，我们也可以将&lt;code&gt;(1 + 2)&lt;/code&gt;与&lt;code&gt;(3 % 4)&lt;/code&gt;视为乘法运算的两个操作数。&lt;/p&gt;
+&lt;p&gt;其次，第9条规则引入了&lt;strong&gt;自决操作数&lt;/strong&gt;的概念，将其定义为符号类型只与操作数本身有关的操作数，这里其实只是对于这类操作数进行了形式上的定义，并没有引入新的推断规则。但是第10条规则引入了对&lt;strong&gt;非自决操作数&lt;/strong&gt;的推断规则，因此有必要明确自决操作数究竟指什么：根据定义，自决操作数其实就是指本身就可以判定符号的操作数，比如之前的整型数&lt;code&gt;-&#39;sd12&lt;/code&gt;，或是第2-8条规则中规定的运算结果（比特选择，拼接运算，比较运算等）。这其实就意味着&lt;strong&gt;Verilog中的这些操作数的符号类型是明确的，不会因为表达式上下文而改变&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;但是，诸如&lt;code&gt;reg regA&lt;/code&gt;，&lt;code&gt;wire wireA&lt;/code&gt;这类变量，它们其实只有默认的符号推断，而它们在表达式中实际的符号推断是可变的，需要结合表达式本身确定，这也就是&lt;strong&gt;非自决操作数&lt;/strong&gt;的概念，第10条规则规定了对非自决操作数的符号推断。&lt;/p&gt;
+&lt;p&gt;但是，我们仔细阅读第10条规则，会发现一个问题，这里其实说明的是如何推断运算结果的符号类型，但是对于非自决操作数本身，这一条规则并没有说明其在参与运算时应如何进行符号推断，这一点其实在标准的5.5.2节中才提到：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The following are the steps for evaluating an expression:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Determine the expression size based upon the standard rules of expression size determination.&lt;/li&gt;
+&lt;li&gt;Determine the sign of the expression using the rules outlined in 5.5.1.&lt;/li&gt;
+&lt;li&gt;Propagate the type and size of the expression (or self-determined subexpression) back down to the context-determined operands of the expression. In general, any context-determined operand of an operator shall be the same type and size as the result of the operator. However, there are two exceptions:
+&lt;ul&gt;
+&lt;li&gt;If the result type of the operator is real and if it has a context-determined operand that is not real, that operand shall be treated as if it were self-determined and then converted to real just before the operator is applied.&lt;/li&gt;
+&lt;li&gt;The relational and equality operators have operands that are neither fully self-determined nor fully context-determined. The operands shall affect each other as if they were context-determined operands with a result type and size (maximum of the two operand sizes) determined from them. However, the actual result type shall always be 1 bit unsigned. The type and size of the operand shall be independent of the rest of the expression and vice versa.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;When propagation reaches a simple operand as defined in 5.2 (a primary as defined in A.8.4), then that operand shall be converted to the propagated type and size. If the operand must be extended, then it shall be sign-extended only if the propagated type is signed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在这一部分其实说明了，对于&lt;strong&gt;非自决操作数&lt;/strong&gt;，也就是标准中提及的&lt;strong&gt;上下文决定操作数（context-determined operand）&lt;strong&gt;其符号是通过&lt;/strong&gt;表达式结果的符号类型向下传播&lt;/strong&gt;确定的。但这里同样有两个例外：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果表达式结果是&lt;strong&gt;实数&lt;/strong&gt;，则对于&lt;strong&gt;非实数&lt;/strong&gt;的上下文决定操作数，需要先假定其为&lt;strong&gt;自决操作数&lt;/strong&gt;，据此判断其取值，再将该值转换为实数。举一个例子，假设我们声明了一个变量&lt;code&gt;reg [3:0] a = 4&#39;b1111；&lt;/code&gt;，则对表达式&lt;code&gt;a * 1.5&lt;/code&gt;而言，由于有实数&lt;code&gt;1.5&lt;/code&gt;的存在，表达式结果被推断为实数，且&lt;code&gt;a&lt;/code&gt;是一个非实数的非自决操作数。因此，我们需要先假定&lt;code&gt;a&lt;/code&gt;为自决操作数，此时就直接使用&lt;code&gt;a&lt;/code&gt;的默认符号推断，即无符号数，进而&lt;code&gt;a&lt;/code&gt;的值就是&lt;code&gt;15&lt;/code&gt;，再将其转换为实数&lt;code&gt;15.0&lt;/code&gt;参与运算。&lt;/li&gt;
+&lt;li&gt;对于&lt;strong&gt;比较运算符&lt;/strong&gt;，它的两个操作数不是严格的自决操作数或非自决操作数，因为两个操作数的符号推断是相互确定的，具体规则已在上文提及，此处不再赘述。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;综上：&lt;strong&gt;表达式结果的符号本身是由所有操作数共同决定的规则推导出来的&lt;/strong&gt;，它是一个&lt;strong&gt;自底向上&lt;/strong&gt; + &lt;strong&gt;自顶向下&lt;/strong&gt;结合的过程：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首先，根据自决操作数符号类型，确定表达式结果的符号类型。&lt;/li&gt;
+&lt;li&gt;然后，再将表达式结果的符号类型应用到所有非自决操作数上，并进行运算。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

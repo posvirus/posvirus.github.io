@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-001：Verilog中的有符号数">
+<title>Verilog中的有符号数</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/dic-001/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="Verilog中的有符号数">
+<meta property='og:description' content="DIC-001：Verilog中的有符号数">
+<meta property='og:url' content='https://posvirus.github.io/p/dic-001/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Verilog' /><meta property='article:published_time' content='2025-11-04T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-11-04T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-001/cicc.png' />
+<meta name="twitter:title" content="Verilog中的有符号数">
+<meta name="twitter:description" content="DIC-001：Verilog中的有符号数"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/dic-001/cicc.png' />
+    <link rel="shortcut icon" href="/favicon.jpeg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤗</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">如无必要，勿增实体</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#写在前面">写在前面</a></li>
+    <li><a href="#verilog中的有符号数">Verilog中的有符号数</a>
+      <ol>
+        <li><a href="#表达式中的整型数">表达式中的整型数</a></li>
+        <li><a href="#算数表达式中的变量">算数表达式中的变量</a></li>
+        <li><a href="#比较运算符">比较运算符</a></li>
+        <li><a href="#移位运算符">移位运算符</a></li>
+        <li><a href="#表达式的符号推断规则">表达式的符号推断规则</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/dic-001/">
+                <img src="/p/dic-001/cicc_hu_d52f18f9a902f256.png"
+                        srcset="/p/dic-001/cicc_hu_d52f18f9a902f256.png 800w, /p/dic-001/cicc_hu_c62d00be19035290.png 1600w"
+                        width="800" 
+                        height="270" 
+                        loading="lazy"
+                        alt="Featured image of post Verilog中的有符号数" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/dic/" >
+                DIC
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/dic-001/">Verilog中的有符号数</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            DIC-001：Verilog中的有符号数
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 04, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 10 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="写在前面">写在前面
+</h2><p>这一系列博客主要用于记录我在 <strong>数字集成电路（Digital Integrated Circuit, DIC）</strong> 中遇到或偶然想到的一些问题，以及日常在各个平台看到的面试八股，以期为明年的秋招做一些准备。集成电路的知识较为繁杂，想要构建清晰的分类体系会消耗太多不必要的精力，所以这里统一以<code>[DIC-XXX]</code>为博客编号。</p>
+<p style='text-align: right;'>Chen Wenyao</p>
+<p style='text-align: right;'>updated at November 3rd, 2025</p>
+<h2 id="verilog中的有符号数">Verilog中的有符号数
+</h2><p>前几天，我在编写一个ALU模块，它需要同时支持有符号数与无符号数大小比较的功能，但我对这部分内容的了解恰巧比较模糊，所以想借本篇博客系统地探讨一下Verilog语法中与有符号数有关的话题。</p>
+<p>在写这篇博客之前，我试图在网上搜索相关的内容，但只找到了两类结果，一类是AI生成的💩，另一类倒是给出了一些简单结论，但是这些结论基本是作者在诸如Vivado之类的EDA上用几个简单的测试归纳总结得到的，所以每个作者得到的结论不尽相同，弄得我有些莫名奇妙，不知道该信谁。</p>
+<p>这里我想提一句，我觉得上文提到的使用仿真器测试归纳Verilog语法特性是一种典型的错误行为（可以称之为DIC中的<strong>Spice Monkey</strong>），因为仿真器所反应的Verilog语法特性本身是遵循<strong>Verilog标准</strong>的，而这种行为其实是试图通过仿真器中的简单测试去 <strong>“逆向”</strong> Verilog标准中所描述的特性，这样最终得到的结论无论是在全面性还是准确性上肯定都存在一定欠缺。</p>
+<blockquote>
+<p>当然，这里可能有人会问，如果EDA本身对Verilog语法特性的支持与Verilog标准不一致怎么办呢，这就是EDA厂商需要考虑的事情了。作为IC设计人员，我觉得应该达成的一个共识是：<strong>我们应当面向标准设计，而不是面向EDA设计。</strong></p>
+</blockquote>
+<p>所以，最好的方法是直接阅读Verilog标准，从标准中寻找答案。这里，我选择<strong>Verilog-2005标准（IEEE 1364-2005）</strong>，它可以在<a class="link" href="https://ieeexplore.ieee.org/document/1620780"  target="_blank" rel="noopener"
+    >这里</a>找到。</p>
+<p>由于我主要关注的是在算数逻辑表达式中有符号数与无符号数的特性，因此以下我将主要选取 <strong>标准第5章（Expressions）</strong> 的相关内容，进行翻译以及归纳：</p>
+<h3 id="表达式中的整型数">表达式中的整型数
+</h3><blockquote>
+<p>[5.1.3] A negative value for an integer with no base specifier shall be interpreted differently from an integer with a base specifier. An integer with no base specifier shall be interpreted as a signed value in twos-complement form. An integer with an unsigned base specifier shall be interpreted as an unsigned value.</p>
+</blockquote>
+<p>当整型数（<code>integer</code>）出现在表达式中：</p>
+<ul>
+<li>如果其没有<strong>基数标识符（base specifier, 如<code>'d</code>）</strong>，则被视为<strong>有符号数</strong>处理；</li>
+<li>如果其有基数标识符，但没有指定为有符号数（如<code>'sd</code>代表指定该数为有符号数），则被视为<strong>无符号数</strong>处理；</li>
+<li>如果其有基数标识符，也被指定为有符号数，则被视为<strong>有符号数</strong>处理。</li>
+</ul>
+<p>标准中给出了一些例子，用于辅助说明：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">integer</span> <span class="n">IntA</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">IntA</span> <span class="o">=</span> <span class="o">-</span><span class="mh">12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>      <span class="c1">// The result is -4.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">IntA</span> <span class="o">=</span> <span class="o">-</span><span class="p">&#39;</span><span class="n">d</span> <span class="mh">12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>   <span class="c1">// The result is 1431655761.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">IntA</span> <span class="o">=</span> <span class="o">-</span><span class="p">&#39;</span><span class="n">sd</span> <span class="mh">12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>  <span class="c1">// The result is -4.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">IntA</span> <span class="o">=</span> <span class="o">-</span><span class="mh">4</span><span class="p">&#39;</span><span class="n">sd</span> <span class="mh">12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span> <span class="c1">// -4&#39;sd12 is the negative of the 4-bit
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                     <span class="c1">// quantity 1100, which is -4. -(-4) = 4.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                     <span class="c1">// The result is 1.
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>注意区分整型数与整型数变量，前者是一个常量，后者是使用<code>integer</code>作为类型声明的变量，这一节说明的其实是表达式中的整型数（非变量）的符号处理规则，比如<code>-'d 12</code>为无符号数，<code>-'sd 12</code>为有符号数等。</p>
+</blockquote>
+<h3 id="算数表达式中的变量">算数表达式中的变量
+</h3><blockquote>
+<p>[5.1.6] A value assigned to a reg variable or a net shall be treated as an unsigned value unless the reg variable or net has been explicitly declared to be signed. A value assigned to an integer, real or realtime variable shall be treated as signed. A value assigned to a time variable shall be treated as unsigned. Signed values, except for those assigned to real and realtime variables, shall use a twos-complement representation. Values assigned to real and realtime variables shall use a floating-point representation. Conversions between signed and unsigned values shall keep the same bit representation; only the interpretation changes.</p>
+</blockquote>
+<p>这里主要给出了算数表达式（进行算数运算的表达式）中一些变量类型（如<code>wire</code>, <code>reg</code>等）的默认符号类型，其可以归纳为下表：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Data Type</th>
+          <th>Interpretation</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>[net]</code></td>
+          <td>Unsigned</td>
+      </tr>
+      <tr>
+          <td><code>signed [net]</code></td>
+          <td>Signed, 2&rsquo;s complement</td>
+      </tr>
+      <tr>
+          <td><code>reg</code></td>
+          <td>Unsigned</td>
+      </tr>
+      <tr>
+          <td><code>signed reg</code></td>
+          <td>Signed, 2&rsquo;s complement</td>
+      </tr>
+      <tr>
+          <td><code>integer</code></td>
+          <td>Signed, 2&rsquo;s complement</td>
+      </tr>
+      <tr>
+          <td><code>time</code></td>
+          <td>Unsigned</td>
+      </tr>
+      <tr>
+          <td><code>real</code>, <code>realtime</code></td>
+          <td>Signed, floating point</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>我们同样可以结合例子进行辅助说明：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">integer</span> <span class="n">intA</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">regA</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="k">signed</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">regS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">intA</span> <span class="o">=</span> <span class="o">-</span><span class="mh">4</span><span class="mi">&#39;d12</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="n">regA</span> <span class="o">=</span> <span class="n">intA</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>    <span class="c1">// expression result is -4,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="c1">// intA is an integer data type, regA is 65532
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="n">regA</span> <span class="o">=</span> <span class="o">-</span><span class="mh">4</span><span class="mi">&#39;d12</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">intA</span> <span class="o">=</span> <span class="n">regA</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>    <span class="c1">// regA is 65524
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="c1">// expression result is 21841,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="c1">// regA is a reg data type
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="n">intA</span> <span class="o">=</span> <span class="o">-</span><span class="mh">4</span><span class="mi">&#39;d12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>  <span class="c1">// expression result is 1431655761.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="c1">// -4&#39;d12 is effectively a 32-bit reg data type
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="n">regA</span> <span class="o">=</span> <span class="o">-</span><span class="mh">12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>     <span class="c1">// expression result is -4, -12 is effectively
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="c1">// an integer data type. regA is 65532
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="n">regS</span> <span class="o">=</span> <span class="o">-</span><span class="mh">12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span>     <span class="c1">// expression result is -4. regS is a signed reg
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="n">regS</span> <span class="o">=</span> <span class="o">-</span><span class="mh">4</span><span class="p">&#39;</span><span class="n">sd12</span> <span class="o">/</span> <span class="mh">3</span><span class="p">;</span> <span class="c1">// expression result is 1. -4&#39;sd12 is actually 4.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="c1">// The rules for integer division yield 4/3==1.
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里需要进行一些补充说明，以第一个例子为例，首先在<code>intA = -4'd12;</code>中，<code>-4'd12</code>为一个整型数，不涉及表达式运算，因此将其直接赋值给<code>intA</code>后，<code>intA</code>将其推断为有符号数<code>-12</code>。而在<code>regA = intA / 3;</code>中，<code>intA</code>为有符号数<code>-12</code>，因此其除以<code>3</code>的结果是<code>-4</code>（这里<code>3</code>也是一个整型数，在表达式中参与运算，没有基数标识符，被推断为有符号数），而赋值给<code>regA</code>后，由于<code>regA</code>没有被声明为<code>signed reg</code>，因此<code>-4</code>被推断为无符号数，亦即<code>16'hfffb=65532</code>。</p>
+<p>再看最后一个例子，<code>-4'sd12</code>也是一个整型数，且参与表达式运算，由于其存在基数标识符，且被指定为有符号数，因此在参与表达式运算时被推断为有符号数<code>4</code>（有符号数<code>-12</code>截位得到），进而表达式的值为<code>1</code>，而由于<code>regS</code>被声明为<code>signed reg</code>，因此<code>1</code>被推断为有符号数，二进制表示为<code>16'h0001</code>。</p>
+<h3 id="比较运算符">比较运算符
+</h3><blockquote>
+<p>[5.1.7] When one or both operands of a relational expression are unsigned, the expression shall be interpreted as a comparison between unsigned values. If the operands are of unequal bit lengths, the smaller operand shall be zero-extended to the size of the larger operand.</p>
+<p>When both operands are signed, the expression shall be interpreted as a comparison between signed values. If the operands are of unequal bit lengths, the smaller operand shall be sign-extended to the size of the larger operand.</p>
+<p>If either operand is a real operand, then the other operand shall be converted to an equivalent real value and the expression shall be interpreted as a comparison between real values.</p>
+</blockquote>
+<p>这里给出在进行比较运算（包括大于/小于/等于/不等于等运算）时，运算符两侧的运算数的推断规则：</p>
+<ul>
+<li>只要比较运算符两侧的操作数<strong>有一个为无符号数</strong>，则比较运算被推断为<strong>无符号数</strong>间的比较，如果操作数位宽不匹配，则位宽较小者需要通过<strong>0位扩展</strong>使其与位宽较大者匹配。</li>
+<li>只有比较运算符两侧的操作数<strong>均为有符号数</strong>，比较运算才被推断为<strong>有符号数</strong>间的比较，如果操作数位宽不匹配，则位宽较小者需要通过<strong>符号位扩展</strong>使其与位宽较大者匹配。</li>
+<li>只要比较运算符两侧的操作数<strong>有一个为实数型（<code>real</code>）</strong>，则比较运算被推断为<strong>实数</strong>间的比较，其余非实数操作数被转换为等价的实数。</li>
+</ul>
+<h3 id="移位运算符">移位运算符
+</h3><blockquote>
+<p>[5.1.12] The logical right shift shall fill the vacated bit positions with zeroes. The arithmetic right shift shall fill the vacated bit positions with zeroes if the result type is unsigned. It shall fill the vacated bit positions with the value of the most significant (i.e., sign) bit of the left operand if the result type is signed. If the right operand has an x or z value, then the result shall be unknown. The right operand is always treated as an unsigned number and has no effect on the signedness of the result.</p>
+</blockquote>
+<p>这里给出在进行移位运算时，运算结果的推断规则：</p>
+<ul>
+<li>运算符的右操作数始终被推断为<strong>无符号数</strong>，且对运算结果无影响。</li>
+<li>当使用<strong>逻辑右移（<code>&gt;&gt;</code>）<strong>时，运算结果的空位需要进行</strong>0位扩展</strong>。</li>
+<li>当使用<strong>算数右移（<code>&gt;&gt;&gt;</code>）<strong>时，如结果类型是</strong>有符号数</strong>，则空位需要进行<strong>符号位扩展</strong>；如结果类型是<strong>无符号数</strong>，则空位需要进行<strong>0位扩展</strong>。</li>
+</ul>
+<h3 id="表达式的符号推断规则">表达式的符号推断规则
+</h3><blockquote>
+<p>[5.5.1] The following are the rules for determining the resulting type of an expression:</p>
+<ul>
+<li>Expression type depends only on the operands. It does not depend on the left-hand side (if any).</li>
+<li>Decimal numbers are signed.</li>
+<li>Based_numbers are unsigned, except where the s notation is used in the base specifier (as in&quot;<code>4'sd12</code>&quot;).</li>
+<li>Bit-select results are unsigned, regardless of the operands.</li>
+<li>Part-select results are unsigned, regardless of the operands even if the part-select specifies the entire vector.</li>
+<li>Concatenate results are unsigned, regardless of the operands.</li>
+<li>Comparison results (1, 0) are unsigned, regardless of the operands.</li>
+<li>Reals converted to integers by type coercion are signed</li>
+<li>The sign and size of any self-determined operand are determined by the operand itself and independent of the                            remainder of the expression.</li>
+<li>For nonself-determined operands, the following rules apply:
+<ul>
+<li>If any operand is real, the result is real.</li>
+<li>If any operand is unsigned, the result is unsigned, regardless of the operator.</li>
+<li>If all operands are signed, the result will be signed, regardless of operator, except when specified otherwise.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>在前几节中，我们分别讨论了整型数常量，变量与特定运算符运算时的符号推断规则。综合来看，上述规则本质上约束的对象是<strong>操作数</strong>（比如比较运算符中，我们实际上是在根据比较运算符两侧的操作数类型推断在进行比较时，操作数本身应该视为有符号数还是无符号数），而在本节中，我们主要聚焦于对于一个一般的表达式而言，其<strong>运算结果</strong>的符号类型推断。标准中给出了如下的规则：</p>
+<ol>
+<li>表达式的符号类型只与<strong>操作数</strong>有关，与 <strong>表达式赋值的对象（LHS）</strong> 无关。</li>
+<li><strong>十进制数</strong>被推断为<strong>有符号数</strong>。</li>
+<li><strong>含基数标识符的操作数</strong>被推断为<strong>无符号数</strong>，除非使用<code>s</code>指定其为有符号数（如<code>4'sd12</code>）。</li>
+<li><strong>比特选择后的结果</strong>被推断为<strong>无符号数</strong>（如<code>a[1]</code>）。</li>
+<li><strong>部分选择后的结果</strong>被推断为<strong>无符号数</strong>（如<code>b[4:2]</code>）。</li>
+<li><strong>拼接运算后的结果</strong>被推断为<strong>无符号数</strong>。</li>
+<li><strong>比较运算的结果</strong>被推断为<strong>无符号数</strong>。</li>
+<li><strong>实数强制转换为整型数的结果</strong>被推断为<strong>有符号数</strong>。</li>
+<li>对于<strong>自决操作数（self-determined operand）</strong>，其符号类型只与操作数本身有关，与表达式其余部分独立。</li>
+<li>对于<strong>非自决操作数</strong>，其符号推断遵循如下规则：
+<ul>
+<li>如果操作数中有一者为<strong>实数</strong>，则运算结果被推断为<strong>实数</strong>。</li>
+<li>如果操作数中有一者为<strong>无符号数</strong>，则运算结果被推断为<strong>无符号数</strong>。</li>
+<li>如果所有操作数均为<strong>有符号数</strong>，则运算结果被推断为<strong>有符号数</strong>。</li>
+</ul>
+</li>
+</ol>
+<p>对于上述规则，我们需要说明以下几点：</p>
+<p>首先，需要注意<strong>操作数</strong>与<strong>表达式</strong>是一个相对的概念，一个表达式可以作为一个更为复杂表达式中的操作数，比如<code>(1 + 2) * (3 % 4)</code>，我们也可以将<code>(1 + 2)</code>与<code>(3 % 4)</code>视为乘法运算的两个操作数。</p>
+<p>其次，第9条规则引入了<strong>自决操作数</strong>的概念，将其定义为符号类型只与操作数本身有关的操作数，这里其实只是对于这类操作数进行了形式上的定义，并没有引入新的推断规则。但是第10条规则引入了对<strong>非自决操作数</strong>的推断规则，因此有必要明确自决操作数究竟指什么：根据定义，自决操作数其实就是指本身就可以判定符号的操作数，比如之前的整型数<code>-'sd12</code>，或是第2-8条规则中规定的运算结果（比特选择，拼接运算，比较运算等）。这其实就意味着<strong>Verilog中的这些操作数的符号类型是明确的，不会因为表达式上下文而改变</strong>。</p>
+<p>但是，诸如<code>reg regA</code>，<code>wire wireA</code>这类变量，它们其实只有默认的符号推断，而它们在表达式中实际的符号推断是可变的，需要结合表达式本身确定，这也就是<strong>非自决操作数</strong>的概念，第10条规则规定了对非自决操作数的符号推断。</p>
+<p>但是，我们仔细阅读第10条规则，会发现一个问题，这里其实说明的是如何推断运算结果的符号类型，但是对于非自决操作数本身，这一条规则并没有说明其在参与运算时应如何进行符号推断，这一点其实在标准的5.5.2节中才提到：</p>
+<blockquote>
+<p>The following are the steps for evaluating an expression:</p>
+<ul>
+<li>Determine the expression size based upon the standard rules of expression size determination.</li>
+<li>Determine the sign of the expression using the rules outlined in 5.5.1.</li>
+<li>Propagate the type and size of the expression (or self-determined subexpression) back down to the context-determined operands of the expression. In general, any context-determined operand of an operator shall be the same type and size as the result of the operator. However, there are two exceptions:
+<ul>
+<li>If the result type of the operator is real and if it has a context-determined operand that is not real, that operand shall be treated as if it were self-determined and then converted to real just before the operator is applied.</li>
+<li>The relational and equality operators have operands that are neither fully self-determined nor fully context-determined. The operands shall affect each other as if they were context-determined operands with a result type and size (maximum of the two operand sizes) determined from them. However, the actual result type shall always be 1 bit unsigned. The type and size of the operand shall be independent of the rest of the expression and vice versa.</li>
+</ul>
+</li>
+<li>When propagation reaches a simple operand as defined in 5.2 (a primary as defined in A.8.4), then that operand shall be converted to the propagated type and size. If the operand must be extended, then it shall be sign-extended only if the propagated type is signed.</li>
+</ul>
+</blockquote>
+<p>在这一部分其实说明了，对于<strong>非自决操作数</strong>，也就是标准中提及的<strong>上下文决定操作数（context-determined operand）<strong>其符号是通过</strong>表达式结果的符号类型向下传播</strong>确定的。但这里同样有两个例外：</p>
+<ul>
+<li>如果表达式结果是<strong>实数</strong>，则对于<strong>非实数</strong>的上下文决定操作数，需要先假定其为<strong>自决操作数</strong>，据此判断其取值，再将该值转换为实数。举一个例子，假设我们声明了一个变量<code>reg [3:0] a = 4'b1111；</code>，则对表达式<code>a * 1.5</code>而言，由于有实数<code>1.5</code>的存在，表达式结果被推断为实数，且<code>a</code>是一个非实数的非自决操作数。因此，我们需要先假定<code>a</code>为自决操作数，此时就直接使用<code>a</code>的默认符号推断，即无符号数，进而<code>a</code>的值就是<code>15</code>，再将其转换为实数<code>15.0</code>参与运算。</li>
+<li>对于<strong>比较运算符</strong>，它的两个操作数不是严格的自决操作数或非自决操作数，因为两个操作数的符号推断是相互确定的，具体规则已在上文提及，此处不再赘述。</li>
+</ul>
+<p>综上：<strong>表达式结果的符号本身是由所有操作数共同决定的规则推导出来的</strong>，它是一个<strong>自底向上</strong> + <strong>自顶向下</strong>结合的过程：</p>
+<ul>
+<li>首先，根据自决操作数符号类型，确定表达式结果的符号类型。</li>
+<li>然后，再将表达式结果的符号类型应用到所有非自决操作数上，并进行运算。</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/verilog/">Verilog</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Nov 04, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
