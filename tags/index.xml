@@ -7,7 +7,15 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Chen Wenyao</copyright>
-        <lastBuildDate>Thu, 06 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 06 Nov 2025 12:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Function Module</title>
+        <link>https://posvirus.github.io/tags/function-module/</link>
+        <pubDate>Thu, 06 Nov 2025 12:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/tags/function-module/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>Verilog</title>
         <link>https://posvirus.github.io/tags/verilog/</link>
         <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
