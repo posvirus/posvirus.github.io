@@ -549,7 +549,7 @@
 <p>但是，诸如<code>reg regA</code>，<code>wire wireA</code>这类变量，它们其实只有默认的符号推断，而它们在表达式中实际的符号推断是可变的，需要结合表达式本身确定，这也就是<strong>非自决操作数</strong>的概念，第10条规则规定了对非自决操作数的符号推断。</p>
 <p>但是，我们仔细阅读第10条规则，会发现一个问题，这里其实说明的是如何推断运算结果的符号类型，但是对于非自决操作数本身，这一条规则并没有说明其在参与运算时应如何进行符号推断，这一点其实在标准的5.5.2节中才提到：</p>
 <blockquote>
-<p>The following are the steps for evaluating an expression:</p>
+<p>[5.5.2] The following are the steps for evaluating an expression:</p>
 <ul>
 <li>Determine the expression size based upon the standard rules of expression size determination.</li>
 <li>Determine the sign of the expression using the rules outlined in 5.5.1.</li>
@@ -618,6 +618,39 @@
     
 
     
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/dic-002/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-002/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post task与function的区别"
+                        data-key="dic-002" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">task与function的区别</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
 
      
     

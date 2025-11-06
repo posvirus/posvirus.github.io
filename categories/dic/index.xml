@@ -7,7 +7,76 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Chen Wenyao</copyright>
-        <lastBuildDate>Tue, 04 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/categories/dic/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 06 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/categories/dic/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>task与function的区别</title>
+        <link>https://posvirus.github.io/p/dic-002/</link>
+        <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/p/dic-002/</guid>
+        <description>&lt;img src="https://posvirus.github.io/p/dic-002/cicc.png" alt="Featured image of post task与function的区别" /&gt;&lt;h2 id=&#34;task与function的区别&#34;&gt;&lt;code&gt;task&lt;/code&gt;与&lt;code&gt;function&lt;/code&gt;的区别
+&lt;/h2&gt;&lt;p&gt;任务（&lt;code&gt;task&lt;/code&gt;）与函数（&lt;code&gt;function&lt;/code&gt;）两类语句在标准中的 &lt;strong&gt;第10章（Tasks and functions）&lt;/strong&gt; 做了详细讨论，以下我们以原文为基础进行讨论说明：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[10.1] The following rules distinguish tasks from functions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A function shall execute in one simulation time unit; a task can contain time-controlling statements.&lt;/li&gt;
+&lt;li&gt;A function cannot enable a task; a task can enable other tasks and functions.&lt;/li&gt;
+&lt;li&gt;A function shall have at least one input type argument and shall not have an output or inout type argument; a task can have zero or more arguments of any type.&lt;/li&gt;
+&lt;li&gt;A function shall return a single value; a task shall not return a value.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;上文主要给出了&lt;code&gt;task&lt;/code&gt;与&lt;code&gt;function&lt;/code&gt;的四点不同：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;首先，函数必须在一个仿真时间单位内执行完毕；而任务可以包含控制仿真时间的语句。这句话的意思是&lt;strong&gt;函数不能消耗仿真时间&lt;/strong&gt;。换言之，函数的执行被认为是&lt;strong&gt;瞬时完成的&lt;/strong&gt;，在调用它的那个仿真时间点上立即返回结果。因此，函数内部&lt;strong&gt;不允许出现任何会延迟仿真时间的语句&lt;/strong&gt;。而&lt;strong&gt;任务可以包含任何时序控制语句&lt;/strong&gt;，因此它可以跨越多个仿真时间单位执行&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;。&lt;/li&gt;
+&lt;li&gt;函数不能 &lt;strong&gt;使能（enable）&lt;strong&gt;任务，而任务可以使能其它任务与函数。注意，这里的&lt;/strong&gt;使能&lt;/strong&gt;可以理解为&lt;strong&gt;调用并执行&lt;/strong&gt;，即某个任务可以在其内部调用其它函数或任务，并使其在仿真运行时被触发执行。至于为什么规定函数不能使能任务，我们可以结合第一条差异理解，因为函数是&lt;strong&gt;瞬时执行完成的&lt;/strong&gt;，如果在其中引入可跨越多个仿真时间单位执行的任务，则会导致未定义的行为。&lt;/li&gt;
+&lt;li&gt;函数至少需要有一个&lt;code&gt;input&lt;/code&gt;类型的参数，且不能有&lt;code&gt;output&lt;/code&gt;或&lt;code&gt;inout&lt;/code&gt;类型的参数。而任务可以有任意个任意类型的参数。&lt;/li&gt;
+&lt;li&gt;函数需要一个返回值，而任务不应存在返回值。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[10.1] The purpose of a function is to respond to an input value by returning a single value. A task can support multiple goals and can calculate multiple result values. However, only the output or inout type arguments pass result values back from the invocation of a task. A function is used as an operand in an expression; the value of that operand is the value returned by the function.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;上文归纳了&lt;code&gt;task&lt;/code&gt;与&lt;code&gt;function&lt;/code&gt;语句的目的，总体而言，函数主要是为了就某一输入值返回单一的输出值，其通常作为表达式内的操作数。而任务则可以支持更灵活的功能，输出更多的返回值，任务的返回值通常通过&lt;code&gt;output&lt;/code&gt;与&lt;code&gt;inout&lt;/code&gt;类型的参数进行传递。&lt;/p&gt;
+&lt;h2 id=&#34;有关task与function的其它注意点&#34;&gt;有关&lt;code&gt;task&lt;/code&gt;与&lt;code&gt;function&lt;/code&gt;的其它注意点
+&lt;/h2&gt;&lt;p&gt;本节主要结合标准说明有关&lt;code&gt;task&lt;/code&gt;与&lt;code&gt;function&lt;/code&gt;的一些其他知识点：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[10.2.1] Tasks without the optional keyword automatic are static tasks, with all declared items being statically allocated. These items shall be shared across all uses of the task executing concurrently. Task with the optional keyword automatic are automatic tasks. All items declared inside automatic tasks are allocated dynamically for each invocation. Automatic task items cannot be accessed by hierarchical references. Automatic tasks can be invoked through use of their hierarchical name.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[10.4.1] The keyword automatic declares an automatic function that is reentrant, with all the function declarations allocated dynamically for each concurrent function call. Automatic function items cannot be accessed by hierarchical references. Automatic functions can be invoked through the use of their hierarchical name&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;第一是函数与任务的调用，在该方面标准对函数与任务的规定是类似的，因此我们仅以任务为例进行说明：&lt;/p&gt;
+&lt;p&gt;标准规定，如果定义的任务没有被&lt;code&gt;automatic&lt;/code&gt;关键字修饰，则该任务为 &lt;strong&gt;静态任务（static task）&lt;/strong&gt; ，这类任务内部的所有变量都是静态分配的，这意味着这些变量在仿真开始时就被分配好内存，并且&lt;strong&gt;在整个仿真过程中只有一份副本&lt;/strong&gt;。此时，如果果多个块内同时调用同一个静态 task（例如在两个并行的 &lt;code&gt;initial&lt;/code&gt; 块中），那么它们&lt;strong&gt;共享同一组内部变量&lt;/strong&gt;。这可能会导致&lt;strong&gt;数据竞争&lt;/strong&gt;：当一个调用修改了变量，另一个调用会看到这个修改，可能引发 &lt;strong&gt;不可预测的行为（UB）&lt;/strong&gt; 。&lt;/p&gt;
+&lt;p&gt;因此，标准引入了&lt;code&gt;automatic&lt;/code&gt;关键字，如果我们使用该关键字修饰一个任务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;task&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;automatic&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;my_auto_task&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;cm&#34;&gt;/* do something */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;endtask&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;该任务会被声明为&lt;strong&gt;自动任务（automatic task）&lt;/strong&gt; ，此时，对该任务的每次调用，都会动态分配一份新的内存空间，因此，&lt;strong&gt;多个并发调用之间互不干扰&lt;/strong&gt;，各自拥有独立的变量副本，避免了数据竞争。&lt;/p&gt;
+&lt;p&gt;但是，对于&lt;strong&gt;自动任务&lt;/strong&gt;而言：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;你不能通过&lt;code&gt;top.inst.my_auto_task.var&lt;/code&gt;之类的层次化引用语句访问任务内部的变量，因为自动任务的变量是动态分配的，可能同时存在多个实例，仿真器无法确定你要访问哪一个副本。&lt;/li&gt;
+&lt;li&gt;你可以通过&lt;code&gt;top.inst.my_auto_task(...)&lt;/code&gt;指令的层次化调用语句来调用任务本身，只是不能读写它的内部变量。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;第二，函数与任务都是&lt;strong&gt;可综合的&lt;/strong&gt;，但需要指出，函数和任务综合出的电路都是组合逻辑，换言之，如果需要对函数与任务进行综合，你不应在其中引入任何时序控制语句。&lt;/p&gt;
+&lt;p&gt;注意，有关函数与任务是否可综合，其实在标准中并没有进行说明。这是因为 &lt;strong&gt;可综合性（Synthesizability）&lt;/strong&gt; 是一个&lt;strong&gt;由综合工具厂商定义和实现的概念&lt;/strong&gt;，而不是语言标准本身强制规定的。一个 Verilog语句是否可综合，取决于综合工具能否将其转换为实际的硬件电路。&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;对于第一条差异，多篇博客将其翻译为“函数只能与主模块共用同一个仿真时间单位，而任务可以定义自己的仿真时间单位”，这是不准确的。&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
         <title>Verilog中的有符号数</title>
         <link>https://posvirus.github.io/p/dic-001/</link>
         <pubDate>Tue, 04 Nov 2025 00:00:00 +0000</pubDate>
@@ -228,7 +297,7 @@
 &lt;p&gt;但是，诸如&lt;code&gt;reg regA&lt;/code&gt;，&lt;code&gt;wire wireA&lt;/code&gt;这类变量，它们其实只有默认的符号推断，而它们在表达式中实际的符号推断是可变的，需要结合表达式本身确定，这也就是&lt;strong&gt;非自决操作数&lt;/strong&gt;的概念，第10条规则规定了对非自决操作数的符号推断。&lt;/p&gt;
 &lt;p&gt;但是，我们仔细阅读第10条规则，会发现一个问题，这里其实说明的是如何推断运算结果的符号类型，但是对于非自决操作数本身，这一条规则并没有说明其在参与运算时应如何进行符号推断，这一点其实在标准的5.5.2节中才提到：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;The following are the steps for evaluating an expression:&lt;/p&gt;
+&lt;p&gt;[5.5.2] The following are the steps for evaluating an expression:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Determine the expression size based upon the standard rules of expression size determination.&lt;/li&gt;
 &lt;li&gt;Determine the sign of the expression using the rules outlined in 5.5.1.&lt;/li&gt;
