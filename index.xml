@@ -66,7 +66,7 @@ $$&lt;p&gt;
 &lt;p&gt;首先，状态机型序列检测器可以同时处理重复检测与非重复检测两类序列检测问题，这一结论是正确的，因为状态转换逻辑可以根据问题类型灵活变化。&lt;/p&gt;
 &lt;p&gt;但是，对于移位寄存器型序列检测器，其不仅可以处理序列的重复检测问题（这是显然的），也可以处理序列的非重复检测问题。对于非重复检测，我们需要意识到移位寄存器中存储的序列本身就是电路的 &lt;strong&gt;“状态”&lt;/strong&gt; ，因此，我们只需将序列匹配输出信号&lt;code&gt;match&lt;/code&gt;反馈至移位寄存器，使移位寄存器在序列匹配时&lt;strong&gt;复位&lt;/strong&gt;即可。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;移位寄存器的复位：&lt;strong&gt;我们需要思考一个问题，移位寄存器的&lt;/strong&gt;复位&lt;/strong&gt;具体指什么？我们可以将清零与复位完全等价吗？答案是否定的，假设我们需要检测的序列是&lt;code&gt;4&#39;b0011&lt;/code&gt;，高位先输入，而我们将移位寄存器清零后，移位寄存器的最高位便已是&lt;code&gt;1&#39;b0&lt;/code&gt;了，此时我们如果输入&lt;code&gt;3&#39;b011&lt;/code&gt;，移位寄存器也会错误地将该序列视为匹配序列。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;移位寄存器的复位：&lt;strong&gt;我们需要思考一个问题，移位寄存器的&lt;/strong&gt;复位&lt;/strong&gt;具体指什么？我们可以将清零与复位完全等价吗？答案是否定的，假设我们需要检测的序列是&lt;code&gt;4&#39;b0011&lt;/code&gt;，高位先输入，而我们将移位寄存器清零后，移位寄存器的最低位便是&lt;code&gt;1&#39;b0&lt;/code&gt;，此时我们如果输入&lt;code&gt;3&#39;b011&lt;/code&gt;，最低位的复位值移位至最高位，移位寄存器的值变为&lt;code&gt;4&#39;b0011&lt;/code&gt;，移位寄存器也会错误地将该序列视为匹配序列。&lt;/p&gt;
 &lt;p&gt;所以，为避免这一点，移位寄存器的复位值需要依据匹配的序列进行指定。具体而言，我们必须保证&lt;strong&gt;移位寄存器各位的复位值与目标序列最高位相反（默认高位先输入）&lt;/strong&gt;，这样可以保证在&lt;strong&gt;移位寄存器复位&lt;/strong&gt;到&lt;strong&gt;移位寄存器复位值完全被输入序列覆盖&lt;/strong&gt;这一段时间内，不会发生错误的序列匹配。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;所以，基于上述说明，并不存在“状态机型序列检测器比移位寄存器型序列检测器更灵活”的说法，相反，移位寄存器简洁的结构与原理，使其可以实现序列匹配电路的参数化设计，而这是状态机型电路难以实现的：&lt;/p&gt;
@@ -6490,7 +6490,7 @@ $$&lt;p&gt;
         <description>&lt;h2 id=&#34;about-me&#34;&gt;About Me
 &lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Chen Wenyao&lt;/strong&gt; is pursuing the M.Eng. degree in Integrated Circuit Engineering at Tsinghua University, Beijing, China, since 2024. He received the B.Eng. degree in Microelectronic Science and Engineering from Shanghai Jiao Tong University (SJTU), Shanghai, China, in 2024.&lt;/p&gt;
 &lt;p&gt;He is currently conducting research at the Institute of Integrated Circuit Design and Electronic Design Automation, School of Integrated Circuits, Tsinghua University. His research focuses on &lt;strong&gt;Chiplet interconnect technology&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;His academic achievements include:&lt;/p&gt;
+&lt;p&gt;His achievements include:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;Youth Impact Award&lt;/strong&gt; in the 1st Douyin AI Innovation Accelerator Contest (2025).&lt;/p&gt;
