@@ -7,7 +7,626 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Chen Wenyao</copyright>
-        <lastBuildDate>Thu, 06 Nov 2025 12:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 11 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>时钟分频</title>
+        <link>https://posvirus.github.io/p/dic-004/</link>
+        <pubDate>Tue, 11 Nov 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/p/dic-004/</guid>
+        <description>&lt;img src="https://posvirus.github.io/p/dic-004/cicc.png" alt="Featured image of post 时钟分频" /&gt;&lt;p&gt;本文主要讨论DIC中的 &lt;strong&gt;时钟分频器（Clock Divider）&lt;/strong&gt; 电路设计，它主要用于实现对输入时钟的分频处理，其模块端口声明通常如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;module&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk_divider&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;input&lt;/span&gt;  &lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;     &lt;span class=&#34;c1&#34;&gt;// input clock
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;input&lt;/span&gt;  &lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;   &lt;span class=&#34;c1&#34;&gt;// reset
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;output&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;// output clock
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;cm&#34;&gt;/* internal logic */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;endmodule&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;同时，我们不妨直接在此处给出用于时钟分频器测试的Testbench，以供参考：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;module&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;test&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// input clock generate
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;always&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// T = 2ns
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// module instantiate
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;clk_divider&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;u_clk_divider&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;      &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;   &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;    &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// stimulus
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;initial&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;@(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;posedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;10000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;$stop&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// waveform
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;initial&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;            
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;$dumpfile&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;wave.vcd&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;$dumpvars&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;test&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;endmodule&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;整数分频&#34;&gt;整数分频
+&lt;/h2&gt;&lt;p&gt;顾名思义，整数分频是指输入时钟的频率$f_\text{ref}$需要是输出时钟的频率$f_\text{out}$的&lt;strong&gt;整倍数&lt;/strong&gt;，即：
+&lt;/p&gt;
+$$
+f_\text{ref} = N \times f_\text{out}, N\in \mathbb{N}_+
+$$&lt;p&gt;
+这一部分的电路实现在网上的各种博客中都有非常详细的讨论，此处只作简单说明。一般而言，我们会将其分为&lt;strong&gt;偶数分频&lt;/strong&gt;与&lt;strong&gt;奇数分频&lt;/strong&gt;两类进行考查：&lt;/p&gt;
+&lt;h3 id=&#34;偶数分频&#34;&gt;偶数分频
+&lt;/h3&gt;&lt;p&gt;对于偶数分频，假设分频数$N=2k$，则我们不难知道，如需保证分频时钟的占空比为&lt;strong&gt;50%&lt;/strong&gt;，则输出时钟的&lt;strong&gt;高电平脉宽&lt;/strong&gt;与&lt;strong&gt;低电平脉宽&lt;/strong&gt;均为$k$个输入时钟周期。因此，我们容易通过&lt;strong&gt;计数器&lt;/strong&gt;实现这一功能：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;module&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk_divider&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;#(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;parameter&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DIV_NUM&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;&amp;#39;d10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// should be set to even
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;parameter&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CNT_WIDTH&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;input&lt;/span&gt;  &lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;input&lt;/span&gt;  &lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;output&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;localparam&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PULSE_WIDTH_CYC&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DIV_NUM&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// cycle counter
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;always&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;@(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;posedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;negedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}};&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DIV_NUM&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}};&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// output clock
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;always&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;@(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PULSE_WIDTH_CYC&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;endmodule&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;注意，在偶数分频中，有一类非常特殊的情况，即$2^k$倍分频，对于这类分频器设计，一些博客给出的方案是这样的：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;采用触发器反向输出端连接到输入端的方式可实现二分频电路，随后将$k$个二分频电路的前级输出与后级时钟输入级联，即可构成$2^k$倍分频电路。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;对于这类方案，我们需要做一些额外的说明：这类利用触发器&lt;strong&gt;数据输出&lt;/strong&gt;与&lt;strong&gt;时钟输入&lt;/strong&gt;级联的方案一般只适用于&lt;strong&gt;全定制电路&lt;/strong&gt;设计，即设计人员从晶体管级开始对电路的各部分进行精细设计与布局，而不是依赖标准单元库或自动化后端工具。&lt;/p&gt;
+&lt;p&gt;如果我们使用RTL代码对该模块进行描述的话，在进行后端综合时，这样$k$个触发器级联的结构其实额外引入了$k$个时钟域（每一级触发器的输入时钟频率都不相同），从而需要人为引入额外的时序约束确保电路的正确建模（甚至某些EDA本身就不支持这类数据输出与时钟输入相连的静态时序分析）。另外，这种描述在一些形式化验证工具中也可能直接导致验证失败。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;后续或许会写一篇博客讨论综合时各类时钟如何进行约束，这里先Mark一下~&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;所以，在使用RTL代码设计$2^k$倍分频器时，我们仍然推荐使用前文的计数器实现，其实从面积占用的角度看，对于$2^k$倍分频，两者对应的电路面积均$\propto k$（假设电路面积主要由D触发器的个数决定），所以差异其实并不大。&lt;/p&gt;
+&lt;h3 id=&#34;奇数分频&#34;&gt;奇数分频
+&lt;/h3&gt;&lt;p&gt;对于奇数分频，假设分频数$N=2k+1$，此时如需保证分频时钟的占空比为&lt;strong&gt;50%&lt;/strong&gt;，则输出时钟的&lt;strong&gt;高电平脉宽&lt;/strong&gt;与&lt;strong&gt;低电平脉宽&lt;/strong&gt;均为$k+0.5$个输入时钟周期。这时我们会发现，前文基于计数器的实现方案失效了，因为计数器是输入时钟单边沿触发的，所以无法实现对半个时钟周期的计数。因此，我们需要进行分类讨论：&lt;/p&gt;
+&lt;p&gt;第一，&lt;strong&gt;如果设计不严格要求输出时钟的占空比为50%&lt;/strong&gt;，那么前文基于计数器的实现方案仍然可以复用，我们取高电平脉宽&lt;strong&gt;或&lt;/strong&gt;低电平脉宽为$\lceil k+0.5\rceil$即可。&lt;/p&gt;
+&lt;p&gt;第二，&lt;strong&gt;如果设计严格要求输出时钟的占空比为50%&lt;/strong&gt;，则需要考虑如何处理对半个输入时钟周期的计数，此处，我们首先给出如下结论：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;对于输入时钟的$2k+1$倍分频，如果我们生成了高电平脉宽为$k$个输入时钟周期的时钟（记为$\text{CP}$），同时将$\text{CP}$移相&lt;strong&gt;半个输入时钟周期&lt;/strong&gt;的时钟记为$\text{CN}$，则占空比严格为50%的$2k+1$倍分频时钟$\text{CLK}$为$\text{CP}$与$\text{CN}$进行&lt;strong&gt;或运算&lt;/strong&gt;的结果。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-004/odd_div.png&#34;
+	width=&#34;680&#34;
+	height=&#34;120&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-004/odd_div_hu_ae26527ce71d4cb3.png 480w, https://posvirus.github.io/p/dic-004/odd_div_hu_b2ec1c2435d306c4.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;占空比为50%的奇数分频&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;566&#34;
+		data-flex-basis=&#34;1360px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;我们可以结合上图理解这一结论，当$\text{CP}$与$\text{CN}$进行&lt;strong&gt;或运算&lt;/strong&gt;时，两者的高电平区间正好相差半个输入时钟周期，则运算结果的高电平脉宽即为$k+0.5$个输入时钟周期（对称地，我们也可以生成低电平脉宽为$k$个输入时钟周期的时钟，将其移相半个输入时钟周期后进行&lt;strong&gt;与运算&lt;/strong&gt;）。&lt;/p&gt;
+&lt;p&gt;于是，问题便化归为：如何将时钟$\text{CP}$移相半个输入时钟周期？我们同样可以从&lt;strong&gt;全定制电路实现&lt;/strong&gt;与&lt;strong&gt;RTL代码描述&lt;/strong&gt;两个角度对其进行说明：&lt;/p&gt;
+&lt;p&gt;对于全定制电路，我们仅需将$\text{CP}$连接至一个&lt;strong&gt;负边沿触发的触发器&lt;/strong&gt;的&lt;strong&gt;数据输入&lt;/strong&gt;，并使用原输入时钟采样即可，可用RTL代码描述如下（注意！这里仅仅是以RTL代码作为电路描述方式，实际实现时不可使用RTL描述，因为很多综合工具并不支持&lt;strong&gt;单个电路中同时存在正/负边沿触发&lt;/strong&gt;）：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;always&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;@(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;negedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;cn&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;assign&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;对于RTL描述，我们则可以同时例化两个前文基于计数器的分频器，一个使用&lt;strong&gt;负边沿触发&lt;/strong&gt;，一个使用&lt;strong&gt;正边沿触发&lt;/strong&gt;，最后两个分频器输出时钟的相位差即为半个输入时钟周期，基于前文&lt;code&gt;clk_divider&lt;/code&gt;模块的RTL实现示例如下（由于该模块在进行奇数分频时，输出的是低电平脉宽为$k$个输入时钟周期的时钟，因此我们最后需要进行&lt;strong&gt;与运算&lt;/strong&gt;）：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;clk_divider&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;#(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DIV_NUM&lt;/span&gt;   &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;&amp;#39;d5&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CNT_WIDTH&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;u_clk_divider_p&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;    &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;   &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cp&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;clk_divider&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;#(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DIV_NUM&lt;/span&gt;   &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;&amp;#39;d5&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CNT_WIDTH&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;u_clk_divider_n&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;   &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;   &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cn&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;assign&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;有理数分频&#34;&gt;有理数分频
+&lt;/h2&gt;&lt;h3 id=&#34;有理数分频的通用方法&#34;&gt;有理数分频的通用方法
+&lt;/h3&gt;&lt;p&gt;除整数分频外，还有一类情况是&lt;strong&gt;有理数分频&lt;/strong&gt;，它通常需要输出时钟的频率$f_\text{out}$与输入时钟的频率$f_\text{ref}$满足：
+&lt;/p&gt;
+$$
+f_\text{ref} = \frac{p}{q}\times f_\text{out},~p,q\in \mathbb{N}_+,~p&gt;q
+$$&lt;blockquote&gt;
+&lt;p&gt;上式中的$p&amp;gt;q$是为了保证$f_\text{ref}&amp;gt;f_\text{out}$，亦即保证我们在进行的是一个 &lt;strong&gt;“分频”&lt;/strong&gt; 的行为而非 &lt;strong&gt;“倍频”&lt;/strong&gt; 的行为。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但这类需求在DIC中通常是无法实现的，观察输入/输出时钟的频率，对输入时钟的$p/q$倍分频实际上需要对输入时钟进行$q$倍频后，再进行$p$分频，而对于倍频，通常只能使用&lt;strong&gt;PLL&lt;/strong&gt;等模拟方案实现。&lt;/p&gt;
+&lt;p&gt;因此，这里我们其实只能实现一个近似的有理数分频方案，我们对上式进行变化，记输入时钟与输出时钟的周期分别为$T_\text{ref}$与$T_\text{out}$，则：
+&lt;/p&gt;
+$$
+\frac{1}{T_\text{ref}}=\frac{p}{q}\times\frac{1}{T_\text{out}}~\Rightarrow~q\times T_\text{out}=p\times T_\text{ref}
+$$&lt;p&gt;
+上式说明，对输入时钟的$p/q$倍分频其实需要保证&lt;strong&gt;在$p$个输入时钟周期内，输出时钟需要经过$q$个输入时钟周期&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;在有理数分频的近似实现中，我们仅需保证&lt;strong&gt;在$p$个输入时钟周期内，输出时钟经过$q$个输入时钟周期&lt;/strong&gt;这一条件即可，而无需考虑输入时钟的$q$个时钟周期是否均匀，占空比是否严格为50%。换言之，我们仅需在$p$个输入时钟周期内让输出时钟翻转$2q$次即可。&lt;/p&gt;
+&lt;p&gt;但是，为了近似实现有理数分频的效果，我们仍然希望输出时钟的$2q$次翻转尽量均匀。在实际设计中，这通常是通过&lt;strong&gt;整数分频叠加&lt;/strong&gt;的方式实现的，具体而言，如果我们能找到一个整数$k$，使得&lt;strong&gt;在$p$个输入时钟周期内，我们可以恰好实现对输入时钟的$q-m$次$k$分频和$m$次$k+1$分频&lt;/strong&gt;，这样便可以从最大程度上保持输出时钟的均匀性&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;，从数学上描述，我们需要：
+&lt;/p&gt;
+$$
+(q-m)\times k+m\times (k+1) = p,~m,k\in\mathbb{N}_+
+$$&lt;p&gt;
+以下，我们将通过求解得到$(m,k)$，首先，整理上式得到：
+&lt;/p&gt;
+$$
+q\times k + m=p
+$$&lt;p&gt;
+两边同除$q$得到：
+&lt;/p&gt;
+$$
+k=\frac{p}{q}-\frac{m}{q}
+$$&lt;p&gt;
+注意到$m&amp;lt;q$，因此$m/q &amp;lt;1$，所以我们可以直接取：
+&lt;/p&gt;
+$$
+k=\left\lfloor\frac{p}{q}\right\rfloor
+$$&lt;p&gt;
+进而：
+&lt;/p&gt;
+$$
+m=p-q\times k =p-q\times\left\lfloor\frac{p}{q}\right\rfloor=p~(\text{mod}~ q)
+$$&lt;p&gt;
+综上，求解得到的$(m,k)$为：
+&lt;/p&gt;
+$$
+(m,k) = \left(p~(\text{mod}~ q),~\left\lfloor\frac{p}{q}\right\rfloor\right)
+$$&lt;blockquote&gt;
+&lt;p&gt;请注意，在上述分析中，我们并没有规定$p$与$q$需要互质，换言之，对于一个确定的有理数分频设计，$k$是确定的，但是$m$是与$(p,~q)$相关的，我们可以对$(p,~q)$进行等比例缩放以对$m$进行缩放。比如，我们要实现&lt;strong&gt;5.4倍&lt;/strong&gt;分频，则易得$k=5$，而对于$m$，我们既可以取$(p,~q)$为$(54,~10)$，此时$m=4$，即需要在&lt;strong&gt;54个输入时钟周期&lt;/strong&gt;内，实现对输入时钟的&lt;strong&gt;6次5分频&lt;/strong&gt;和&lt;strong&gt;4次6分频&lt;/strong&gt;；也可以取$(p,~q)$为$(27,~5)$，此时$m=2$，即需要在&lt;strong&gt;27个输入时钟周期&lt;/strong&gt;内，实现对输入时钟的&lt;strong&gt;3次5分频&lt;/strong&gt;和&lt;strong&gt;2次6分频&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;$(p,~q)$的选取通常没有固定的规则，但我们至少需要保证$(p,~q)$适当大，这样可以在更大的时间尺度上实现对$k$分频与$k+1$分频的均匀分配，进而降低输出时钟的偏斜。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;至此，我们已经确定了$(m,k)$的取值，之后仅需在$p$个输入时钟周期内，实现对输入时钟的$q-m$次$k$分频和$m$次$k+1$分频即可。但是这里还有一个问题，我们应该如何确定$q-m$次$k$分频和$m$次$k+1$分频的先后顺序呢？&lt;/p&gt;
+&lt;p&gt;对于这个问题，决策的根本依据肯定是希望&lt;strong&gt;通过对这$q$次分频进行合理排序，使得输出时钟的$2q$次翻转尽量均匀&lt;/strong&gt;，关键是如何量化输出时钟翻转的 &lt;strong&gt;“均匀性”&lt;/strong&gt; ，这里我们通常通过最小化&lt;strong&gt;若干次分频后，理想输出时钟周期数（以输入时钟周期为单位）与实际输出时钟周期数（以输入时钟周期为单位）的差值&lt;/strong&gt;进行决策，这可以通过如下数学建模描述：&lt;/p&gt;
+&lt;p&gt;对于输入时钟的一次$k$分频而言，分频后的时钟周期长度为$k$个输入时钟周期，其与理想的$p/q$分频的时钟周期长度差值为$t=p/q-k$个输入时钟周期；对于输入时钟的一次$k+1$分频而言，分频后的时钟周期长度为$k$个输入时钟周期，其与理想的$p/q$分频的时钟周期长度差值为$t-1$个输入时钟周期&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
+&lt;p&gt;进而，我们得到了一个包含$q-m$个$t$与$m$个$t-1$的无序序列，且满足：
+&lt;/p&gt;
+$$
+(q-m)\times t+m\times(t-1)=0
+$$&lt;p&gt;我们的目标即是找到将该无序序列排序为一个有序数组 $\{a_n\}$ 的方案，使得数组 $\{S_n\}$ ：
+&lt;/p&gt;
+$$
+S_n=\sum\limits_{i=1}^na_i,~1\leqslant i\leqslant q
+$$&lt;p&gt;
+满足在所有排序方案中，$\max\limits_{1\leqslant n\leqslant q}{|S_n|}$ 取最小值。&lt;/p&gt;
+&lt;p&gt;以下，我们来解决上述问题：&lt;/p&gt;
+&lt;p&gt;首先消去变量$t$，已知：
+&lt;/p&gt;
+$$
+t=\frac{p}{q}-k=\frac{p-k\times q}{q}=\frac{m}{q}~\Rightarrow~t-1=\frac{m-q}{q}
+$$&lt;p&gt;
+因此，我们若记有序数组$\{a_n\}$的前$n$项中$t$的个数为$x_n$，则：
+&lt;/p&gt;
+$$
+S_n=\sum\limits_{i=1}^na_i=x_n\times t+(n-x_n)\times(t-1)=n\times(t-1)+x_n
+$$&lt;p&gt;
+进而：
+&lt;/p&gt;
+$$
+\left|S_n\right|=\left|x_n-\frac{n\times(q-m)}{q}\right|
+$$&lt;p&gt;
+直观看来，我们只需要保证$x_n$尽可能接近$n\times (q-m)/q$即可。以下，我们给出一种方案，并证明该方案的最优性，该方案可使用伪代码描述如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;temporary&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;variable&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;to&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;q&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;round&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;q&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;q&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;n&#34;&gt;insert&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;by&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;k&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;round&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;q&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;q&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;n&#34;&gt;insert&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;by&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;k&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;endif&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;endfor&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;比如，对于前文的$(p,~q)=(54,~10)$的情况，需要对输入时钟进行&lt;strong&gt;6次5分频&lt;/strong&gt;和&lt;strong&gt;4次6分频&lt;/strong&gt;，这可通过如下过程确定分频顺序：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;$x=0$，$(q-m)/q=0.6$，则$[ 1\times 0.6]=1&amp;gt;x$&lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;，插入&lt;strong&gt;5分频&lt;/strong&gt;，同时令$x=1$。&lt;/li&gt;
+&lt;li&gt;$[2\times0.6]=1=x$，插入&lt;strong&gt;6分频&lt;/strong&gt;，$x$保持不变。&lt;/li&gt;
+&lt;li&gt;$[3\times 0.6]=2&amp;gt;x$，插入&lt;strong&gt;5分频&lt;/strong&gt;，同时令$x=2$。&lt;/li&gt;
+&lt;li&gt;$[4\times0.6]=2=x$，插入&lt;strong&gt;6分频&lt;/strong&gt;，$x$保持不变。&lt;/li&gt;
+&lt;li&gt;$[5\times0.6]=3&amp;gt;x$，插入&lt;strong&gt;5分频&lt;/strong&gt;，同时令$x=3$。&lt;/li&gt;
+&lt;li&gt;$[6\times0.6]=4&amp;gt;x$，插入&lt;strong&gt;5分频&lt;/strong&gt;，同时令$x=4$。&lt;/li&gt;
+&lt;li&gt;$[7\times0.6]=4=x$，插入&lt;strong&gt;6分频&lt;/strong&gt;，$x$保持不变。&lt;/li&gt;
+&lt;li&gt;$[8\times0.6]=5&amp;gt;x$，插入&lt;strong&gt;5分频&lt;/strong&gt;，同时令$x=5$。&lt;/li&gt;
+&lt;li&gt;$[9\times0.6]=5=x$，插入&lt;strong&gt;6分频&lt;/strong&gt;，$x$保持不变。&lt;/li&gt;
+&lt;li&gt;$[10\times0.6]=6&amp;gt;x$，插入&lt;strong&gt;5分频&lt;/strong&gt;，同时令$x=6$。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;综上，插入的顺序即为：$5,~6,~5,~6,~5,~5,~6,~5,~6,~5$。&lt;/p&gt;
+&lt;p&gt;分析该方案，其实我们不难发现，这里的$x$其实就代表着有序数组前$n$项中$t$的个数，亦即：
+&lt;/p&gt;
+$$
+x_n=\left[\frac{n\times (q-m)}{q}\right]
+$$&lt;p&gt;
+这是因为在该方案的操作过程中，如果对于某个$n$，满足：
+&lt;/p&gt;
+$$
+\left[\frac{n\times (q-m)}{q}\right]\leqslant x,~\left[\frac{(n+1)\times (q-m)}{q}\right]&gt; x
+$$&lt;p&gt;
+则由于：
+&lt;/p&gt;
+$$
+\left|\frac{(n+1)\times (q-m)}{q}-\frac{n\times (q-m)}{q}\right|=\frac{q-m}{q}&lt;1
+$$&lt;p&gt;
+因此根据$n\times(q-m)/q$, $x$, $(n+1)\times(q-m)/q$在数轴上的分布，一定有：
+&lt;/p&gt;
+$$
+\left[\frac{(n+1)\times (q-m)}{q}\right]= x+1
+$$&lt;p&gt;
+换言之，$x$每次改变，一定只会&lt;strong&gt;递增1&lt;/strong&gt;，而每次$x$改变时又对应着在有序数组中插入$t$的操作，递归地，可验证上述结论的正确性。&lt;/p&gt;
+&lt;p&gt;最后，我们来证明该方案的最优性：&lt;/p&gt;
+&lt;p&gt;我们构造新数列$\{f_n\}$，用于描述$n\times(q-m)/q$的小数部分，即：
+&lt;/p&gt;
+$$
+f_n=\left\{\frac{n\times(q-m)}{q}\right\},~1\leqslant n\leqslant q
+$$&lt;p&gt;
+于是对于该方案，由于$x_n$是对$n\times(q-m)/q$的四舍五入取整，因此不难得到：
+&lt;/p&gt;
+$$
+\left|S_n\right|=\left|x_n-\frac{n\times(q-m)}{q}\right|=\min\{f_n,~1-f_n\}
+$$&lt;p&gt;
+进而：
+&lt;/p&gt;
+$$
+\max\limits_{1\leqslant n\leqslant q}\{|S_n|\}=\max\limits_{1\leqslant n\leqslant q}\{\min\{f_n,~1-f_n\}\}=K
+$$&lt;p&gt;
+注意$K$是一个仅与$(p,~q)$有关的值，它与我们选择的排序方案无关。以下我们将证明，对于任意的排序方案，$\max\limits_{1\leqslant n\leqslant q}{|S_n|}$一定不小于$K$：假设一种排序方案，前$n$项中$t$的个数为$x_n$，则注意到$x_n$是整数，易得：
+&lt;/p&gt;
+$$
+\left|S_n\right|=\left|x_n-\frac{n\times(q-m)}{q}\right|\geqslant\min\{f_n,~1-f_n\}
+$$&lt;p&gt;
+进而：
+&lt;/p&gt;
+$$
+\max\limits_{1\leqslant n\leqslant q}\{|S_n|\}\geqslant\max\limits_{1\leqslant n\leqslant q}\{\min\{f_n,~1-f_n\}\}=K
+$$&lt;p&gt;
+综上，我们即证明了前文提及排序方案的最优性。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意前文的所有分析，是在确定对于给定的有理数分频，我们应当如何选择若干次整数分频进行近似，以及这若干次整数分频应当如何排序以保证输出时钟的翻转尽量均匀。&lt;strong&gt;这些过程都是在进行分频器的硬件实现前就确定的，并不需要通过RTL代码描述。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在确定$q$次分频的排序方案后，我们便可进行分频器的RTL设计，我们不妨再以&lt;strong&gt;5.4倍分频&lt;/strong&gt;为例，给出如下示例：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;44
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;45
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;46
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;47
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;48
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;49
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;50
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;51
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;52
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-verilog&#34; data-lang=&#34;verilog&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;module&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk_divider&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;input&lt;/span&gt;  &lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;input&lt;/span&gt;  &lt;span class=&#34;kt&#34;&gt;wire&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;output&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;localparam&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_Q&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;localparam&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_K&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;localparam&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_ORDER&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0101001010&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;localparam&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ALC_CNT_WIDTH&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;localparam&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CYC_CNT_WIDTH&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// allocation counter
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ALC_CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;reg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CYC_CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;always&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;@(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;posedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;negedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ALC_CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}};&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_ORDER&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_K&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_Q&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;({(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ALC_CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_ORDER&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_K&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_Q&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;({(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ALC_CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// cycle counter
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;always&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;@(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;posedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;clk&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;negedge&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rst_n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CYC_CNT_WIDTH&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;&lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}};&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_ORDER&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_K&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_ORDER&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FRAC_K&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// output clock
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;always&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;@(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_ORDER&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_K&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_ORDER&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;alc_cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cyc_cnt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;FRAC_K&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;begin&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;clk_out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;mb&#34;&gt;&amp;#39;b1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;endmodule&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;当然，需要指出的是，$k$与$k+1$中必有一者是奇数，因此在处理有理数分频时，我们同时也需要处理奇数分频。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;半整数分频&#34;&gt;半整数分频
+&lt;/h3&gt;&lt;p&gt;最后，我们讨论一种特殊的有理数分频，即对输入时钟进行 &lt;strong&gt;$n+0.5$倍分频&lt;/strong&gt; （简称半整数分频），此时我们知道，输出时钟的周期$T_\text{out}$与输入时钟的周期$T_\text{ref}$需满足：
+&lt;/p&gt;
+$$
+T_\text{out}=\left(n+0.5\right)\times T_\text{ref}
+$$&lt;p&gt;
+但这里我们不难发现，对于半个输入时钟周期的延时，我们是有可能利用&lt;strong&gt;输入时钟的双边沿触发&lt;/strong&gt;精确实现的，故可以对其进一步优化：&lt;/p&gt;
+&lt;p&gt;以下，我们不妨先按照通用方法实现，则：
+&lt;/p&gt;
+$$
+\frac{p}{q}=\frac{1}{2}+n=\frac{2n+1}{2}
+$$&lt;p&gt;
+因此，我们可取$(p,~q)=(2n+1,~2)$，则$(m,~k)=(1,~n)$，这说明我们可以在$2n+1$个输入时钟周期内，通过对输入时钟的一次$n$分频与一次$n+1$分频近似$n+0.5$分频的效果。&lt;/p&gt;
+&lt;p&gt;以下，我们进行如下操作：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;以&lt;strong&gt;输入时钟上升沿&lt;/strong&gt;触发，顺次进行$k+1$分频与$k$分频，各分频时钟的高电平脉宽均为$\left\lfloor k/2\right\rfloor$个输入时钟周期，得到输出时钟$\text{CP}$。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;以&lt;strong&gt;输入时钟上升沿&lt;/strong&gt;触发，顺次进行$k$分频与$k+1$分频，并将其&lt;strong&gt;移相半个时钟周期&lt;/strong&gt;，各分频时钟的高电平脉宽均为$\left\lfloor k/2\right\rfloor$个输入时钟周期，得到输出时钟$\text{CN}$。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;取$\text{CLK}$为$\text{CP}$与$\text{CN}$进行&lt;strong&gt;或运算&lt;/strong&gt;的结果，则$\text{CLK}$的周期即为$k+0.5$个输入时钟周期。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;上述操作本质上是对$k+1$分频时钟与$k$分频时钟进行平均化操作，此处便不进行严格证明了，我们不妨以&lt;strong&gt;3.5倍分频&lt;/strong&gt;为例，展示其效果：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-004/half_div.png&#34;
+	width=&#34;1040&#34;
+	height=&#34;120&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-004/half_div_hu_9ff0e4356a9350ed.png 480w, https://posvirus.github.io/p/dic-004/half_div_hu_a665734d5027a1d.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;精确周期的半整数分频&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;866&#34;
+		data-flex-basis=&#34;2080px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;这种方法通常被称为&lt;strong&gt;双模前置小数分频法&lt;/strong&gt;。&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;这里取$t-1&amp;lt;0$，代表分频后的时钟周期长度大于理想分频后的时钟周期长度。&amp;#160;&lt;a href=&#34;#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:3&#34;&gt;
+&lt;p&gt;这里的$[x]$代表对$x$进行&lt;strong&gt;四舍五入取整&lt;/strong&gt;。&amp;#160;&lt;a href=&#34;#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
         <title>序列检测</title>
         <link>https://posvirus.github.io/p/dic-003/</link>
         <pubDate>Thu, 06 Nov 2025 12:00:00 +0000</pubDate>

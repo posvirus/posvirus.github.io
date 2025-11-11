@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-004：时钟分频">
+<title>时钟分频</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/dic-004/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="时钟分频">
+<meta property='og:description' content="DIC-004：时钟分频">
+<meta property='og:url' content='https://posvirus.github.io/p/dic-004/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Function Module' /><meta property='article:published_time' content='2025-11-11T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-11-11T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-004/cicc.png' />
+<meta name="twitter:title" content="时钟分频">
+<meta name="twitter:description" content="DIC-004：时钟分频"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/dic-004/cicc.png' />
+    <link rel="shortcut icon" href="/favicon.jpeg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤗</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">如无必要，勿增实体</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#整数分频">整数分频</a>
+      <ol>
+        <li><a href="#偶数分频">偶数分频</a></li>
+        <li><a href="#奇数分频">奇数分频</a></li>
+      </ol>
+    </li>
+    <li><a href="#有理数分频">有理数分频</a>
+      <ol>
+        <li><a href="#有理数分频的通用方法">有理数分频的通用方法</a></li>
+        <li><a href="#半整数分频">半整数分频</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/dic-004/">
+                <img src="/p/dic-004/cicc_hu_d52f18f9a902f256.png"
+                        srcset="/p/dic-004/cicc_hu_d52f18f9a902f256.png 800w, /p/dic-004/cicc_hu_c62d00be19035290.png 1600w"
+                        width="800" 
+                        height="270" 
+                        loading="lazy"
+                        alt="Featured image of post 时钟分频" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/dic/" >
+                DIC
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/dic-004/">时钟分频</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            DIC-004：时钟分频
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 11, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 13 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>本文主要讨论DIC中的 <strong>时钟分频器（Clock Divider）</strong> 电路设计，它主要用于实现对输入时钟的分频处理，其模块端口声明通常如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">clk_divider</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="n">clk</span><span class="p">,</span>     <span class="c1">// input clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span> <span class="n">rst_n</span><span class="p">,</span>   <span class="c1">// reset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">reg</span>  <span class="n">clk_out</span>  <span class="c1">// output clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* internal logic */</span>
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时，我们不妨直接在此处给出用于时钟分频器测试的Testbench，以供参考：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">test</span> <span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// input clock generate
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="n">clk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">#</span><span class="mh">1</span> <span class="n">clk</span> <span class="o">=</span> <span class="o">~</span><span class="n">clk</span><span class="p">;</span> <span class="c1">// T = 2ns
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// module instantiate
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="n">rst_n</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">wire</span> <span class="n">clk_out</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">clk_divider</span> <span class="n">u_clk_divider</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">clk</span>     <span class="p">(</span><span class="n">clk</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">rst_n</span>   <span class="p">(</span><span class="n">rst_n</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">clk_out</span> <span class="p">(</span><span class="n">clk_out</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// stimulus
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">clk</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#</span><span class="mh">10</span><span class="p">;</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#</span><span class="mh">10000</span><span class="p">;</span> <span class="nb">$stop</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// waveform
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">initial</span> <span class="k">begin</span>            
+</span></span><span class="line"><span class="cl">        <span class="n">$dumpfile</span><span class="p">(</span><span class="s">&#34;wave.vcd&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">$dumpvars</span><span class="p">(</span><span class="mh">0</span><span class="p">,</span> <span class="n">test</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="整数分频">整数分频
+</h2><p>顾名思义，整数分频是指输入时钟的频率$f_\text{ref}$需要是输出时钟的频率$f_\text{out}$的<strong>整倍数</strong>，即：
+</p>
+$$
+f_\text{ref} = N \times f_\text{out}, N\in \mathbb{N}_+
+$$<p>
+这一部分的电路实现在网上的各种博客中都有非常详细的讨论，此处只作简单说明。一般而言，我们会将其分为<strong>偶数分频</strong>与<strong>奇数分频</strong>两类进行考查：</p>
+<h3 id="偶数分频">偶数分频
+</h3><p>对于偶数分频，假设分频数$N=2k$，则我们不难知道，如需保证分频时钟的占空比为<strong>50%</strong>，则输出时钟的<strong>高电平脉宽</strong>与<strong>低电平脉宽</strong>均为$k$个输入时钟周期。因此，我们容易通过<strong>计数器</strong>实现这一功能：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">clk_divider</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">DIV_NUM</span>   <span class="o">=</span> <span class="mh">4</span><span class="mi">&#39;d10</span><span class="p">,</span> <span class="c1">// should be set to even
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">parameter</span> <span class="n">CNT_WIDTH</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="n">clk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="n">rst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="n">clk_out</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">localparam</span> <span class="n">PULSE_WIDTH_CYC</span> <span class="o">=</span> <span class="n">DIV_NUM</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// cycle counter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="n">CNT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cyc_cnt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">CNT_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">==</span> <span class="n">DIV_NUM</span> <span class="o">-</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">CNT_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="n">cyc_cnt</span> <span class="o">+</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// output clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">&lt;</span> <span class="n">PULSE_WIDTH_CYC</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">clk_out</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">clk_out</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意，在偶数分频中，有一类非常特殊的情况，即$2^k$倍分频，对于这类分频器设计，一些博客给出的方案是这样的：</p>
+<blockquote>
+<p>采用触发器反向输出端连接到输入端的方式可实现二分频电路，随后将$k$个二分频电路的前级输出与后级时钟输入级联，即可构成$2^k$倍分频电路。</p>
+</blockquote>
+<p>对于这类方案，我们需要做一些额外的说明：这类利用触发器<strong>数据输出</strong>与<strong>时钟输入</strong>级联的方案一般只适用于<strong>全定制电路</strong>设计，即设计人员从晶体管级开始对电路的各部分进行精细设计与布局，而不是依赖标准单元库或自动化后端工具。</p>
+<p>如果我们使用RTL代码对该模块进行描述的话，在进行后端综合时，这样$k$个触发器级联的结构其实额外引入了$k$个时钟域（每一级触发器的输入时钟频率都不相同），从而需要人为引入额外的时序约束确保电路的正确建模（甚至某些EDA本身就不支持这类数据输出与时钟输入相连的静态时序分析）。另外，这种描述在一些形式化验证工具中也可能直接导致验证失败。</p>
+<blockquote>
+<p>后续或许会写一篇博客讨论综合时各类时钟如何进行约束，这里先Mark一下~</p>
+</blockquote>
+<p>所以，在使用RTL代码设计$2^k$倍分频器时，我们仍然推荐使用前文的计数器实现，其实从面积占用的角度看，对于$2^k$倍分频，两者对应的电路面积均$\propto k$（假设电路面积主要由D触发器的个数决定），所以差异其实并不大。</p>
+<h3 id="奇数分频">奇数分频
+</h3><p>对于奇数分频，假设分频数$N=2k+1$，此时如需保证分频时钟的占空比为<strong>50%</strong>，则输出时钟的<strong>高电平脉宽</strong>与<strong>低电平脉宽</strong>均为$k+0.5$个输入时钟周期。这时我们会发现，前文基于计数器的实现方案失效了，因为计数器是输入时钟单边沿触发的，所以无法实现对半个时钟周期的计数。因此，我们需要进行分类讨论：</p>
+<p>第一，<strong>如果设计不严格要求输出时钟的占空比为50%</strong>，那么前文基于计数器的实现方案仍然可以复用，我们取高电平脉宽<strong>或</strong>低电平脉宽为$\lceil k+0.5\rceil$即可。</p>
+<p>第二，<strong>如果设计严格要求输出时钟的占空比为50%</strong>，则需要考虑如何处理对半个输入时钟周期的计数，此处，我们首先给出如下结论：</p>
+<blockquote>
+<p>对于输入时钟的$2k+1$倍分频，如果我们生成了高电平脉宽为$k$个输入时钟周期的时钟（记为$\text{CP}$），同时将$\text{CP}$移相<strong>半个输入时钟周期</strong>的时钟记为$\text{CN}$，则占空比严格为50%的$2k+1$倍分频时钟$\text{CLK}$为$\text{CP}$与$\text{CN}$进行<strong>或运算</strong>的结果。</p>
+</blockquote>
+<p><img src="/p/dic-004/odd_div.png"
+	width="680"
+	height="120"
+	srcset="/p/dic-004/odd_div_hu_ae26527ce71d4cb3.png 480w, /p/dic-004/odd_div_hu_b2ec1c2435d306c4.png 1024w"
+	loading="lazy"
+	
+		alt="占空比为50%的奇数分频"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="566"
+		data-flex-basis="1360px"
+	
+></p>
+<p>我们可以结合上图理解这一结论，当$\text{CP}$与$\text{CN}$进行<strong>或运算</strong>时，两者的高电平区间正好相差半个输入时钟周期，则运算结果的高电平脉宽即为$k+0.5$个输入时钟周期（对称地，我们也可以生成低电平脉宽为$k$个输入时钟周期的时钟，将其移相半个输入时钟周期后进行<strong>与运算</strong>）。</p>
+<p>于是，问题便化归为：如何将时钟$\text{CP}$移相半个输入时钟周期？我们同样可以从<strong>全定制电路实现</strong>与<strong>RTL代码描述</strong>两个角度对其进行说明：</p>
+<p>对于全定制电路，我们仅需将$\text{CP}$连接至一个<strong>负边沿触发的触发器</strong>的<strong>数据输入</strong>，并使用原输入时钟采样即可，可用RTL代码描述如下（注意！这里仅仅是以RTL代码作为电路描述方式，实际实现时不可使用RTL描述，因为很多综合工具并不支持<strong>单个电路中同时存在正/负边沿触发</strong>）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="kt">reg</span> <span class="n">cn</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">negedge</span> <span class="n">clk</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cn</span> <span class="o">&lt;=</span> <span class="n">cp</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">clk_out</span> <span class="o">=</span> <span class="n">cp</span> <span class="o">|</span> <span class="n">cn</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于RTL描述，我们则可以同时例化两个前文基于计数器的分频器，一个使用<strong>负边沿触发</strong>，一个使用<strong>正边沿触发</strong>，最后两个分频器输出时钟的相位差即为半个输入时钟周期，基于前文<code>clk_divider</code>模块的RTL实现示例如下（由于该模块在进行奇数分频时，输出的是低电平脉宽为$k$个输入时钟周期的时钟，因此我们最后需要进行<strong>与运算</strong>）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="kt">wire</span> <span class="n">cp</span><span class="p">,</span> <span class="n">cn</span><span class="p">,</span> <span class="n">clk_out</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">clk_divider</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">DIV_NUM</span>   <span class="p">(</span><span class="mh">3</span><span class="mi">&#39;d5</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">CNT_WIDTH</span> <span class="p">(</span><span class="mh">3</span>     <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_clk_divider_p</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk</span>     <span class="p">(</span><span class="n">clk</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">rst_n</span>   <span class="p">(</span><span class="n">rst_n</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk_out</span> <span class="p">(</span><span class="n">cp</span>     <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">clk_divider</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">DIV_NUM</span>   <span class="p">(</span><span class="mh">3</span><span class="mi">&#39;d5</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">CNT_WIDTH</span> <span class="p">(</span><span class="mh">3</span>     <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_clk_divider_n</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk</span>     <span class="p">(</span><span class="o">~</span><span class="n">clk</span>   <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">rst_n</span>   <span class="p">(</span><span class="n">rst_n</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk_out</span> <span class="p">(</span><span class="n">cn</span>     <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">clk_out</span> <span class="o">=</span> <span class="n">cp</span> <span class="o">&amp;</span> <span class="n">cn</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="有理数分频">有理数分频
+</h2><h3 id="有理数分频的通用方法">有理数分频的通用方法
+</h3><p>除整数分频外，还有一类情况是<strong>有理数分频</strong>，它通常需要输出时钟的频率$f_\text{out}$与输入时钟的频率$f_\text{ref}$满足：
+</p>
+$$
+f_\text{ref} = \frac{p}{q}\times f_\text{out},~p,q\in \mathbb{N}_+,~p>q
+$$<blockquote>
+<p>上式中的$p&gt;q$是为了保证$f_\text{ref}&gt;f_\text{out}$，亦即保证我们在进行的是一个 <strong>“分频”</strong> 的行为而非 <strong>“倍频”</strong> 的行为。</p>
+</blockquote>
+<p>但这类需求在DIC中通常是无法实现的，观察输入/输出时钟的频率，对输入时钟的$p/q$倍分频实际上需要对输入时钟进行$q$倍频后，再进行$p$分频，而对于倍频，通常只能使用<strong>PLL</strong>等模拟方案实现。</p>
+<p>因此，这里我们其实只能实现一个近似的有理数分频方案，我们对上式进行变化，记输入时钟与输出时钟的周期分别为$T_\text{ref}$与$T_\text{out}$，则：
+</p>
+$$
+\frac{1}{T_\text{ref}}=\frac{p}{q}\times\frac{1}{T_\text{out}}~\Rightarrow~q\times T_\text{out}=p\times T_\text{ref}
+$$<p>
+上式说明，对输入时钟的$p/q$倍分频其实需要保证<strong>在$p$个输入时钟周期内，输出时钟需要经过$q$个输入时钟周期</strong>。</p>
+<p>在有理数分频的近似实现中，我们仅需保证<strong>在$p$个输入时钟周期内，输出时钟经过$q$个输入时钟周期</strong>这一条件即可，而无需考虑输入时钟的$q$个时钟周期是否均匀，占空比是否严格为50%。换言之，我们仅需在$p$个输入时钟周期内让输出时钟翻转$2q$次即可。</p>
+<p>但是，为了近似实现有理数分频的效果，我们仍然希望输出时钟的$2q$次翻转尽量均匀。在实际设计中，这通常是通过<strong>整数分频叠加</strong>的方式实现的，具体而言，如果我们能找到一个整数$k$，使得<strong>在$p$个输入时钟周期内，我们可以恰好实现对输入时钟的$q-m$次$k$分频和$m$次$k+1$分频</strong>，这样便可以从最大程度上保持输出时钟的均匀性<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>，从数学上描述，我们需要：
+</p>
+$$
+(q-m)\times k+m\times (k+1) = p,~m,k\in\mathbb{N}_+
+$$<p>
+以下，我们将通过求解得到$(m,k)$，首先，整理上式得到：
+</p>
+$$
+q\times k + m=p
+$$<p>
+两边同除$q$得到：
+</p>
+$$
+k=\frac{p}{q}-\frac{m}{q}
+$$<p>
+注意到$m&lt;q$，因此$m/q &lt;1$，所以我们可以直接取：
+</p>
+$$
+k=\left\lfloor\frac{p}{q}\right\rfloor
+$$<p>
+进而：
+</p>
+$$
+m=p-q\times k =p-q\times\left\lfloor\frac{p}{q}\right\rfloor=p~(\text{mod}~ q)
+$$<p>
+综上，求解得到的$(m,k)$为：
+</p>
+$$
+(m,k) = \left(p~(\text{mod}~ q),~\left\lfloor\frac{p}{q}\right\rfloor\right)
+$$<blockquote>
+<p>请注意，在上述分析中，我们并没有规定$p$与$q$需要互质，换言之，对于一个确定的有理数分频设计，$k$是确定的，但是$m$是与$(p,~q)$相关的，我们可以对$(p,~q)$进行等比例缩放以对$m$进行缩放。比如，我们要实现<strong>5.4倍</strong>分频，则易得$k=5$，而对于$m$，我们既可以取$(p,~q)$为$(54,~10)$，此时$m=4$，即需要在<strong>54个输入时钟周期</strong>内，实现对输入时钟的<strong>6次5分频</strong>和<strong>4次6分频</strong>；也可以取$(p,~q)$为$(27,~5)$，此时$m=2$，即需要在<strong>27个输入时钟周期</strong>内，实现对输入时钟的<strong>3次5分频</strong>和<strong>2次6分频</strong>。</p>
+<p>$(p,~q)$的选取通常没有固定的规则，但我们至少需要保证$(p,~q)$适当大，这样可以在更大的时间尺度上实现对$k$分频与$k+1$分频的均匀分配，进而降低输出时钟的偏斜。</p>
+</blockquote>
+<p>至此，我们已经确定了$(m,k)$的取值，之后仅需在$p$个输入时钟周期内，实现对输入时钟的$q-m$次$k$分频和$m$次$k+1$分频即可。但是这里还有一个问题，我们应该如何确定$q-m$次$k$分频和$m$次$k+1$分频的先后顺序呢？</p>
+<p>对于这个问题，决策的根本依据肯定是希望<strong>通过对这$q$次分频进行合理排序，使得输出时钟的$2q$次翻转尽量均匀</strong>，关键是如何量化输出时钟翻转的 <strong>“均匀性”</strong> ，这里我们通常通过最小化<strong>若干次分频后，理想输出时钟周期数（以输入时钟周期为单位）与实际输出时钟周期数（以输入时钟周期为单位）的差值</strong>进行决策，这可以通过如下数学建模描述：</p>
+<p>对于输入时钟的一次$k$分频而言，分频后的时钟周期长度为$k$个输入时钟周期，其与理想的$p/q$分频的时钟周期长度差值为$t=p/q-k$个输入时钟周期；对于输入时钟的一次$k+1$分频而言，分频后的时钟周期长度为$k$个输入时钟周期，其与理想的$p/q$分频的时钟周期长度差值为$t-1$个输入时钟周期<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</p>
+<p>进而，我们得到了一个包含$q-m$个$t$与$m$个$t-1$的无序序列，且满足：
+</p>
+$$
+(q-m)\times t+m\times(t-1)=0
+$$<p>我们的目标即是找到将该无序序列排序为一个有序数组 $\{a_n\}$ 的方案，使得数组 $\{S_n\}$ ：
+</p>
+$$
+S_n=\sum\limits_{i=1}^na_i,~1\leqslant i\leqslant q
+$$<p>
+满足在所有排序方案中，$\max\limits_{1\leqslant n\leqslant q}{|S_n|}$ 取最小值。</p>
+<p>以下，我们来解决上述问题：</p>
+<p>首先消去变量$t$，已知：
+</p>
+$$
+t=\frac{p}{q}-k=\frac{p-k\times q}{q}=\frac{m}{q}~\Rightarrow~t-1=\frac{m-q}{q}
+$$<p>
+因此，我们若记有序数组$\{a_n\}$的前$n$项中$t$的个数为$x_n$，则：
+</p>
+$$
+S_n=\sum\limits_{i=1}^na_i=x_n\times t+(n-x_n)\times(t-1)=n\times(t-1)+x_n
+$$<p>
+进而：
+</p>
+$$
+\left|S_n\right|=\left|x_n-\frac{n\times(q-m)}{q}\right|
+$$<p>
+直观看来，我们只需要保证$x_n$尽可能接近$n\times (q-m)/q$即可。以下，我们给出一种方案，并证明该方案的最优性，该方案可使用伪代码描述如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="o">//</span> <span class="n">temporary</span> <span class="n">variable</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">q</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">q</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">		<span class="n">insert</span> <span class="n">t</span><span class="p">;</span> <span class="o">//</span> <span class="n">div</span> <span class="n">by</span> <span class="n">k</span>
+</span></span><span class="line"><span class="cl">		<span class="n">x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">else</span>
+</span></span><span class="line"><span class="cl">		<span class="n">insert</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span> <span class="o">//</span> <span class="n">div</span> <span class="n">by</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">endif</span>
+</span></span><span class="line"><span class="cl"><span class="n">endfor</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>比如，对于前文的$(p,~q)=(54,~10)$的情况，需要对输入时钟进行<strong>6次5分频</strong>和<strong>4次6分频</strong>，这可通过如下过程确定分频顺序：</p>
+<ol>
+<li>$x=0$，$(q-m)/q=0.6$，则$[ 1\times 0.6]=1&gt;x$<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>，插入<strong>5分频</strong>，同时令$x=1$。</li>
+<li>$[2\times0.6]=1=x$，插入<strong>6分频</strong>，$x$保持不变。</li>
+<li>$[3\times 0.6]=2&gt;x$，插入<strong>5分频</strong>，同时令$x=2$。</li>
+<li>$[4\times0.6]=2=x$，插入<strong>6分频</strong>，$x$保持不变。</li>
+<li>$[5\times0.6]=3&gt;x$，插入<strong>5分频</strong>，同时令$x=3$。</li>
+<li>$[6\times0.6]=4&gt;x$，插入<strong>5分频</strong>，同时令$x=4$。</li>
+<li>$[7\times0.6]=4=x$，插入<strong>6分频</strong>，$x$保持不变。</li>
+<li>$[8\times0.6]=5&gt;x$，插入<strong>5分频</strong>，同时令$x=5$。</li>
+<li>$[9\times0.6]=5=x$，插入<strong>6分频</strong>，$x$保持不变。</li>
+<li>$[10\times0.6]=6&gt;x$，插入<strong>5分频</strong>，同时令$x=6$。</li>
+</ol>
+<p>综上，插入的顺序即为：$5,~6,~5,~6,~5,~5,~6,~5,~6,~5$。</p>
+<p>分析该方案，其实我们不难发现，这里的$x$其实就代表着有序数组前$n$项中$t$的个数，亦即：
+</p>
+$$
+x_n=\left[\frac{n\times (q-m)}{q}\right]
+$$<p>
+这是因为在该方案的操作过程中，如果对于某个$n$，满足：
+</p>
+$$
+\left[\frac{n\times (q-m)}{q}\right]\leqslant x,~\left[\frac{(n+1)\times (q-m)}{q}\right]> x
+$$<p>
+则由于：
+</p>
+$$
+\left|\frac{(n+1)\times (q-m)}{q}-\frac{n\times (q-m)}{q}\right|=\frac{q-m}{q}<1
+$$<p>
+因此根据$n\times(q-m)/q$, $x$, $(n+1)\times(q-m)/q$在数轴上的分布，一定有：
+</p>
+$$
+\left[\frac{(n+1)\times (q-m)}{q}\right]= x+1
+$$<p>
+换言之，$x$每次改变，一定只会<strong>递增1</strong>，而每次$x$改变时又对应着在有序数组中插入$t$的操作，递归地，可验证上述结论的正确性。</p>
+<p>最后，我们来证明该方案的最优性：</p>
+<p>我们构造新数列$\{f_n\}$，用于描述$n\times(q-m)/q$的小数部分，即：
+</p>
+$$
+f_n=\left\{\frac{n\times(q-m)}{q}\right\},~1\leqslant n\leqslant q
+$$<p>
+于是对于该方案，由于$x_n$是对$n\times(q-m)/q$的四舍五入取整，因此不难得到：
+</p>
+$$
+\left|S_n\right|=\left|x_n-\frac{n\times(q-m)}{q}\right|=\min\{f_n,~1-f_n\}
+$$<p>
+进而：
+</p>
+$$
+\max\limits_{1\leqslant n\leqslant q}\{|S_n|\}=\max\limits_{1\leqslant n\leqslant q}\{\min\{f_n,~1-f_n\}\}=K
+$$<p>
+注意$K$是一个仅与$(p,~q)$有关的值，它与我们选择的排序方案无关。以下我们将证明，对于任意的排序方案，$\max\limits_{1\leqslant n\leqslant q}{|S_n|}$一定不小于$K$：假设一种排序方案，前$n$项中$t$的个数为$x_n$，则注意到$x_n$是整数，易得：
+</p>
+$$
+\left|S_n\right|=\left|x_n-\frac{n\times(q-m)}{q}\right|\geqslant\min\{f_n,~1-f_n\}
+$$<p>
+进而：
+</p>
+$$
+\max\limits_{1\leqslant n\leqslant q}\{|S_n|\}\geqslant\max\limits_{1\leqslant n\leqslant q}\{\min\{f_n,~1-f_n\}\}=K
+$$<p>
+综上，我们即证明了前文提及排序方案的最优性。</p>
+<blockquote>
+<p>注意前文的所有分析，是在确定对于给定的有理数分频，我们应当如何选择若干次整数分频进行近似，以及这若干次整数分频应当如何排序以保证输出时钟的翻转尽量均匀。<strong>这些过程都是在进行分频器的硬件实现前就确定的，并不需要通过RTL代码描述。</strong></p>
+</blockquote>
+<p>在确定$q$次分频的排序方案后，我们便可进行分频器的RTL设计，我们不妨再以<strong>5.4倍分频</strong>为例，给出如下示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">clk_divider</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="n">clk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="n">rst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="n">clk_out</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">localparam</span> <span class="n">FRAC_Q</span> <span class="o">=</span> <span class="mh">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">localparam</span> <span class="n">FRAC_K</span> <span class="o">=</span> <span class="mh">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">localparam</span> <span class="n">FRAC_ORDER</span> <span class="o">=</span> <span class="mh">10</span><span class="mb">&#39;b0101001010</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">localparam</span> <span class="n">ALC_CNT_WIDTH</span> <span class="o">=</span> <span class="mh">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">localparam</span> <span class="n">CYC_CNT_WIDTH</span> <span class="o">=</span> <span class="mh">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// allocation counter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="n">ALC_CNT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">alc_cnt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">reg</span> <span class="p">[</span><span class="n">CYC_CNT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">cyc_cnt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">alc_cnt</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">ALC_CNT_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">FRAC_ORDER</span><span class="p">[</span><span class="n">alc_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">==</span> <span class="n">FRAC_K</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">alc_cnt</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">alc_cnt</span> <span class="o">&lt;</span> <span class="n">FRAC_Q</span> <span class="o">-</span> <span class="mh">1</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">alc_cnt</span> <span class="o">+</span> <span class="mb">&#39;b1</span><span class="p">)</span> <span class="o">:</span> <span class="p">({(</span><span class="n">ALC_CNT_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}});</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">FRAC_ORDER</span><span class="p">[</span><span class="n">alc_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">==</span> <span class="n">FRAC_K</span> <span class="o">+</span> <span class="mh">1</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">alc_cnt</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">alc_cnt</span> <span class="o">&lt;</span> <span class="n">FRAC_Q</span> <span class="o">-</span> <span class="mh">1</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">alc_cnt</span> <span class="o">+</span> <span class="mb">&#39;b1</span><span class="p">)</span> <span class="o">:</span> <span class="p">({(</span><span class="n">ALC_CNT_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}});</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">alc_cnt</span> <span class="o">&lt;=</span> <span class="n">alc_cnt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// cycle counter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">CYC_CNT_WIDTH</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">FRAC_ORDER</span><span class="p">[</span><span class="n">alc_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">==</span> <span class="n">FRAC_K</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">FRAC_ORDER</span><span class="p">[</span><span class="n">alc_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">==</span> <span class="n">FRAC_K</span> <span class="o">+</span> <span class="mh">1</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="n">cyc_cnt</span> <span class="o">+</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// output clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">((</span><span class="n">FRAC_ORDER</span><span class="p">[</span><span class="n">alc_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">FRAC_K</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">)))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">clk_out</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">FRAC_ORDER</span><span class="p">[</span><span class="n">alc_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">cyc_cnt</span> <span class="o">&lt;=</span> <span class="p">((</span><span class="n">FRAC_K</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">)))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">clk_out</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">clk_out</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>当然，需要指出的是，$k$与$k+1$中必有一者是奇数，因此在处理有理数分频时，我们同时也需要处理奇数分频。</p>
+</blockquote>
+<h3 id="半整数分频">半整数分频
+</h3><p>最后，我们讨论一种特殊的有理数分频，即对输入时钟进行 <strong>$n+0.5$倍分频</strong> （简称半整数分频），此时我们知道，输出时钟的周期$T_\text{out}$与输入时钟的周期$T_\text{ref}$需满足：
+</p>
+$$
+T_\text{out}=\left(n+0.5\right)\times T_\text{ref}
+$$<p>
+但这里我们不难发现，对于半个输入时钟周期的延时，我们是有可能利用<strong>输入时钟的双边沿触发</strong>精确实现的，故可以对其进一步优化：</p>
+<p>以下，我们不妨先按照通用方法实现，则：
+</p>
+$$
+\frac{p}{q}=\frac{1}{2}+n=\frac{2n+1}{2}
+$$<p>
+因此，我们可取$(p,~q)=(2n+1,~2)$，则$(m,~k)=(1,~n)$，这说明我们可以在$2n+1$个输入时钟周期内，通过对输入时钟的一次$n$分频与一次$n+1$分频近似$n+0.5$分频的效果。</p>
+<p>以下，我们进行如下操作：</p>
+<ol>
+<li>
+<p>以<strong>输入时钟上升沿</strong>触发，顺次进行$k+1$分频与$k$分频，各分频时钟的高电平脉宽均为$\left\lfloor k/2\right\rfloor$个输入时钟周期，得到输出时钟$\text{CP}$。</p>
+</li>
+<li>
+<p>以<strong>输入时钟上升沿</strong>触发，顺次进行$k$分频与$k+1$分频，并将其<strong>移相半个时钟周期</strong>，各分频时钟的高电平脉宽均为$\left\lfloor k/2\right\rfloor$个输入时钟周期，得到输出时钟$\text{CN}$。</p>
+</li>
+<li>
+<p>取$\text{CLK}$为$\text{CP}$与$\text{CN}$进行<strong>或运算</strong>的结果，则$\text{CLK}$的周期即为$k+0.5$个输入时钟周期。</p>
+</li>
+</ol>
+<p>上述操作本质上是对$k+1$分频时钟与$k$分频时钟进行平均化操作，此处便不进行严格证明了，我们不妨以<strong>3.5倍分频</strong>为例，展示其效果：</p>
+<p><img src="/p/dic-004/half_div.png"
+	width="1040"
+	height="120"
+	srcset="/p/dic-004/half_div_hu_9ff0e4356a9350ed.png 480w, /p/dic-004/half_div_hu_a665734d5027a1d.png 1024w"
+	loading="lazy"
+	
+		alt="精确周期的半整数分频"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="866"
+		data-flex-basis="2080px"
+	
+></p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>这种方法通常被称为<strong>双模前置小数分频法</strong>。&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>这里取$t-1&lt;0$，代表分频后的时钟周期长度大于理想分频后的时钟周期长度。&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p>这里的$[x]$代表对$x$进行<strong>四舍五入取整</strong>。&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/function-module/">Function Module</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Nov 11, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/dic-003/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-003/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 序列检测"
+                        data-key="dic-003" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">序列检测</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-002/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-002/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post task与function的区别"
+                        data-key="dic-002" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">task与function的区别</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-001/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-001/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post Verilog中的有符号数"
+                        data-key="dic-001" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Verilog中的有符号数</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
