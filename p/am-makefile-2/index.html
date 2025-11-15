@@ -546,7 +546,7 @@
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>该字段表明，如果程序在非<code>native</code>架构下编译，或在<code>native</code>架构下编译且定义了<code>__NATIVE_USE_KLIB__</code>，则译该文件中的函数实现。</li>
+<li>该字段表明，如果程序在非<code>native</code>架构下编译，或在<code>native</code>架构下编译且定义了<code>__NATIVE_USE_KLIB__</code>，则编译该文件中的函数实现。</li>
 <li><strong>链接阶段：</strong> 链接器会按顺序处理目标文件和库。自定义实现的符号会优先被链接，而不是系统标准库中的相同符号（因为链接器默认先处理显式指定的目标文件，后处理库）。</li>
 </ul>
 

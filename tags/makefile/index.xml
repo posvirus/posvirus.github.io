@@ -723,7 +723,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;该字段表明，如果程序在非&lt;code&gt;native&lt;/code&gt;架构下编译，或在&lt;code&gt;native&lt;/code&gt;架构下编译且定义了&lt;code&gt;__NATIVE_USE_KLIB__&lt;/code&gt;，则译该文件中的函数实现。&lt;/li&gt;
+&lt;li&gt;该字段表明，如果程序在非&lt;code&gt;native&lt;/code&gt;架构下编译，或在&lt;code&gt;native&lt;/code&gt;架构下编译且定义了&lt;code&gt;__NATIVE_USE_KLIB__&lt;/code&gt;，则编译该文件中的函数实现。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;链接阶段：&lt;/strong&gt; 链接器会按顺序处理目标文件和库。自定义实现的符号会优先被链接，而不是系统标准库中的相同符号（因为链接器默认先处理显式指定的目标文件，后处理库）。&lt;/li&gt;
 &lt;/ul&gt;
 </description>
