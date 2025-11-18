@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-005：通信系统简介">
+<title>通信系统简介</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/dic-005/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="通信系统简介">
+<meta property='og:description' content="DIC-005：通信系统简介">
+<meta property='og:url' content='https://posvirus.github.io/p/dic-005/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='VLSI' /><meta property='article:published_time' content='2025-11-18T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-11-18T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-005/cicc.png' />
+<meta name="twitter:title" content="通信系统简介">
+<meta name="twitter:description" content="DIC-005：通信系统简介"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/dic-005/cicc.png' />
+    <link rel="shortcut icon" href="/favicon.jpeg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤗</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">如无必要，勿增实体</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#一般通信系统">一般通信系统</a></li>
+    <li><a href="#数字通信系统">数字通信系统</a></li>
+    <li><a href="#通信系统的分类">通信系统的分类</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/dic-005/">
+                <img src="/p/dic-005/cicc_hu_d52f18f9a902f256.png"
+                        srcset="/p/dic-005/cicc_hu_d52f18f9a902f256.png 800w, /p/dic-005/cicc_hu_c62d00be19035290.png 1600w"
+                        width="800" 
+                        height="270" 
+                        loading="lazy"
+                        alt="Featured image of post 通信系统简介" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/dic/" >
+                DIC
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/dic-005/">通信系统简介</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            DIC-005：通信系统简介
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 18, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 4 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<p>本文是我在几年前学习《VLSI数字信号处理系统设计》这门课程时所做的笔记，此处进行简单整理，以供复习。</p>
+</blockquote>
+<h2 id="一般通信系统">一般通信系统
+</h2><p><strong>通信系统的定义：</strong> 通信系统是传输信息所需技术设备的总和。</p>
+<p><strong>通信系统的一般模型：</strong></p>
+<p><img src="/p/dic-005/Lec1-1.png"
+	width="1002"
+	height="357"
+	srcset="/p/dic-005/Lec1-1_hu_cf8d4062345d04bd.png 480w, /p/dic-005/Lec1-1_hu_c8d1f6c66709803.png 1024w"
+	loading="lazy"
+	
+		alt="通信系统的一般模型"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="280"
+		data-flex-basis="673px"
+	
+></p>
+<p>通信系统一般由<strong>信息源（信源）</strong>、<strong>发送设备</strong>、<strong>信道</strong>、<strong>接收设备</strong>、<strong>受信者（信宿）</strong> 构成，各成分的具体定义如下：</p>
+<ul>
+<li><strong>信息源（信源）：</strong> 产生或发出消息的人或机器</li>
+<li><strong>发送设备：</strong> 将信源产生的消息信号变换成便于传送的形式</li>
+<li><strong>接收设备：</strong> 从带有干扰的接收信号中正确恢复出原始信号</li>
+<li><strong>受信者（信宿）：</strong> 接收消息的人或机器</li>
+</ul>
+<p>同时，我们可对通信系统传输的信号进行分类：</p>
+<ul>
+<li><strong>基带信号（Baseband）：</strong> 信源发出的没有经过调制（进行频谱搬移和变换）的原始电信号，其特点是信号的幅度在零频附近不全为零，在其他频率幅度全为零，对一个基带信号 $f(t)$ ，其性质可用数学语言描述为：</li>
+</ul>
+$$
+\exists \omega_H>0,~\text{s.t.}~F(\omega)=0,~\forall \omega>\omega_H,~F(\omega)=\mathscr{F}\{f(t)\}
+$$<ul>
+<li><strong>频带/带通信号（Bandpass）：</strong> 被调制后的基带信号，又称为<strong>已调信号</strong>，在以 $|f|=f_c$ 为中心的一个频带内幅度不全为零，其中 $f_c\gg 0$ ，叫做<strong>载波频率</strong>。</li>
+<li><strong>载波信号（Carrier）：</strong> 用于调制基带信号的载体，基带信号通过载波信号映射为带通信号，这个带通信号以某个频率 $f_c$ 为载波，这一过程通常被称为<strong>载波调制（Carrier modulation/demodulation）</strong>。</li>
+</ul>
+<blockquote>
+<p><strong>注：</strong> 在利用通信系统进行信号传输时，由于在近距离范围内基带信号的衰减不大，从而信号内容不会发生变化。因此在某些具有<strong>低通特性</strong>的有线信道中，特别是传输距离不太远的情况下，<strong>基带信号可以不经过调制而直接进行传输</strong>。如计算机内部并行总线上的信号全部都是基带信号，还有从计算机到监视器、打印机等外设的信号也都是基带传输的。在大多数的局域网直接使用基带脉冲信号传输，如以太网、令牌环网。</p>
+<p>但是，基带信号包含的低频分量不易通过无线传输，无线电磁波一般在空中传播的频率要高于<strong>100KHz</strong>（这是因为根据 $\lambda f= c$ ，无线通信所使用的电磁波波长较短，进而具有更高的频率）。基带信号需要进行调制，与<strong>载波高频信号</strong>混频后变换到较高的频率，然后比较容易通过天线发射（天线长度应该至少达到 $0.25\lambda\sim 0.5\lambda$ ，这也解释了为什么无线通信需要使用较短波长的电磁波，假设无线通信使用的频率为 $100~\text{KHz}$，光速默认为 $3\times10^8~\text{m/s}$ ，则可计算出电磁波波长为 $\lambda=c/f=3\times 10^3~\text{m}$ ）。因此自由空间通常传输的都是频带信号。</p>
+</blockquote>
+<p><strong>通信系统的分类：</strong> 通信系统根据所传信息的信号表示形式，可分为<strong>模拟通信系统</strong>和<strong>数字通信系统</strong>：</p>
+<ul>
+<li><strong>模拟通信系统：</strong> 利用模拟信号传输信息的系统，一般是将采集的信号直接进行传输。</li>
+<li><strong>数字通信系统：</strong> 利用数字信号传输信息的系统，一般是将信号转变为数字信号后再进行传输。</li>
+</ul>
+<p><strong>模拟通信系统正在逐步被数字通信系统取代</strong>，因为数字通信系统具备如下优点：</p>
+<ol>
+<li>抗干扰能力强，噪声不积累</li>
+<li>易于采用纠错编码控制传输差错</li>
+<li>易于加密处理，且保密度高</li>
+<li>便于处理、变换和存储</li>
+<li>易于集成，方便小型化</li>
+</ol>
+<p>但数字通信系统在现阶段也存在着若干不足：</p>
+<ol>
+<li>数据率高</li>
+<li>同步要求高</li>
+<li>实现复杂度高</li>
+</ol>
+<p>虽然数字通信系统存在一些不足之处，但瑕不掩瑜，本课程的剩余部分，我们仍以数字通信系统为主体进行研究。</p>
+<h2 id="数字通信系统">数字通信系统
+</h2><p><strong>数字通信系统的一般模型：</strong></p>
+<p><img src="/p/dic-005/Lec1-2.png"
+	width="1087"
+	height="596"
+	srcset="/p/dic-005/Lec1-2_hu_2924a0f6cb712413.png 480w, /p/dic-005/Lec1-2_hu_8e7058e259d35ce5.png 1024w"
+	loading="lazy"
+	
+		alt="数字通信系统的一般模型"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="182"
+		data-flex-basis="437px"
+	
+></p>
+<p>读图可知，数字通信系统中，在<strong>发送设备</strong>与<strong>接收设备</strong>中分别存在着<strong>信道编码、信源编码</strong>与<strong>信道译码、信源译码</strong>两个过程，这是数字通信系统所独有的：</p>
+<ul>
+<li><strong>信源编码：</strong> 信源编码是将信息转换成二进制数据，而后进行适当的压缩。</li>
+<li><strong>信源译码：</strong> 信源编码的逆过程。</li>
+<li><strong>信道编码：</strong> 信道编码是在信息传入信道前，对信息的二次编码过程，也叫<strong>差错控制编码</strong>，就是在发送端对原数据添加冗余信息，这些冗余信息是和原数据相关的，再在接收端根据这种相关性来检测和纠正传输过程产生的差错，从而对抗传输过程的干扰。</li>
+<li><strong>信道译码：</strong> 通过信道编码中加入的冗余信息恢复原信号的过程。</li>
+</ul>
+<h2 id="通信系统的分类">通信系统的分类
+</h2><ul>
+<li><strong>按通信业务分类：</strong> 电话通信系统、数据通信系统、图像通信系统、多媒体通信系统</li>
+<li><strong>按是否调制信号分类：</strong> 基带传输系统、频带传输（带通传输）系统</li>
+<li><strong>按传输媒质分类：</strong> 有线通信系统（以<strong>光纤通信</strong>为主）、无线通信系统（以<strong>无线电通信</strong>为主）
+<ul>
+<li>对无线电通信，我们又有进一步的分类：
+<ul>
+<li><strong>按工作波段分类：</strong> 长波通信、短波通信、超短波通信、微波通信等系统</li>
+<li><strong>按接入方式分类：</strong> 频分多址、时分多址、码分多址等系统</li>
+<li><strong>按频带利用方式：</strong> 定频窄带通信、跳频通信、扩频通信等系统</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>按消息传送的方向与时间分类：</strong>
+<ul>
+<li><strong>单工通信（Simplex）：</strong> 消息只能单向传输的通信工作方式（如广播、遥控、无线寻呼等）</li>
+<li><strong>半双工通信（Half Duplex）：</strong> 通信双方都具备收发能力，但收发不能同时工作（如对讲机等）</li>
+<li><strong>全双工通信（Full Duplex）：</strong> 收发双方可同时进行双向消息传输的方式（如电话等）</li>
+</ul>
+</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/vlsi/">VLSI</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Nov 18, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/dic-004/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-004/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 时钟分频"
+                        data-key="dic-004" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">时钟分频</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-003/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-003/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 序列检测"
+                        data-key="dic-003" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">序列检测</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-002/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-002/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post task与function的区别"
+                        data-key="dic-002" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">task与function的区别</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-001/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-001/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post Verilog中的有符号数"
+                        data-key="dic-001" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Verilog中的有符号数</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

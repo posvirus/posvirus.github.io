@@ -7,7 +7,122 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Chen Wenyao</copyright>
-        <lastBuildDate>Tue, 11 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/categories/dic/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 18 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/categories/dic/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>通信系统简介</title>
+        <link>https://posvirus.github.io/p/dic-005/</link>
+        <pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/p/dic-005/</guid>
+        <description>&lt;img src="https://posvirus.github.io/p/dic-005/cicc.png" alt="Featured image of post 通信系统简介" /&gt;&lt;blockquote&gt;
+&lt;p&gt;本文是我在几年前学习《VLSI数字信号处理系统设计》这门课程时所做的笔记，此处进行简单整理，以供复习。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;一般通信系统&#34;&gt;一般通信系统
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;通信系统的定义：&lt;/strong&gt; 通信系统是传输信息所需技术设备的总和。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;通信系统的一般模型：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-005/Lec1-1.png&#34;
+	width=&#34;1002&#34;
+	height=&#34;357&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-005/Lec1-1_hu_cf8d4062345d04bd.png 480w, https://posvirus.github.io/p/dic-005/Lec1-1_hu_c8d1f6c66709803.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;通信系统的一般模型&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;280&#34;
+		data-flex-basis=&#34;673px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;通信系统一般由&lt;strong&gt;信息源（信源）&lt;/strong&gt;、&lt;strong&gt;发送设备&lt;/strong&gt;、&lt;strong&gt;信道&lt;/strong&gt;、&lt;strong&gt;接收设备&lt;/strong&gt;、&lt;strong&gt;受信者（信宿）&lt;/strong&gt; 构成，各成分的具体定义如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;信息源（信源）：&lt;/strong&gt; 产生或发出消息的人或机器&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;发送设备：&lt;/strong&gt; 将信源产生的消息信号变换成便于传送的形式&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;接收设备：&lt;/strong&gt; 从带有干扰的接收信号中正确恢复出原始信号&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;受信者（信宿）：&lt;/strong&gt; 接收消息的人或机器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;同时，我们可对通信系统传输的信号进行分类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;基带信号（Baseband）：&lt;/strong&gt; 信源发出的没有经过调制（进行频谱搬移和变换）的原始电信号，其特点是信号的幅度在零频附近不全为零，在其他频率幅度全为零，对一个基带信号 $f(t)$ ，其性质可用数学语言描述为：&lt;/li&gt;
+&lt;/ul&gt;
+$$
+\exists \omega_H&gt;0,~\text{s.t.}~F(\omega)=0,~\forall \omega&gt;\omega_H,~F(\omega)=\mathscr{F}\{f(t)\}
+$$&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;频带/带通信号（Bandpass）：&lt;/strong&gt; 被调制后的基带信号，又称为&lt;strong&gt;已调信号&lt;/strong&gt;，在以 $|f|=f_c$ 为中心的一个频带内幅度不全为零，其中 $f_c\gg 0$ ，叫做&lt;strong&gt;载波频率&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;载波信号（Carrier）：&lt;/strong&gt; 用于调制基带信号的载体，基带信号通过载波信号映射为带通信号，这个带通信号以某个频率 $f_c$ 为载波，这一过程通常被称为&lt;strong&gt;载波调制（Carrier modulation/demodulation）&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注：&lt;/strong&gt; 在利用通信系统进行信号传输时，由于在近距离范围内基带信号的衰减不大，从而信号内容不会发生变化。因此在某些具有&lt;strong&gt;低通特性&lt;/strong&gt;的有线信道中，特别是传输距离不太远的情况下，&lt;strong&gt;基带信号可以不经过调制而直接进行传输&lt;/strong&gt;。如计算机内部并行总线上的信号全部都是基带信号，还有从计算机到监视器、打印机等外设的信号也都是基带传输的。在大多数的局域网直接使用基带脉冲信号传输，如以太网、令牌环网。&lt;/p&gt;
+&lt;p&gt;但是，基带信号包含的低频分量不易通过无线传输，无线电磁波一般在空中传播的频率要高于&lt;strong&gt;100KHz&lt;/strong&gt;（这是因为根据 $\lambda f= c$ ，无线通信所使用的电磁波波长较短，进而具有更高的频率）。基带信号需要进行调制，与&lt;strong&gt;载波高频信号&lt;/strong&gt;混频后变换到较高的频率，然后比较容易通过天线发射（天线长度应该至少达到 $0.25\lambda\sim 0.5\lambda$ ，这也解释了为什么无线通信需要使用较短波长的电磁波，假设无线通信使用的频率为 $100~\text{KHz}$，光速默认为 $3\times10^8~\text{m/s}$ ，则可计算出电磁波波长为 $\lambda=c/f=3\times 10^3~\text{m}$ ）。因此自由空间通常传输的都是频带信号。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;通信系统的分类：&lt;/strong&gt; 通信系统根据所传信息的信号表示形式，可分为&lt;strong&gt;模拟通信系统&lt;/strong&gt;和&lt;strong&gt;数字通信系统&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;模拟通信系统：&lt;/strong&gt; 利用模拟信号传输信息的系统，一般是将采集的信号直接进行传输。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;数字通信系统：&lt;/strong&gt; 利用数字信号传输信息的系统，一般是将信号转变为数字信号后再进行传输。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;模拟通信系统正在逐步被数字通信系统取代&lt;/strong&gt;，因为数字通信系统具备如下优点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;抗干扰能力强，噪声不积累&lt;/li&gt;
+&lt;li&gt;易于采用纠错编码控制传输差错&lt;/li&gt;
+&lt;li&gt;易于加密处理，且保密度高&lt;/li&gt;
+&lt;li&gt;便于处理、变换和存储&lt;/li&gt;
+&lt;li&gt;易于集成，方便小型化&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;但数字通信系统在现阶段也存在着若干不足：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;数据率高&lt;/li&gt;
+&lt;li&gt;同步要求高&lt;/li&gt;
+&lt;li&gt;实现复杂度高&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;虽然数字通信系统存在一些不足之处，但瑕不掩瑜，本课程的剩余部分，我们仍以数字通信系统为主体进行研究。&lt;/p&gt;
+&lt;h2 id=&#34;数字通信系统&#34;&gt;数字通信系统
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;数字通信系统的一般模型：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-005/Lec1-2.png&#34;
+	width=&#34;1087&#34;
+	height=&#34;596&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-005/Lec1-2_hu_2924a0f6cb712413.png 480w, https://posvirus.github.io/p/dic-005/Lec1-2_hu_8e7058e259d35ce5.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;数字通信系统的一般模型&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;182&#34;
+		data-flex-basis=&#34;437px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;读图可知，数字通信系统中，在&lt;strong&gt;发送设备&lt;/strong&gt;与&lt;strong&gt;接收设备&lt;/strong&gt;中分别存在着&lt;strong&gt;信道编码、信源编码&lt;/strong&gt;与&lt;strong&gt;信道译码、信源译码&lt;/strong&gt;两个过程，这是数字通信系统所独有的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;信源编码：&lt;/strong&gt; 信源编码是将信息转换成二进制数据，而后进行适当的压缩。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;信源译码：&lt;/strong&gt; 信源编码的逆过程。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;信道编码：&lt;/strong&gt; 信道编码是在信息传入信道前，对信息的二次编码过程，也叫&lt;strong&gt;差错控制编码&lt;/strong&gt;，就是在发送端对原数据添加冗余信息，这些冗余信息是和原数据相关的，再在接收端根据这种相关性来检测和纠正传输过程产生的差错，从而对抗传输过程的干扰。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;信道译码：&lt;/strong&gt; 通过信道编码中加入的冗余信息恢复原信号的过程。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;通信系统的分类&#34;&gt;通信系统的分类
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;按通信业务分类：&lt;/strong&gt; 电话通信系统、数据通信系统、图像通信系统、多媒体通信系统&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;按是否调制信号分类：&lt;/strong&gt; 基带传输系统、频带传输（带通传输）系统&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;按传输媒质分类：&lt;/strong&gt; 有线通信系统（以&lt;strong&gt;光纤通信&lt;/strong&gt;为主）、无线通信系统（以&lt;strong&gt;无线电通信&lt;/strong&gt;为主）
+&lt;ul&gt;
+&lt;li&gt;对无线电通信，我们又有进一步的分类：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;按工作波段分类：&lt;/strong&gt; 长波通信、短波通信、超短波通信、微波通信等系统&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;按接入方式分类：&lt;/strong&gt; 频分多址、时分多址、码分多址等系统&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;按频带利用方式：&lt;/strong&gt; 定频窄带通信、跳频通信、扩频通信等系统&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;按消息传送的方向与时间分类：&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;单工通信（Simplex）：&lt;/strong&gt; 消息只能单向传输的通信工作方式（如广播、遥控、无线寻呼等）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;半双工通信（Half Duplex）：&lt;/strong&gt; 通信双方都具备收发能力，但收发不能同时工作（如对讲机等）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;全双工通信（Full Duplex）：&lt;/strong&gt; 收发双方可同时进行双向消息传输的方式（如电话等）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
         <title>时钟分频</title>
         <link>https://posvirus.github.io/p/dic-004/</link>
         <pubDate>Tue, 11 Nov 2025 00:00:00 +0000</pubDate>
