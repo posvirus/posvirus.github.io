@@ -7,7 +7,836 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Chen Wenyao</copyright>
-        <lastBuildDate>Tue, 18 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/categories/dic/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sat, 29 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/categories/dic/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>基带信号的调制与解调</title>
+        <link>https://posvirus.github.io/p/dic-006/</link>
+        <pubDate>Sat, 29 Nov 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/p/dic-006/</guid>
+        <description>&lt;img src="https://posvirus.github.io/p/dic-006/cicc.png" alt="Featured image of post 基带信号的调制与解调" /&gt;&lt;blockquote&gt;
+&lt;p&gt;本文是我在几年前学习《VLSI数字信号处理系统设计》这门课程时所做的笔记，此处进行简单整理，以供复习。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;数字基带传输&#34;&gt;数字基带传输
+&lt;/h2&gt;&lt;h3 id=&#34;数字基带传输系统&#34;&gt;数字基带传输系统
+&lt;/h3&gt;&lt;p&gt;在本节中，我们将首先考查数字基带传输系统进行信号传输，在&lt;a class=&#34;link&#34; href=&#34;https://posvirus.github.io/p/dic-005/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;第一章&lt;/a&gt;中已经说明过，所谓数字基带传输系统，即为不经载波调制而直接传输数字基带信号的&lt;strong&gt;数字通信系统&lt;/strong&gt;，常用于传输距离不太远的情况。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-1.png&#34;
+	width=&#34;1685&#34;
+	height=&#34;584&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-1_hu_d918c2cf0de4e749.png 480w, https://posvirus.github.io/p/dic-006/Lec2-1_hu_62205ec321f7066f.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;数字通信系统的工作流图&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;288&#34;
+		data-flex-basis=&#34;692px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;我们仍然可以使用如上图所示的一般数字通信系统的&lt;strong&gt;Work-flow Chart&lt;/strong&gt;来对数字基带传输系统进行可视化理解（毕竟其也为一类数字通信系统），原始信号在进行&lt;strong&gt;量化&lt;/strong&gt;、&lt;strong&gt;信源编码（Source encode）&lt;/strong&gt; 与&lt;strong&gt;信道编码（Channel encode）&lt;/strong&gt; 后成功生成了一个&lt;strong&gt;二进制序列&lt;/strong&gt;（ $0101001\cdots$ ），而注意，此时的二进制序列仍然只是一个抽象的数字序列，要将其转化为可实际进行传输的信号，我们需要将该数字序列&lt;strong&gt;整合&lt;/strong&gt;&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;至脉冲波形上，形成实际的数字基带信号。在此之后，直接对数字基带信号进行传输，并通过接收端的&lt;strong&gt;采样&lt;/strong&gt;、&lt;strong&gt;解码&lt;/strong&gt;等操作恢复原始的二进制序列信息。&lt;/p&gt;
+&lt;h3 id=&#34;几类常用的基带信号&#34;&gt;几类常用的基带信号
+&lt;/h3&gt;&lt;p&gt;而首先，我们需了解数字基带传输系统中常用的几类基带信号：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-2.png&#34;
+	width=&#34;964&#34;
+	height=&#34;208&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-2_hu_33e2ab475ae52cb2.png 480w, https://posvirus.github.io/p/dic-006/Lec2-2_hu_1109982c5f48c69e.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;数字通信系统的工作流图&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;463&#34;
+		data-flex-basis=&#34;1112px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;矩形脉冲：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+$$
+f(t)=\left\{\begin{array}{lcl}
+A&amp;&amp;|t|\leqslant T_c\\
+\\
+0&amp;&amp;\text{else}
+\end{array}\right.
+$$&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;三角脉冲：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+$$
+f(t)=\left\{\begin{array}{lcl}
+\displaystyle\frac{A}{T_c}(t+T_c)&amp;&amp;-T_c\leqslant t&lt;0\\
+\\
+\displaystyle-\frac{A}{T_c}(t-T_c)&amp;&amp;0\leqslant t\leqslant T_c\\
+\\
+0&amp;&amp;\text{else}
+\end{array}\right.
+$$&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;高斯脉冲：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+$$
+f(t)=\frac{1}{\sqrt{2\pi}\sigma}\mathrm{e}^{-\frac{t^2}{2\sigma^2}}
+$$&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;升余弦脉冲：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+$$
+f(t)=\left\{\begin{array}{lcl}
+\displaystyle \frac{A}{2}\left[1+\cos\left(\frac{\pi t}{T_c}\right)\right]&amp;&amp;|t|\leqslant T_c\\
+\\
+0&amp;&amp;\text{else}
+\end{array}\right.
+$$&lt;p&gt;其中，考虑到各脉冲在现实应用场景中的生成难度，最常用的基带信号为&lt;strong&gt;升余弦脉冲&lt;/strong&gt;，但为保证说明的形象性与简洁性，在后文我们统一采用&lt;strong&gt;矩形脉冲&lt;/strong&gt;进行讨论。&lt;/p&gt;
+&lt;p&gt;这里需要补充说明两个问题：&lt;/p&gt;
+&lt;p&gt;第一，上述这些信号虽被称为基带信号，但它们是符合严格数学定义的基带信号吗？不妨以矩形脉冲为例，对其进行Fourier变换：&lt;/p&gt;
+$$
+F(\omega)=\mathscr{F}\{f(t)\}=\int_{-T_c}^{+T_c}A\mathrm{e}^{-i\omega t}\mathrm{d}t=\frac{A\sin(\omega T_c)}{\omega}=AT_c\cdot\text{Sinc}(T_c\omega)
+$$&lt;p&gt;
+可见，矩形脉冲具有无限宽的频谱，从数学意义上并不是基带信号（其实从更广义的角度而言，在时域上有限的信号往往在频域上无限），那么，我们为何称其为基带信号呢？仍以矩形脉冲为例，我们注意到， $F(\omega)=\displaystyle \frac{A\sin(\omega T_c)}{\omega}$ 除在 $[-\pi/T_c,~\pi/T_c]$ 上取值较大（&lt;strong&gt;主瓣&lt;/strong&gt;）外，在其余区域内（&lt;strong&gt;旁瓣&lt;/strong&gt;）频谱的取值都非常接近0，这就说明，虽然 $F(\omega)$ 是无限宽的频谱，但它其实与基带信号的频谱是十分相似的。&lt;/p&gt;
+&lt;p&gt;当然， $F(\omega)$ 与基带信号的频谱相似并不代表着我们可以直接把矩形脉冲当作基带信号使用，但我们确实可以利用这种相似性将矩形脉冲转化为基带信号，这一过程一般称为&lt;strong&gt;脉冲/基带成型&lt;/strong&gt;：即使用一个&lt;strong&gt;低通滤波器&lt;/strong&gt;滤去 $F(\omega)$ 的高频分量，将滤波后的信号作为基带信号使用，而 $F(\omega)$ 与基带信号频谱的相似性保证了在滤波后，矩形脉冲的时域波形不会发生太大改变。由于脉冲成型是一个相对独立的处理过程，且滤波后的波形的解析表达式在形式上又过于复杂，因此我们常常直接称矩形脉冲信号（以及上述这些信号）为基带信号。&lt;/p&gt;
+&lt;p&gt;第二，上述信号所代表的仅仅为&lt;strong&gt;单个脉冲&lt;/strong&gt;，而若要传输一个二进制序列，往往需要在一段连续时间内多个脉冲的叠加，即：
+&lt;/p&gt;
+$$
+f(t)=\sum\limits_{i=0}^{+\infty}a_ig(t-iT_B)
+$$&lt;p&gt;
+其中 $g(t)$ 为单个基带脉冲，而我们注意到：
+&lt;/p&gt;
+$$
+\mathscr{F}\{g(t-t_0)\}=\int_{-\infty}^{+\infty}g(t-t_0)\mathrm{e}^{-i\omega(t-t_0)}\cdot\mathrm{e}^{-i\omega t_0}\mathrm{d}t=\mathscr{F}\{g(t)\}\cdot\mathrm{e}^{-i\omega t_0}
+$$&lt;p&gt;
+因此我们得到一个重要事实：&lt;strong&gt;基带信号在时域上平移叠加后的信号仍为基带信号&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;二进制序列与脉冲波形的对应关系&#34;&gt;二进制序列与脉冲波形的对应关系
+&lt;/h3&gt;&lt;p&gt;在完成对几类基带信号的说明后，以下我们将以&lt;strong&gt;矩形脉冲&lt;/strong&gt;为例，探讨二进制序列与脉冲波形的对应关系：&lt;/p&gt;
+&lt;p&gt;由于二进制序列从本质上而言仅有0和1两个基本元素，因此我们仅需考虑脉冲波形的（电平）取值与0和1的对应关系即可，我们常将这种对应关系称为&lt;strong&gt;二元传输码&lt;/strong&gt;的&lt;strong&gt;传输码型&lt;/strong&gt;，主要有以下几类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;单极性非归零码（Unipolar Non-return-to-zero Coding）：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;用一种信号电平代表1，用另一种信号电平代表0，在码元&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;持续期间电平保持不变。如用高电平代表1，低电平（一般为零电平）代表0，为&lt;strong&gt;正逻辑&lt;/strong&gt;，反之为&lt;strong&gt;负逻辑&lt;/strong&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;双极性非归零码（Bipolar Non-return-to-zero Coding）：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;用正电平和负电平分别表示1和0，在码元持续期间电平保持不变。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注：&lt;/strong&gt; 单极性码与双极性码的特点比较：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;单极性码&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;双极性码&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;1. 有直流分量，无法使用一些交流耦合的线路和设备；2. 判决电平不能稳定在最佳的电平，即抗噪性能差；3. 传输时需一端接地。不能用两根芯线均不接地的电缆传输线。（用于设备内部和数字调制器中）&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;1.直流分量小。当二进制序列中1和0等可能出现时，无直流成分；2.接收端判决门限为0，容易设置并且稳定，因此抗干扰能力强；3.可以在电缆等无接地线上传输。（RS-232C接口标准和数字调制器中）&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;单极性归零码（Unipolar Return-to-zero Coding）：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;单极性归零码与单极性非归零码稍有区别，具体表现为：&lt;strong&gt;高电平&lt;/strong&gt;不是在整个码元期间保持不变，而是只持续一段时间，然后在码元的其余时间内返回到零电平。以正逻辑为例，这种码在表示1时，信号会在一个码元宽度（记为 $T_s$ ）内先保持一段时间（记为 $\tau$ ）的高电平，并在剩余时间切换为零电平；在表示0时则仍始终为低电平。我们同时称 $\tau/T_s$ 为这种码型的&lt;strong&gt;占空比&lt;/strong&gt;，一般地， $\tau/T_s=0.5$ 。&lt;/p&gt;
+&lt;p&gt;单极性归零码可直接提取&lt;strong&gt;位同步&lt;/strong&gt;信号，可作为其他码型提取同步时钟的过渡码型。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;双极性归零码（Bipolar Return-to-zero Coding）：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;正电平与负电平在整个码元期间均不是保持不变的，而是只持续一段时间，然后在码元的其余时间内返回到零电平。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;差分波形：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不是用码元本身的电平表示二进制序列，而是用相邻码元的电平的跳变和不变来表示二进制序列，分为&lt;strong&gt;传号差分&lt;/strong&gt;与&lt;strong&gt;空号差分&lt;/strong&gt;：考虑第 $k$ 个码元的电平 $E_k$ 与第 $k+1$ 个码元的电平 $E_{k+1}$ ，对传号差分，若 $E_{k}=E_{k+1}$ ，则第 $k+1$ 个码元代表0；若 $E_k\ne E_{k+1}$ ，则第 $k+1$ 个码元代表1，对空号差分则相反。&lt;/p&gt;
+&lt;p&gt;差分波形可以消除设备初始状态不确定性带来的影响。同时，由于差分波形是以相邻脉冲电平的相对变化来表示二进制序列的，因此称它为&lt;strong&gt;相对码&lt;/strong&gt;，而相应地称前面的码型为&lt;strong&gt;绝对码&lt;/strong&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;多进制波形：&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;使用超过两个电平的脉冲波形表示二进制序列，根据所使用电平的数量，各电平可包含多个比特的信息（一般地，如使用 $N$ 个电平，则每个电平至多可包含 $\lfloor\log_2 N\rfloor~\text{bit}$ 的序列信息）。&lt;/p&gt;
+&lt;p&gt;对多进制波形，&lt;strong&gt;传码率&lt;/strong&gt;&lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;一定时，其&lt;strong&gt;传信率&lt;/strong&gt;&lt;sup id=&#34;fnref1:3&#34;&gt;&lt;a href=&#34;#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;高，可用于高数据速率传输系统。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-3.png&#34;
+	width=&#34;1056&#34;
+	height=&#34;453&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-3_hu_fc3aa43c1cba80bc.png 480w, https://posvirus.github.io/p/dic-006/Lec2-3_hu_be10357afdf97ccb.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;各类传输码型的示意图&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;233&#34;
+		data-flex-basis=&#34;559px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;数字基带信号的表达式&#34;&gt;数字基带信号的表达式
+&lt;/h3&gt;&lt;p&gt;在不考虑二进制序列所包含的具体信息的前提下（即考查&lt;strong&gt;随机生成的二进制序列&lt;/strong&gt;），我们可将一个随机二进制序列对应的数字基带信号记作 $f(t)$ ，其可表示如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当&lt;strong&gt;各码元波形相同而取值不同&lt;/strong&gt;时：&lt;/li&gt;
+&lt;/ul&gt;
+$$
+f(t)=\sum\limits_{n=-\infty}^{+\infty}a_ng(t-nT_s)
+$$&lt;p&gt;其中，${a_n}$ 为离散型随机变量， $T_s$ 为码元宽度。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当&lt;strong&gt;0/1使用不同波形表示&lt;/strong&gt;时：&lt;/li&gt;
+&lt;/ul&gt;
+$$
+f(t)=\sum\limits_{n=-\infty}^{+\infty}g_n(t),~g_n(t)=\left\{\begin{array}{lcl}
+g_{(1)}(t-nT_s)&amp;&amp;\text{with probability of}~p\\
+\\
+g_{(0)}(t-nT_s)&amp;&amp;\text{with probability of}~1-p\\
+\end{array}\right.
+$$&lt;p&gt;其中， $p$ 为二进制序列中1出现的概率。&lt;/p&gt;
+&lt;h2 id=&#34;基带信号解调与检测&#34;&gt;基带信号解调与检测
+&lt;/h2&gt;&lt;h3 id=&#34;噪声的来源简述&#34;&gt;噪声的来源简述
+&lt;/h3&gt;&lt;p&gt;在上节中，我们考查了&lt;strong&gt;数字基带传输系统&lt;/strong&gt;的原始信息编码，以下，我们将对传输系统的后半部分，即信号的&lt;strong&gt;传输&lt;/strong&gt;与&lt;strong&gt;接收&lt;/strong&gt;进行说明。我们首先考查信号的传输，在实际的信号传输过程中，由于受到外界各类因素的干扰，因此会在信号传输过程中引入&lt;strong&gt;噪声（Noise）&lt;/strong&gt;。我们对信号传输过程的研究，也是这些噪声为重点的。&lt;/p&gt;
+&lt;p&gt;噪声一般分为两类，外界因素引起的噪声（我们一般称为&lt;strong&gt;热噪声（Thermal Noise）&lt;/strong&gt;），以及因传输信息的脉冲波形的非理想特性所引起的噪声（一般称为&lt;strong&gt;码间串扰（Inter-Symbol Interference, ISI）&lt;/strong&gt;），具体内容如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;热噪声：&lt;/strong&gt; 一般用于仿真热噪声的数学模型被称为&lt;strong&gt;加性高斯白噪声模型（Addictive White Gaussian Noise, AWGN）&lt;/strong&gt;，是最基本的噪声与干扰模型，其可使用 $n(t)$ 进行描述，对加性高斯白噪声 $n(t)$ 而言，其应当满足如下条件：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;加性：&lt;/strong&gt; 噪声 $n(t)$ 是直接叠加在信号波形上的，且无论信号是否存在，噪声都始终存在。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;白噪声：&lt;/strong&gt; 噪声 $n(t)$ 的&lt;strong&gt;功率谱&lt;/strong&gt;&lt;sup id=&#34;fnref:4&#34;&gt;&lt;a href=&#34;#fn:4&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;为常数。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;高斯噪声：&lt;/strong&gt; 噪声取值的概率分布满足&lt;strong&gt;正态分布&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注：&lt;/strong&gt; 噪声是随机信号，$n(t)$ 只是形式上的记法，我们应从统计意义上对其进行分析。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;码间串扰：&lt;/strong&gt; 我们将在后面的章节中讨论，此处从略。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;接收系统的组成&#34;&gt;接收系统的组成
+&lt;/h3&gt;&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-4.png&#34;
+	width=&#34;1361&#34;
+	height=&#34;267&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-4_hu_94a79e509cf06e9f.png 480w, https://posvirus.github.io/p/dic-006/Lec2-4_hu_f72f42eee5c462bf.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;接收系统的组成&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;509&#34;
+		data-flex-basis=&#34;1223px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;上图展示了数字基带传输系统中接收系统的组成，读图可知，接收系统主要由&lt;strong&gt;接收滤波器&lt;/strong&gt;与&lt;strong&gt;抽样判决器&lt;/strong&gt;组成，两者的作用具体如下所示：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;接收滤波器/匹配滤波器：&lt;/strong&gt; 滤除带外噪声，恢复具有&lt;strong&gt;最大信噪比&lt;/strong&gt;的基带脉冲，使输出的基带波形有利于抽样判决。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;抽样判决器：&lt;/strong&gt; 对接收滤波器的输出波形进行抽样判决（即依据波形取值判断二进制0/1），确定发送的二进制序列。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;同步提取：&lt;/strong&gt; 提取用于抽样的位同步脉冲。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;而对&lt;strong&gt;接收滤波器&lt;/strong&gt;而言，在进行基带脉冲恢复的前后，还需要分别通过&lt;strong&gt;频率下搬移&lt;/strong&gt;与&lt;strong&gt;均衡滤波器&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-5.png&#34;
+	width=&#34;1265&#34;
+	height=&#34;509&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-5_hu_2aa0d38cf8028544.png 480w, https://posvirus.github.io/p/dic-006/Lec2-5_hu_de27f66cba642698.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;频率下搬移与均衡滤波器&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;248&#34;
+		data-flex-basis=&#34;596px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;其中，&lt;strong&gt;频率下搬移&lt;/strong&gt;是指将接收到的&lt;strong&gt;带通信号&lt;/strong&gt;重构为&lt;strong&gt;基带信号&lt;/strong&gt;，当然，这仅对&lt;strong&gt;带通传输系统&lt;/strong&gt;是必要的，对本节所讨论的&lt;strong&gt;数字基带传输系统&lt;/strong&gt;则无必要；而&lt;strong&gt;均衡滤波器&lt;/strong&gt;则用于消除&lt;strong&gt;码间串扰&lt;/strong&gt;，当然，如果不考虑码间串扰的影响，则均衡滤波器也是不必要的。&lt;/p&gt;
+&lt;h2 id=&#34;信号与噪声&#34;&gt;信号与噪声
+&lt;/h2&gt;&lt;h3 id=&#34;awgn噪声模型&#34;&gt;AWGN噪声模型
+&lt;/h3&gt;&lt;p&gt;在本节，我们将对上节提到的&lt;strong&gt;AWGN噪声模型&lt;/strong&gt;进行量化分析，首先，我们假设传输的二进制序列为随机序列：
+&lt;/p&gt;
+$$
+s(t)=\sum\limits_{n=-\infty}^{+\infty}s_n(t),~s_n(t)=\left\{\begin{array}{lcl}
+s_{(1)}(t-nT_s)&amp;&amp;\text{for a binary 1, with probability of}~p\\
+\\
+s_{(0)}(t-nT_s)&amp;&amp;\text{for a binary 0, with probability of}~1-p\\
+\end{array}\right.
+$$&lt;p&gt;
+其中， $s_0(t),~s_1(t)$ 分别为代表0和1的脉冲波形，码元宽度为 $T_s$ 。同时，我们记AWGN噪声为 $n(t)$ ，则传输基带信号 $s(t)$ 的信道可抽象为如下系统：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-6.png&#34;
+	width=&#34;515&#34;
+	height=&#34;219&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-6_hu_2b20534ec71ba260.png 480w, https://posvirus.github.io/p/dic-006/Lec2-6_hu_6ffb1b23ebd60302.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;信道的系统抽象&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;235&#34;
+		data-flex-basis=&#34;564px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;其中 $h_c(t)=\delta(t)$ 为一个&lt;strong&gt;单位无失真传输系统&lt;/strong&gt;，输入信号与输出信号完全相等， $s(t)$ 在通过该系统后，与AWGN噪声 $n(t)$ 线性叠加，假设输出信号为 $z(t)$ ，则成立：
+&lt;/p&gt;
+$$
+z(t)=s(t)+n(t)
+$$&lt;p&gt;
+我们固定某一时间点 $\tau$ 对上式研究，假设上式可记作：
+&lt;/p&gt;
+$$
+z(\tau)=s_i(\tau)+n(\tau)=\left\{\begin{array}{lcl}
+a_{(1)}+n(\tau)&amp;&amp;\text{for a binary 1, with probability of}~p\\
+\\
+a_{(0)}+n(\tau)&amp;&amp;\text{for a binary 0, with probability of}~1-p\\
+\end{array}\right.
+$$&lt;p&gt;
+可知，当该时间点传输的码元为&lt;strong&gt;1&lt;/strong&gt;时（将该事件记为 $S_{(1)}$ ， $p(S_{(1)})=p$ ），则 $z(\tau)=a_{(1)}+n(\tau)$ ;当该时间点传输的码元为&lt;strong&gt;0&lt;/strong&gt;时（将该事件记为 $S_{(0)}$ ， $p(S_{(0)})=1-p$ ），则 $z(\tau)=a_{(0)}+n(\tau)$ 。&lt;/p&gt;
+&lt;p&gt;而注意到，当固定时间点 $\tau$ 时，$n(\tau)$ 是一个服从正态分布的随机变量， $a_{(1)},~a_{(0)}$ 默认为常数，我们记：
+&lt;/p&gt;
+$$
+n(\tau)\sim N(0,~\sigma^2)
+$$&lt;p&gt;
+则显然 $z(\tau)$ 也是一个随机变量，满足：
+&lt;/p&gt;
+$$
+z(\tau)\sim \left\{\begin{array}{lcl}
+N(a_{(1)},~\sigma^2)&amp;&amp;\text{for a binary 1, with probability of}~p\\
+\\
+N(a_{(0)},~\sigma^2)&amp;&amp;\text{for a binary 0, with probability of}~1-p\\
+\end{array}\right.
+$$&lt;p&gt;
+或也可用&lt;strong&gt;概率密度函数&lt;/strong&gt;的形式写作：
+&lt;/p&gt;
+$$
+\rho(z|S_{(1)})=\frac{1}{\sqrt{2\pi}\sigma}\mathrm{e}^{-\frac{(z-a_{(1)})^2}{2\sigma^2}},~\rho(z|S_{(0)})=\frac{1}{\sqrt{2\pi}\sigma}\mathrm{e}^{-\frac{(z-a_{(0)})^2}{2\sigma^2}}
+$$&lt;p&gt;
+进一步，依据条件概率公式，我们有：
+&lt;/p&gt;
+$$
+\rho(z)=p\rho(z|S_{(1)})+(1-p)\rho(z|S_{(0)})=\frac{p}{\sqrt{2\pi}\sigma}\mathrm{e}^{-\frac{(z-a_{(1)})^2}{2\sigma^2}}+\frac{1-p}{\sqrt{2\pi}\sigma}\mathrm{e}^{-\frac{(z-a_{(0)})^2}{2\sigma^2}}
+$$&lt;p&gt;
+$\rho(z)$ 给出了 $\tau$ 时刻的接收信号 $z(\tau)$ 服从的概率分布，事实上一般性地也给出了任意时刻接收信号服从的概率分布（因为 $\sigma^2,~a_{(0)},~a_{(1)}$ 均是独立于时间的变量），而我们最终需要依据该概率密度函数确定一个&lt;strong&gt;判决门限&lt;/strong&gt; $\gamma$ （当然也是独立于时间的），当实际接收的信号 $\hat{z}(\tau)&amp;gt;\gamma$ 时，判定该码元表示二进制1；当实际接收的信号 $\hat{z}(\tau)&amp;lt;\gamma$ 时，判定该码元表示二进制0（以下，均使用&lt;strong&gt;正逻辑&lt;/strong&gt;作为代表）。&lt;/p&gt;
+&lt;p&gt;当然，由于 $z$ 是连续型随机变量，这就表明，无论我们如何选取判决门限 $\gamma$ ，总不能将&lt;strong&gt;误码&lt;/strong&gt;的概率降至0，而在信号传输的过程中，我们希望能够将误码的概率降至最低，这一准则一般称为&lt;strong&gt;最小错误概率准则&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;信噪比&#34;&gt;信噪比
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;信噪比（Signal-noise Ratio, SNR）&lt;/strong&gt; 是描述信号传输中噪声的一个重要参量，若记 接收信号在 $t=\tau$ 时的&lt;strong&gt;瞬时功率&lt;/strong&gt;为 $P(\tau)$ ，噪声在 $t=\tau$ 时的&lt;strong&gt;平均功率&lt;/strong&gt;&lt;sup id=&#34;fnref:5&#34;&gt;&lt;a href=&#34;#fn:5&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;5&lt;/a&gt;&lt;/sup&gt;为 $N(\tau)$ ，则信噪比被定义为：
+&lt;/p&gt;
+$$
+\text{SNR}=\frac{P(\tau)}{N(\tau)}
+$$&lt;p&gt;
+同时，利用上节中的AWGN噪声模型，我们易于给出 $P(\tau),~N(\tau)$ 的具体表达式，仅需注意到：
+&lt;/p&gt;
+$$
+P(\tau)=\lim\limits_{T\to 0}\frac{1}{T}\int_{\tau-T/2}^{\tau+T/2}z^2(t)\mathrm{d}t=z^2(\tau)
+$$&lt;p&gt;
+以及：
+&lt;/p&gt;
+$$
+N(\tau)=E[n^2(\tau)]
+$$&lt;p&gt;
+同时，我们若记&lt;strong&gt;各码元的平均能量&lt;/strong&gt;为 $E_s$ ，&lt;strong&gt;每比特的平均能量&lt;/strong&gt;为 $E_b$ ， &lt;strong&gt;传码率&lt;/strong&gt;为 $R_s$ ，&lt;strong&gt;传信率&lt;/strong&gt;为 $R_b$ ，则应当成立：
+&lt;/p&gt;
+$$
+\frac{E_s}{E_b}=\frac{R_b}{R_s}=k
+$$&lt;p&gt;
+$k$ 即为&lt;strong&gt;每个码元传输的比特数&lt;/strong&gt;，因此有：
+&lt;/p&gt;
+$$
+\bar{P}=\frac{E_s}{T_s}=E_sR_s=E_bR_b,~\bar{N}=\frac{N_0W}{2}
+$$&lt;p&gt;
+其中 $W$ 为噪声功率谱的带宽（虽然白噪声功率谱的带宽理论上是无穷大，但在实际中应当是一个有限值 $W$ ），噪声的功率谱记为 $\displaystyle P_s(\omega)=\frac{N_0}{2}$ ，进而有：
+&lt;/p&gt;
+$$
+\text{SNR}=\frac{E_b}{N_0}\cdot\frac{2R_b}{W}
+$$&lt;p&gt;
+参量 $\displaystyle\frac{E_b}{N_0}$ 有时也作为衡量数字通信系统性能的重要指标之一。&lt;/p&gt;
+&lt;p&gt;在信号传输过程中，我们同样希望接收信号的信噪比能够尽可能大，这一准则一般称为&lt;strong&gt;最大输出信噪比准则&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;匹配滤波器&#34;&gt;匹配滤波器
+&lt;/h2&gt;&lt;h3 id=&#34;匹配滤波器的基本形式&#34;&gt;匹配滤波器的基本形式
+&lt;/h3&gt;&lt;p&gt;在上节中我们了解到，利用&lt;strong&gt;接收滤波器/匹配滤波器&lt;/strong&gt;对接收信号进行处理，可以改善接收信号的信噪比，以下，我们记匹配滤波器的&lt;strong&gt;系统函数&lt;/strong&gt;为 $h(t)$ ，探究当 $h(t)$ 满足何种表达式时，输出信号 $y(t)$ 的信噪比最低。&lt;/p&gt;
+&lt;p&gt;为此，我们假设接收系统会在 $t=t_0$ 时刻进行抽样，不妨仅考查 $t=t_0$ 这一时刻的信噪比，并不妨设首先计算输出信号 $y(t)$ 的表达式：
+&lt;/p&gt;
+$$
+y(t_0)=z(t_0)*h(t_0)=\int_{-\infty}^{+\infty}z(\tau)h(t_0-\tau)\mathrm{d}\tau=\int_{-\infty}^{+\infty}(s(\tau)+n(\tau))h(t_0-\tau)\mathrm{d}\tau
+$$&lt;p&gt;
+进而可记：
+&lt;/p&gt;
+$$
+y_s(t_0)=\int_{-\infty}^{+\infty}s(\tau)h(t_0-\tau)\mathrm{d}\tau,~y_n(t_0)=\int_{-\infty}^{+\infty}n(\tau)h(t_0-\tau)\mathrm{d}\tau
+$$&lt;p&gt;于是有：
+&lt;/p&gt;
+$$
+\text{SNR}(t_0)=\frac{y_s^2(t_0)}{E[y_n^2(t_0)]}
+$$&lt;p&gt;
+以下我们重点考查 $E[y_n^2(t_0)]$ 的计算，将其展开，有：
+&lt;/p&gt;
+$$
+E[y_n^2(t_0)]=E\left[\left(\int_{-\infty}^{+\infty}n(\tau)h(t_0-\tau)\mathrm{d}\tau\right)^2\right]=E\left[\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty}n(\tau)n(t)h(t_0-\tau)h(t_0-t)\mathrm{d}\tau\mathrm{d}t\right]
+$$&lt;p&gt;
+而由于积分运算的线性性质，我们有：
+&lt;/p&gt;
+$$
+E[y_n^2(t_0)]=\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty}E[n(\tau)n(t)]h(t_0-\tau)h(t_0-t)\mathrm{d}\tau\mathrm{d}t
+$$&lt;p&gt;
+其中，$R(t-\tau)=E[n(\tau)n(t)]$ 一般被称为&lt;strong&gt;自相关函数&lt;/strong&gt;，利用 &lt;strong&gt;维纳-辛钦定理（Wiener–Khinchin Theorem）&lt;/strong&gt; 可得：若记 $n(t)$ 对应的功率谱为 $\displaystyle P_s(\omega)=\frac{N_0}{2}$ ，则 $\displaystyle R(\tau)=\mathscr{F}^{-1}\{P_s(\omega)\}=\frac{N_0}{2}\delta(\tau)$ ，因此有：
+&lt;/p&gt;
+$$
+E[y_n^2(t_0)]=\frac{N_0}{2}\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty}\delta(t-\tau)h(t_0-\tau)h(t_0-t)\mathrm{d}\tau\mathrm{d}t=\frac{N_0}{2}\int_{-\infty}^{+\infty}h^2(t_0-\tau)\mathrm{d}\tau
+$$&lt;p&gt;
+因此就有：
+&lt;/p&gt;
+$$
+\text{SNR}(t_0)=\frac{\displaystyle\left|\int_{-\infty}^{+\infty}s(\tau)h(t_0-\tau)\mathrm{d}\tau\right|^2}{\displaystyle \frac{N_0}{2}\int_{-\infty}^{+\infty}h^2(t_0-\tau)\mathrm{d}\tau}=\frac{\displaystyle\left|\int_{-\infty}^{+\infty}s(t_0-\tau)h(\tau)\mathrm{d}\tau\right|^2}{\displaystyle \frac{N_0}{2}\int_{-\infty}^{+\infty}h^2(\tau)\mathrm{d}\tau}
+$$&lt;p&gt;
+而若记 $S(f)=\mathscr{F}\{s(t)\},~H(f)=\mathscr{F}\{h(t)\}$ （此处， $f$ 为&lt;strong&gt;频率&lt;/strong&gt;而非&lt;strong&gt;角频率&lt;/strong&gt;），则有：
+&lt;/p&gt;
+$$
+\mathscr{F}\{s(t_0-t)\}=S^*(f)\cdot\mathrm{e}^{-2\pi ft_0}
+$$&lt;p&gt;
+利用&lt;strong&gt;Parseval定理&lt;/strong&gt;，可计算得：
+&lt;/p&gt;
+$$
+\text{SNR}(t_0)=\frac{\displaystyle\left|\int_{-\infty}^{+\infty}H(f)S(f)\cdot\mathrm{e}^{2\pi ft_0}\mathrm{d}f\right|}{\displaystyle \frac{N_0}{2}\int_{-\infty}^{+\infty}|H(f)|^2\mathrm{d}f}
+$$&lt;p&gt;
+利用&lt;strong&gt;Cauchy-Schwartz不等式&lt;/strong&gt;，则有：
+&lt;/p&gt;
+$$
+\text{SNR}(t_0)\leqslant\frac{\displaystyle\int_{-\infty}^{+\infty}|S(f)\cdot\mathrm{e}^{2\pi ft_0}|^2\mathrm{d}f\cdot \int_{-\infty}^{+\infty}|H(f)|^2\mathrm{d}f}{\displaystyle \frac{N_0}{2}\int_{-\infty}^{+\infty}|H(f)|^2\mathrm{d}f}=\frac{2\displaystyle\int_{-\infty}^{+\infty}|S(f)\cdot\mathrm{e}^{2\pi ft_0}|^2\mathrm{d}f}{N_0}=\frac{2\displaystyle\int_{-\infty}^{+\infty}|S(f)|^2\mathrm{d}f}{N_0}
+$$&lt;p&gt;
+以下，为方便讨论，我们不妨仅考查&lt;strong&gt;第一个码元&lt;/strong&gt;，即认为 $s(t)$ 仅在 $[0,~T_s]$ 上非0&lt;sup id=&#34;fnref:6&#34;&gt;&lt;a href=&#34;#fn:6&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;6&lt;/a&gt;&lt;/sup&gt;，并设 $t_0\in[0,~T_s]$ ，于是有：
+&lt;/p&gt;
+$$
+\int_{-\infty}^{+\infty}|S(f)|^2\mathrm{d}f=E_s&lt;\infty
+$$&lt;p&gt;
+其中， $E_s$ 为码元的平均能量。&lt;/p&gt;
+&lt;p&gt;由上式可知，在 $t=t_0$ 时的信噪比的最大值为 $\displaystyle \frac{2E_s}{N_0}$ ，而由Cauchy-Schwartz不等式的取等条件，信噪比取得该最大值的条件是：
+&lt;/p&gt;
+$$
+H(f)=K\cdot\left(S(f)\mathrm{e}^{2\pi ft_0}\right)^*=K\cdot S^*(f)\mathrm{e}^{-2\pi ft_0},~K\in\mathbb{R}
+$$&lt;p&gt;
+等式两边进行&lt;strong&gt;Fourier逆变换&lt;/strong&gt;，进而有：
+&lt;/p&gt;
+$$
+h(t)=K\cdot\mathscr{F}^{-1}\{S^*(f)\mathrm{e}^{-2\pi ft_0}\}=K\cdot s(t_0-t)
+$$&lt;p&gt;
+上式表明，若使在 $t=t_0$ 时刻抽样第一个码元所获样本的信噪比取最大值，则 $h(t)$ 应当满足： $h(t)=K\cdot s(t_0-t)$ 。&lt;/p&gt;
+&lt;p&gt;以下，我们对抽样时刻 $t_0$ 是否有特殊的要求呢？首先，由于抽样的是第一个码元，则 $t_0\in[0,~T_s]$ ；其次，若使 $h(t)$ 在实际中是可实现的，则 $h(t)$ 至少要是&lt;strong&gt;因果的&lt;/strong&gt;，即：
+&lt;/p&gt;
+$$
+s(t_0-t)\equiv0,~\forall t&lt;0~(\Leftrightarrow\forall t_0-t&gt;t_0)
+$$&lt;p&gt;
+注意到 $s(t)$ 在 $[0,~T_s]$ 上是非0的，则有 $t_0\geqslant T_s$ ，因此，对抽样时刻的最优选择只能是 $t=T_s$ ，对应的匹配滤波器的单位脉冲响应为 $h(t)=s(T_s-t)$ （为方便讨论，不妨约定 $K=1$ ）。&lt;/p&gt;
+&lt;p&gt;以下，我们考查更一般的情形，假定输入信号为：
+&lt;/p&gt;
+$$
+z(t)=s(t)+n(t)=\sum\limits_{k=1}^{+\infty}s_k(t)+n(t)
+$$&lt;p&gt;
+其中， $s_k(t)$ 为第 $k$ 个码元的对应波形，则我们不妨将其设为 $s_k(t)=a_k\hat{s}(t-(k-1)T_s)$ ，$a_k$ 为随机二进制序列在第 $k$ 位取值的随机变量，$\hat{s}(t)$ 是仅在 $[0,~T]$ 非0的脉冲波形。将该输入信号输入匹配滤波器后，我们有：
+&lt;/p&gt;
+$$
+y(t)=z(t)*h(t)=\sum\limits_{k=1}^{+\infty}s_k(t)*h(t)+n(t)*h(t)=\sum\limits_{k=1}^{+\infty}y_{s,k}(t)+y_n(t)
+$$&lt;p&gt;
+不难发现，此时的输出脉冲波形是AWGN噪声对应响应 $y_n(t)$ 与各码元对应响应 $y_{s,k}(t)$ 的线性叠加，如果我们在 $t=kT_s$ 时刻对第 $k$ 个码元进行抽样，则很明显，我们希望在该时刻&lt;strong&gt;有且仅有&lt;/strong&gt;第 $k$ 个码元对应响应与AWGN噪声对应响应的叠加（否则不同码元响应的叠加会导致干扰），即：
+&lt;/p&gt;
+$$
+y(kT_s)=y_{s,k}(kT_s)+y_n(kT_s),~k\in\mathbb{N}_+
+$$&lt;p&gt;
+这直接导致 $y_{s,k}(t)$ 必须在时域上有限，更具体地说， $y_{s,k}(t)$​ 至多在 $(k-1)T_s&amp;lt;t&amp;lt;(k+1)T_s$ 时非0，结合 $y_{s,k}(t)$ 的表达式：
+&lt;/p&gt;
+$$
+y_{s,k}(t)=\int_{-\infty}^{+\infty}s_k(\tau)h(t-\tau)\mathrm{d}\tau=\int_{(k-1)T_s}^{kT_s}s_k(\tau)h(t-\tau)\mathrm{d}\tau,~t-\tau\in(t-kT_s,~t-(k-1)T_s)
+$$&lt;p&gt;
+可知 $h(t)$ 也必须在时域上有限，至多在 $0 &amp;lt; t &amp;lt; T_s$ 上非0（此处同时考虑了 $h(t)$ 的&lt;strong&gt;因果性&lt;/strong&gt;）。进而我们有：
+&lt;/p&gt;
+$$
+\text{SNR}(kT_s)=\frac{\displaystyle\left|\int_{-\infty}^{+\infty}s(\tau)h(kT_s-\tau)\mathrm{d}\tau\right|^2}{\displaystyle \frac{N_0}{2}\int_{-\infty}^{+\infty}h^2(kT_s-\tau)\mathrm{d}\tau}=\frac{\displaystyle\left|\int_{(k-1)T_s}^{kT_s}a_k\hat{s}(\tau-(k-1)T_s)h(kT_s-\tau)\mathrm{d}\tau\right|^2}{\displaystyle \frac{N_0}{2}\int_{-\infty}^{+\infty}h^2(kT_s-\tau)\mathrm{d}\tau}\leqslant\frac{2E_s}{N_0}
+$$&lt;p&gt;
+此时不等式的取等条件为：
+&lt;/p&gt;
+$$
+h(kT_s-\tau)=K\cdot a_k\hat{s}(\tau-(k-1)T_s)~\Leftrightarrow~h(t)=K\cdot a_k\hat{s}(T_s-t),~K\in\mathbb{R}
+$$&lt;p&gt;
+综上可知，对形如 $\displaystyle z(t)=\sum\limits_{k=1}^{+\infty}a_k\hat{s}(t-(k-1)T_s)+n(t)$ 的接收信号，我们仅需保证匹配滤波器的单位脉冲响应 $h(t)=\hat{s}(T_s-t)$ ，即可同时使在 $t=kT_s$ 时刻对第 $k$ 个码元的抽样信噪比达到最大。&lt;/p&gt;
+&lt;h3 id=&#34;使用相关运算取代匹配滤波器&#34;&gt;使用相关运算取代匹配滤波器
+&lt;/h3&gt;&lt;p&gt;匹配滤波器虽然可以使抽样时的信噪比达到最大，但是相对而言难以实现，为此，我们有时会使用相关运算取代匹配滤波器的实现，我们仅需注意到，当 $t=kT_s$ 时，成立：
+&lt;/p&gt;
+$$
+y(kT_s)=\int_{(k-1)T_s}^{kT_s}z(\tau)\hat{s}(\tau-(k-1)T_s)\mathrm{d}\tau=\int_{0}^{T_s}z(\tau+(k-1)T_s)\hat{s}(\tau)\mathrm{d}\tau
+$$&lt;p&gt;
+我们如果定义信号 $f(t)$ 与 $g(t)$ 的&lt;strong&gt;相关运算&lt;/strong&gt;为：
+&lt;/p&gt;
+$$
+(f\otimes g)(t)=\int_{-\infty}^{+\infty}f^*(\tau)g(\tau+t)\mathrm{d}\tau
+$$&lt;p&gt;
+则考虑到 $z(t),~\hat{s}(t)$ 均为&lt;strong&gt;实信号&lt;/strong&gt;，易有：
+&lt;/p&gt;
+$$
+y(kT_s)=(\hat{s}\otimes z)((k-1)T_s)
+$$&lt;p&gt;
+我们不难注意到， $y(kT_s)=(\hat{s}\otimes z)((k-1)T_s)$ 是在 $t=kT_s$ 信噪比最大的输出信号（之一），这一结论对&lt;strong&gt;任意形式&lt;/strong&gt;的匹配滤波器均成立，那么，我们不妨构造系统 $\mathscr{H}$ ，满足：&lt;/p&gt;
+$$
+y(t)=\mathscr{H}\{x(t)\}=(\hat{s}\otimes x)(t-T_s)=\int_{0}^{T_s}\hat{s}(\tau)x(\tau+t-T_s)\mathrm{d}\tau
+$$&lt;p&gt;
+这样，该系统在 $t=kT_s$ 时的信噪比也能够达到最大。&lt;/p&gt;
+&lt;p&gt;这样的系统 $\mathscr{H}$ 相比原来的匹配滤波器设计有什么好处呢？除相关运算更易于实现外，该系统实际上可以对更广义的脉冲波形进行处理，如果我们记：
+&lt;/p&gt;
+$$
+s_n(t)=\left\{\begin{array}{lcl}
+s_{(1)}(t-nT_s)&amp;&amp;\text{for a binary 1, with probability of}~p\\
+\\
+s_{(0)}(t-nT_s)&amp;&amp;\text{for a binary 0, with probability of}~1-p\\
+\end{array}\right.
+$$&lt;p&gt;
+且 $s_{(1)}(t)$ 与 $s_{(0)}(t)$ 如果不具备&lt;strong&gt;倍数关系&lt;/strong&gt;的话，则原来的匹配滤波器失效（因为 $h(t)$ 显然不可能在 $s_{(1)}(T_s-t)$ 与 $s_{(0)}(T_s-t)$ 间概率性地切换），但我们仍然可以使用系统 $\mathscr{H}$ 进行设计，可以分别构造如下两个系统：
+&lt;/p&gt;
+$$
+y(t)=\mathscr{H}_{(0)}\{x(t)\}=(s_{(0)}\otimes x)(t-T_s),~y(t)=\mathscr{H}_{(1)}\{x(t)\}=(s_{(1)}\otimes x)(t-T_s)
+$$&lt;p&gt;
+则我们可以分别将接收信号 $z(t)$ 输入两个系统得到输出 $y_{(0)}(t)$ 与 $y_{(1)}(t)$ ，再根据 $y_{(0)}(t)$ 与 $y_{(1)}(t)$ 在 $t=kT_s$ 的取值判断第 $k$ 个码元的取值。&lt;/p&gt;
+&lt;p&gt;至于具体如何依据 $y_{(0)}(kT_s)$ 与 $y_{(1)}(kT_s)$ 的取值判断第 $k$ 个码元的取值，我们可举一个简单的例子，如果我们&lt;strong&gt;忽略噪声&lt;/strong&gt;并认为：
+&lt;/p&gt;
+$$
+\int_{0}^{T_s}s_{(0)}^2(\tau)\mathrm{d}\tau=\int_{0}^{T_s}s_{(1)}^2(\tau)\mathrm{d}\tau=E_s
+$$&lt;p&gt;
+则依据&lt;strong&gt;Cauchy-Schwartz不等式&lt;/strong&gt;，我们有：
+&lt;/p&gt;
+$$
+E_s\geqslant\int_{0}^{T_s}s_{(0)}(\tau)s_{(1)}(\tau)\mathrm{d}\tau
+$$&lt;p&gt;
+因此，我们可得如下判定条件：当 $y_{(1)}(kT_s)&amp;gt;y_{(0)}(kT_s)$ 时，则第 $k$ 个码元为&lt;strong&gt;1&lt;/strong&gt;；当 $y_{(1)}(kT_s)&amp;lt;y_{(0)}(kT_s)$ 时，则第 $k$ 个码元为&lt;strong&gt;0&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;awgn噪声干扰下的二进制信号检测&#34;&gt;AWGN噪声干扰下的二进制信号检测
+&lt;/h2&gt;&lt;h3 id=&#34;一般性模型&#34;&gt;一般性模型
+&lt;/h3&gt;&lt;p&gt;在本节，我们将通过对更一般情形的分析，讨论如何对AWGN噪声干扰下的接收波形进行接收滤波以及抽样判决，在上节中我们已经讨论过，使用怎样的接收滤波器才可以满足&lt;strong&gt;最大输出信噪比准则&lt;/strong&gt;，而在本节我们主要讨论，应当使用怎样的策略对通过接收滤波器的信号进行抽样判决，才能使得判决的结果满足&lt;strong&gt;最小错误概率准则&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;为此，首先我们定义更为一般的接收信号，假设对一个码元而言，共有 $M$ 种可能的脉冲波形，构成集合：
+&lt;/p&gt;
+$$
+S_M=\{s_m(t)|m=1,~2,\cdots,~M\}
+$$&lt;p&gt;
+而此处我们默认 $S_M$ 满足一个性质：即 $S_M$ 中的脉冲波形可进行&lt;strong&gt;正交基分解&lt;/strong&gt;，换言之，存在一组正交基：
+&lt;/p&gt;
+$$
+F_N=\{f_n(t)|n=1,~2,\cdots,~n\},~\int_{-\infty}^{+\infty}f_n(t)f_m(t)\mathrm{d}t=\delta_{mn}
+$$&lt;p&gt;
+使得：
+&lt;/p&gt;
+$$
+s_m(t)=\sum\limits_{n=1}^{N}\hat{s}_{mn}f_n(t),~m=1,~2,\cdots,~M
+$$&lt;p&gt;
+或可写成矩阵形式：
+&lt;/p&gt;
+$$
+\left[\begin{array}{c}
+s_1(t)\\
+s_2(t)\\
+\vdots\\
+s_M(t)
+\end{array}\right]=\left[\begin{array}{cccc}
+\hat{s}_{11}&amp;\hat{s}_{12}&amp;\cdots&amp;\hat{s}_{1N}\\
+\hat{s}_{21}&amp;\hat{s}_{22}&amp;\cdots&amp;\hat{s}_{2N}\\
+\vdots&amp;\vdots&amp;\ddots&amp;\vdots\\
+\hat{s}_{M1}&amp;\hat{s}_{M2}&amp;\cdots&amp;\hat{s}_{MN}
+\end{array}\right]\left[\begin{array}{c}
+f_1(t)\\
+f_2(t)\\
+\vdots\\
+f_N(t)
+\end{array}\right]
+$$&lt;p&gt;
+进而，接收信号 $z(t)$ 便可记作：
+&lt;/p&gt;
+$$
+z(t)=s_m(t)+n(t)=\sum\limits_{k=1}^{N}\hat{s}_{mk}f_k(t)+n(t)
+$$&lt;p&gt;
+其次，我们设计如下的接收滤波器：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-7.png&#34;
+	width=&#34;688&#34;
+	height=&#34;673&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-7_hu_d359ac1acb6ae865.png 480w, https://posvirus.github.io/p/dic-006/Lec2-7_hu_5175587a6e4c2779.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;接收滤波器的设计&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;102&#34;
+		data-flex-basis=&#34;245px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;读图可知，该接收滤波器有 $N$ 个并行的相关器，分别输出 $z(t)$ 与 $N$ 个基函数的相关性，而我们最终即基于这 $N$ 条描述相关性的抽样信息，去判定接收的波形究竟是 $S_M$ 中的哪一者。如果用数学语言描述，即为：
+&lt;/p&gt;
+$$
+r_k=\int_{0}^{T_s}f_k(t)z(t)\mathrm{d}t=\int_{0}^{T_s}f_k(t)\cdot\sum\limits_{j=1}^N\hat{s}_{mj}f_j(t)\mathrm{d}t+\int_{0}^{T_s}f_k(t)n(t)\mathrm{d}t
+$$&lt;p&gt;
+利用正交基的性质，并记 $\displaystyle n_k=\int_{0}^{T_s}f_k(t)n(t)\mathrm{d}t$ ，则有：
+&lt;/p&gt;
+$$
+r_k=\hat{s}_{mk}+n_k,~m=1,~2,\cdots,~M
+$$&lt;p&gt;
+我们最终即需根据输出的抽样向量 $\vec{r}=[r_1,~r_2,\cdots,~r_N]^T$ ，判定接收信号 $z(t)$ 中所传输的脉冲波形 $s_m(t)$ 。&lt;/p&gt;
+&lt;p&gt;以下，我们考查抽样向量所满足的性质，对 $r_k$ 而言， $\hat{s}_{mk}$ 是一个确定值，而 $n_k$ 则是一个服从&lt;strong&gt;正态分布&lt;/strong&gt;的随机变量，且由积分运算的线性性质，其均值 $E[n_k]$ 满足：
+&lt;/p&gt;
+$$
+E[n_k]=E\left[\int_{0}^{T_s}f_k(t)n(t)\mathrm{d}t\right]=\int_{0}^{T_s}f_k(t)E[n(t)]\mathrm{d}t=0
+$$&lt;p&gt;
+其方差 $D[n_k]$ 满足：
+&lt;/p&gt;
+$$
+D[n_k]=E[n_k^2]-(E[n_k])^2=E[n_k^2]
+$$&lt;p&gt;
+而由上节的推导可知，若 $n(t)$ 的&lt;strong&gt;功率谱&lt;/strong&gt;为 $\displaystyle \frac{N_0}{2}$ ，则有：
+&lt;/p&gt;
+$$
+D[n_k]=E[n_k^2]=\frac{N_0}{2}\int_{0}^{T_s}f^2_k(t)\mathrm{d}t=\frac{N_0}{2}
+$$&lt;p&gt;
+因此有：
+&lt;/p&gt;
+$$
+n_k\sim N\left(0,~\frac{N_0}{2}\right)~\Rightarrow~r_k\sim N\left(\hat{s}_{mk},~\frac{N_0}{2}\right)
+$$&lt;p&gt;
+以上的推导实质上是在&lt;strong&gt;已知传输的脉冲波形为$s_m(t)$​&lt;/strong&gt; 的前提下进行的。因此，可以知道，如果接收信号传输的脉冲波形为 $s_m(t)$ （将该事件简记为 $s_m$ ），则输出向量 $\vec{r}$ 满足的&lt;strong&gt;概率密度函数&lt;/strong&gt;为：
+&lt;/p&gt;
+$$
+\rho(\vec{r}|s_m)=\prod\limits_{k=1}^N\rho(r_k|s_m)=\frac{1}{(\sqrt{\pi N_0})^N}\cdot\exp\left(-\frac{\displaystyle\sum\limits_{k=1}^N(r_k-\hat{s}_{mk})^2}{N_0}\right)
+$$&lt;p&gt;
+那么，不难注意到，如果我们得到的抽样向量为 $\vec{r}$ ，则若要使得判决结果 $s(t)$ 满足&lt;strong&gt;最小错误概率准则&lt;/strong&gt;，应进行如下判决：
+&lt;/p&gt;
+$$
+s(t)=\underset{s_m(t)\in S_M}{\text{argmax}}\{\rho(s_m|\vec{r})\}
+$$&lt;p&gt;
+其中， $\text{argmax}$ 代表能够使目标函数取得最大值的&lt;strong&gt;自变量&lt;/strong&gt;集合，上述判决准则的含义是：在已知抽样向量 $\vec{r}$ 的条件下，如果取得某个脉冲波形 $s_m(t)$ 的&lt;strong&gt;条件概率&lt;/strong&gt;最大，则就认为接收波形传输的是 $s_m(t)$ 。从概率论的角度， $\rho(s_m|\vec{r})$ 是&lt;strong&gt;后验概率&lt;/strong&gt;，因此这种判决准则又被称为&lt;strong&gt;最大后验概率准则（Maximum A Posteriori Estimation, MAP）&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;利用最大后验概率准则，我们可以使判决完全满足最小错误概率准则。但是，最大后验概率准则是可实现的吗？这一问题实质上等价于在已知抽样向量 $\vec{r}$ 时，后验概率密度 $\rho(s_m|\vec{r})$ 是否是可算的。为此，我们可以使用&lt;strong&gt;Bayes公式&lt;/strong&gt;，将后验概率 $\rho(s_m|\vec{r})$ 转化为先验概率 $\rho(\vec{r}|s_m)$ ：
+&lt;/p&gt;
+$$
+\rho(s_m|\vec{r})=\frac{\displaystyle \rho(\vec{r}|s_m)\cdot\rho(s_m)}{\displaystyle\rho(\vec{r})}=\frac{\displaystyle \rho(\vec{r}|s_m)\cdot\rho(s_m)}{\displaystyle\sum\limits_{m=1}^M\rho(\vec{r}|s_m)\cdot\rho(s_m)}
+$$&lt;p&gt;由上式可知，由于 $\rho(\vec{r}|s_m)$ 是已知的，如果希望计算 $\rho(s_m|\vec{r})$ ，则必须需要知道 $\rho(s_m)$ ，即各脉冲波形在序列中出现的概率，但很显然，对接收系统而言，我们无法事先预判各脉冲波形出现的概率，因此， $\rho(s_m)$ 是未知的，进而导致 $\rho(s_m|\vec{r})$ 不可算，基于最大后验概率准则的抽样判决实质上是&lt;strong&gt;不可实现的&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;但是，最大后验概率准则并非一无是处，虽然我们无法知道确切的 $\rho(s_m)$ ，但我们可以作一个先验的假设，认为任一脉冲波形的出现均是&lt;strong&gt;等概率的&lt;/strong&gt;（即 $\rho(s_m)=1/M,~m=1,~2,\cdots,~M$ ），则我们有：
+&lt;/p&gt;
+$$
+\rho(s_m|\vec{r})=\frac{\rho(\vec{r}|s_m)}{\displaystyle\sum\limits_{k=1}^M\rho(\vec{r}|s_k)}
+$$&lt;p&gt;
+注意到， $\displaystyle\sum\limits_{k=1}^M\rho(\vec{r}|s_k)$ 对固定的 $\vec{r}$ 而言是一个常量，则最大后验概率准则对应的判决表达式可等价为：
+&lt;/p&gt;
+$$
+s(t)=\underset{s_m(t)\in S_M}{\text{argmax}}\left\{\rho(\vec{r}|s_m)\right\}
+$$&lt;p&gt;
+这一判决准则又被称为&lt;strong&gt;最大似然概率准则（Maximum Likelihood Estimation, ML）&lt;/strong&gt;，考虑到前文已给出的 $\rho(\vec{r}|s_m)$ 的表达式，该准则可进一步等价为（利用 $\mathrm{e}^{-x}$ 的单调性）：
+&lt;/p&gt;
+$$
+s(t)=\underset{s_m(t)\in S_M}{\text{argmin}}\{\Vert\vec{r}-\hat{s}_{m}\Vert^2\},~\hat{s}_m=[\hat{s}_{m1},~\hat{s}_{m2},\cdots,~\hat{s}_{mN}]^T
+$$&lt;p&gt;
+直观上，最大似然概率准则即是在得到抽样向量 $\vec{r}$ 后，直接比较 $\vec{r}$ 与各个 $\hat{s}_m$ 系数的&lt;strong&gt;平方误差&lt;/strong&gt;，认为其中的最小者即为传输的脉冲波形。&lt;/p&gt;
+&lt;h3 id=&#34;一类特殊情形&#34;&gt;一类特殊情形
+&lt;/h3&gt;&lt;p&gt;以下，我们考查在前文中提到的一类特殊情形，此时的脉冲波形只有两种 $s_{(1)}(t),~s_{(0)}(t)$ ，分别代表&lt;strong&gt;二进制1&lt;/strong&gt;与&lt;strong&gt;二进制0&lt;/strong&gt;，且我们可以使用一个基函数 $s(t)$ 对其进行展开：
+&lt;/p&gt;
+$$
+s_{(i)}(t)=a_{(i)}\cdot s(t),~i=0,~1
+$$&lt;p&gt;
+那么，此时的接收滤波器便可以仅由一个相关器 $\mathscr{H}$ 构成（ $\displaystyle y(t)=\mathscr{H}{x(t)}=\int_{0}^{T_s}s(\tau)x(\tau+t-T_s)\mathrm{d}\tau$ ），当传输脉冲波形为 $s_{(i)}(t)$ 时，对应相关器输出 $r$ &lt;sup id=&#34;fnref:7&#34;&gt;&lt;a href=&#34;#fn:7&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;7&lt;/a&gt;&lt;/sup&gt;为：
+&lt;/p&gt;
+$$
+r=a_{(i)}+n_i,~i=0,~1
+$$&lt;p&gt;则若依据&lt;strong&gt;最大后验概率准则&lt;/strong&gt;，此时的判定准则为：
+&lt;/p&gt;
+$$
+\rho(r|s_{(1)})\cdot\rho(s_{(1)})\lesseqqgtr\rho(r|s_{(0)})\cdot\rho(s_{(0)})
+$$&lt;p&gt;
+进一步等价于：
+&lt;/p&gt;
+$$
+\exp\left(-\frac{(r-a_{(1)})^2}{N_0}\right)\cdot\rho(s_{(1)})\lesseqqgtr\exp\left(-\frac{(r-a_{(0)})^2}{N_0}\right)\cdot\rho(s_{(0)})
+$$&lt;p&gt;
+此亦即：
+&lt;/p&gt;
+$$
+\exp\left(\frac{(a_{(1)}-a_{(0)})(2r-a_{(0)}-a_{(1)})}{N_0}\right)=\exp\left(\frac{(r-a_{(0)})^2-(r-a_{(1)})^2}{N_0}\right)\lesseqqgtr\frac{\rho(s_{(0)})}{\rho(s_{(1)})}
+$$&lt;p&gt;
+如果考查&lt;strong&gt;正逻辑&lt;/strong&gt;（即 $a_{(1)}&amp;gt;a_{(0)}$ ），化简即有：
+&lt;/p&gt;
+$$
+r\lesseqqgtr\frac{a_{(0)}+a_{(1)}}{2}-\frac{N_0}{2}\cdot\frac{\ln(\rho(s_{(1)}))-\ln(\rho(s_{(0)}))}{a_{(1)}-a_{(0)}}
+$$&lt;p&gt;
+由此可知，&lt;strong&gt;判决门限&lt;/strong&gt; $\gamma$ 满足：
+&lt;/p&gt;
+$$
+\gamma=\frac{a_{(0)}+a_{(1)}}{2}-\frac{N_0}{2}\cdot\frac{\ln(\rho(s_{(1)}))-\ln(\rho(s_{(0)}))}{a_{(1)}-a_{(0)}}
+$$&lt;p&gt;
+当 $r&amp;gt;\gamma$ 时，将接收信号判定为&lt;strong&gt;二进制1&lt;/strong&gt;；当 $r&amp;lt;\gamma$ 时，将接收信号判定为&lt;strong&gt;二进制0&lt;/strong&gt;。而若依据&lt;strong&gt;最大似然概率准则&lt;/strong&gt;，则判决门限退化为：
+&lt;/p&gt;
+$$
+\gamma=\frac{a_{(0)}+a_{(1)}}{2}
+$$&lt;h2 id=&#34;码间串扰isi&#34;&gt;码间串扰（ISI）
+&lt;/h2&gt;&lt;h3 id=&#34;码间串扰的基本概念&#34;&gt;码间串扰的基本概念
+&lt;/h3&gt;&lt;p&gt;在前文中我们提到过，为保证我们用于传输波形的脉冲 $s(t)$ 为基带信号，我们需要在传输前对其进行&lt;strong&gt;脉冲/基带成型&lt;/strong&gt;，即使用&lt;strong&gt;低通滤波器&lt;/strong&gt;迫使其频谱仅在&lt;strong&gt;低频有限域&lt;/strong&gt;内非0。而我们忽略了这一操作对时域脉冲波形的影响，即&lt;strong&gt;一个频域有限的信号在时域上通常是无限的&lt;/strong&gt;。换言之，对进行脉冲/基带成型后的脉冲波形 $\displaystyle s(t)=\sum\limits_{n=-\infty}^{+\infty}s_n(t)$ 而言， $s_n(t)$ 在时域上是&lt;strong&gt;无限&lt;/strong&gt;的，因此，不同码元对应的脉冲波形便会相互重叠，发生干扰，这一现象便称为 &lt;strong&gt;码间串扰（Inter-Symbol Interference, ISI）&lt;/strong&gt; ，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-8.png&#34;
+	width=&#34;773&#34;
+	height=&#34;364&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-8_hu_ee9f200d9608d022.png 480w, https://posvirus.github.io/p/dic-006/Lec2-8_hu_74f98871c28c8909.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;码间串扰的原理示意图&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;212&#34;
+		data-flex-basis=&#34;509px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;那么，如何从数学上定量描述码间串扰呢？需要指出，对数字基带传输系统而言，我们其实仅关注码间串扰对最终&lt;strong&gt;抽样判决&lt;/strong&gt;的影响，因此，我们可以将数字基带传输系统抽样判决前的所有部分抽样为一个子系统 $\mathscr{H}$ ，对输入信号 $s(t)$ 的单位脉冲响应为 $h(t)$ 。同时，AWGN噪声 $n(t)$ 是在传输时加入的，由于其具有&lt;strong&gt;加性&lt;/strong&gt;，因此可与 $s(t)$ 相对独立地进行分析，我们可直接记噪声通过&lt;strong&gt;接收滤波器&lt;/strong&gt;后的输出为 $n_r(t)$ ，则需进行抽样判决的信号 $y(t)$ 为：
+&lt;/p&gt;
+$$
+y(t)=\mathscr{H}\{s(t)\}+n_r(t)=s(t)*h(t)+n_r(t)
+$$&lt;p&gt;
+代入 $\displaystyle s(t)=\sum\limits_{n=-\infty}^{+\infty}s_n(t)$ ，有：
+&lt;/p&gt;
+$$
+y(t)=\sum\limits_{n=-\infty}^{+\infty}\left(\int_{-\infty}^{+\infty}s_n(\tau)h(t-\tau)\mathrm{d}\tau\right)+n_r(t)
+$$&lt;p&gt;
+我们考虑 $s_n(t)=a_n\cdot \hat{s}(t-nT_s)$ 的特殊情形，则有：
+&lt;/p&gt;
+$$
+y(t)=\sum\limits_{n=-\infty}^{+\infty}\left(a_n\cdot\int_{-\infty}^{+\infty}\hat{s}(\tau-nT_s)h(t-\tau)\mathrm{d}\tau\right)+n_r(t)
+$$&lt;p&gt;
+于是，在 $t=kT_s$ 处抽样时，对应的抽样值 $y(kT_s)$ 可化作：
+&lt;/p&gt;
+$$
+y(kT_s)=a_k\cdot\left(\int_{-\infty}^{+\infty}\hat{s}(\tau-kT_s)h(kT_s-\tau)\mathrm{d}\tau\right)+\sum\limits_{n\ne k}\left(a_n\cdot\int_{-\infty}^{+\infty}\hat{s}(\tau-nT_s)h(kT_s-\tau)\mathrm{d}\tau\right)+n_r(kT_s)
+$$&lt;p&gt;
+我们可以不妨设 $\hat{s}(t)=\delta(t)$ &lt;sup id=&#34;fnref:8&#34;&gt;&lt;a href=&#34;#fn:8&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;8&lt;/a&gt;&lt;/sup&gt; ，则上式可化简为：
+&lt;/p&gt;
+$$
+y(kT_s)=a_k\cdot h(0)+\sum\limits_{n\ne k}a_n\cdot h((k-n)T_s)+n_r(kT_s)
+$$&lt;p&gt;
+其中， $a_k\cdot h(0)$ 为第 $k$ 个码元对应的样本， $\displaystyle \sum\limits_{n\ne k}a_n\cdot h((k-n)T_s)$ 为码间串扰， $n_r(kT_s)$ 为AWGN噪声。&lt;/p&gt;
+&lt;h3 id=&#34;使用均衡滤波器消除码间串扰&#34;&gt;使用均衡滤波器消除码间串扰
+&lt;/h3&gt;&lt;p&gt;前文提及，我们可以使用&lt;strong&gt;均衡滤波器&lt;/strong&gt;消除码间串扰，本节我们便来考虑均衡滤波器的具体实现。&lt;/p&gt;
+&lt;p&gt;我们记均衡滤波器为系统 $\mathscr{B}$ ，均衡滤波器的输入信号为 $y(t)$ ：
+&lt;/p&gt;
+$$
+y(t)=\sum\limits_{n=-\infty}^{+\infty}a_n\cdot h(t-nT_s)+n_r(t)
+$$&lt;p&gt;
+同时设均衡滤波器的输出信号： $z(t)=\mathscr{B}\{y(t)\}$ ，则不妨假定这是一个&lt;strong&gt;线性非时变系统&lt;/strong&gt;，我们有：
+&lt;/p&gt;
+$$
+z(t)=\sum\limits_{n=-\infty}^{+\infty}a_n\cdot\mathscr{B}\{h(t-nT_s)\}+\mathscr{B}\{n_r(t)\}
+$$&lt;p&gt;
+为方便说明，不妨记 $h_o(t)=\mathscr{B}\{h(t)\},~n_o(t)=\mathscr{B}\{n_r(t)\}$​ ，则利用系统的&lt;strong&gt;非时变性&lt;/strong&gt;，有：
+&lt;/p&gt;
+$$
+z(t)=\sum\limits_{n=-\infty}^{+\infty}a_n\cdot h_o(t-nT_s)+n_o(t)
+$$&lt;p&gt;
+对均衡滤波器，要使其能够消除码间串扰，我们至少希望&lt;strong&gt;输出信号在抽样时刻对应的码间串扰为0&lt;/strong&gt;，而&lt;strong&gt;样本&lt;/strong&gt;不为0，考虑 $t=kT_s$ 时刻的抽样，即：
+&lt;/p&gt;
+$$
+a_k\cdot h_o(0)\ne0,~\sum\limits_{n\ne k}a_n\cdot h_o((k-n)T_s)=0,~\forall k\in \mathbb{Z}
+$$&lt;p&gt;
+如果我们进一步&lt;strong&gt;加强条件&lt;/strong&gt;，我们其实可以要求 $h_o(t)$ 满足：
+&lt;/p&gt;
+$$
+\mathscr{B}\{h(t)\}=h_o(t)=\left\{\begin{array}{lcl}
+1&amp;&amp;t=0\\
+\\
+0&amp;&amp;t=kT_s,~\forall k\in \mathbb{Z}/\{0\}\\
+\end{array}\right.
+$$&lt;p&gt;
+要实现这一点，其实我们仅需记系统 $\mathscr{B}$ 的单位脉冲响应为 $\displaystyle b(t)=\sum_{n=-\infty}^{+\infty}b_k\cdot\delta(t-kT_s)$ ，则易有：
+&lt;/p&gt;
+$$
+h_o(t)=\int_{-\infty}^{+\infty}b(\tau)h(t-\tau)\mathrm{d}\tau=\sum\limits_{n=-\infty}^{+\infty}b_n\cdot h(t-nT_s)
+$$&lt;p&gt;
+因此，我们仅需确定系数 $b_k,~k\in\mathbb{Z}$ ，使得 $h_o(t)$ 满足性质即可。同时，我们注意，此时的系统 $\mathscr{B}$ 对应&lt;strong&gt;递归方程&lt;/strong&gt;：
+&lt;/p&gt;
+$$
+y(t)=\mathscr{B}\{x(t)\}=\sum\limits_{n=-\infty}^{+\infty}b_n\cdot x(t-nT_s)
+$$&lt;p&gt;
+一方面，这一系统是&lt;strong&gt;非因果的&lt;/strong&gt;，同时涉及&lt;strong&gt;无限多个&lt;/strong&gt;延时器，因此是&lt;strong&gt;物理不可实现的&lt;/strong&gt;，为获得一个物理可实现的均衡滤波器，我们考查如下系统：
+&lt;/p&gt;
+$$
+y(t)=\mathscr{B}\{x(t)\}=\sum\limits_{n=0}^{N}b_n\cdot x(t-nT_s),~b(t)=\sum\limits_{n=0}^{N}b_n\cdot\delta(t-nT_s)
+$$&lt;p&gt;
+上述系统即是将系统响应的无穷求和变为了有限项求和，此时输出 $\displaystyle h_o(t)=\sum\limits_{n=0}^{N}b_n\cdot h(t-nT_s)$ ，为方便讨论，我们记 $c_k=h(kT_s)$ ，则有：
+&lt;/p&gt;
+$$
+h_o(kT_s)=\sum\limits_{n=0}^{N}b_n\cdot c_{k-n}
+$$&lt;p&gt;
+首先注意两个事实：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;$h(t)$ 是&lt;strong&gt;因果系统&lt;/strong&gt;的单位脉冲响应，因此对所有的$k&amp;lt;0$，有 $c_k=0$ ，进而 $h_o(kT_s)=0$ （这也可以理解为因果系统级联仍为因果系统）。&lt;/li&gt;
+&lt;li&gt;$h_o(t)$ 在 $t$ 充分大时通常近似为0。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;因此，我们对 $h_o(t)$ 的要求其实可以弱化为：
+&lt;/p&gt;
+$$
+\mathscr{B}\{h(t)\}=h_o(t)=\left\{\begin{array}{lcl}
+1&amp;&amp;t=0\\
+\\
+0&amp;&amp;t=kT_s,~1\leqslant k\leqslant N\\
+\end{array}\right.
+$$&lt;p&gt;
+其中，保证 $N$ 为一充分大的正整数即可，换言之，对码元 $a_n\cdot h_o(t-nT_s)$ ，我们仅需考虑其对&lt;strong&gt;未来&lt;/strong&gt; $N$ 个码元（对过去的码元无影响）的码间串扰，之后的码间串扰即使不作处理也可忽略不计。&lt;/p&gt;
+&lt;p&gt;进而，我们仅需确定 $N+1$ 个未知数 $b_k,~0\leqslant k\leqslant N+1$ 的取值，其应满足线性方程组：
+&lt;/p&gt;
+$$
+\left[\begin{array}{cccc}
+c_0&amp;c_{-1}&amp;\cdots&amp;c_{-N}\\
+c_1&amp;c_0&amp;\cdots&amp;c_{1-N}\\
+\vdots&amp;\vdots&amp;\ddots&amp;\vdots\\
+c_N&amp;c_{N-1}&amp;\cdots&amp;c_{0}
+\end{array}\right]\left[\begin{array}{c}
+b_0\\
+b_1\\
+\vdots\\
+b_N
+\end{array}\right]=\left[\begin{array}{c}
+1\\
+0\\
+\vdots\\
+0
+\end{array}\right]
+$$&lt;p&gt;
+这种均衡滤波器设计一般称为&lt;strong&gt;迫零均衡器&lt;/strong&gt;，其实现如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-006/Lec2-9.png&#34;
+	width=&#34;802&#34;
+	height=&#34;326&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-006/Lec2-9_hu_8bacbc16ae8106c5.png 480w, https://posvirus.github.io/p/dic-006/Lec2-9_hu_5142ad0342d8e79f.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;迫零均衡器的设计&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;246&#34;
+		data-flex-basis=&#34;590px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;其中， $N$ 一般称为迫零均衡器的&lt;strong&gt;抽头数&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;均衡滤波器的性能评估&#34;&gt;均衡滤波器的性能评估
+&lt;/h3&gt;&lt;p&gt;以下，我们可给出用于评估均衡滤波器的性能指标，记均衡滤波器 $\mathscr{B}$ 前子系统的单位脉冲响应为 $h(t)$ ，且 $h_o(t)=\mathscr{B}\{h(t)\}$ ，则有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;输出峰值失真：&lt;/strong&gt; $\displaystyle D_o=\frac{\displaystyle \sum\limits_{n\ne 0}h_o(nT_s)}{h_o(0)}$ ，即输出信号&lt;strong&gt;码间串扰&lt;/strong&gt;与&lt;strong&gt;原样本&lt;/strong&gt;的比值。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;输入峰值失真：&lt;/strong&gt; $\displaystyle D=\frac{\displaystyle \sum\limits_{n\ne 0}h(nT_s)}{h(0)}$ ，即输入信号&lt;strong&gt;码间串扰&lt;/strong&gt;与&lt;strong&gt;原样本&lt;/strong&gt;的比值。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一般地，我们使用 $\eta=D/D_o$ 来评估均衡滤波器的效果， $\eta$ 越大，均衡滤波器的效果越好。&lt;/p&gt;
+&lt;p&gt;但同时注意，均衡滤波器不可避免地会对噪声信号 $n_r(t)$ 进行进一步处理，导致在 $t=kT_s$ 抽样时，信噪比可能有所降低。&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;有的文本中会直接表述为“用数字序列&lt;strong&gt;调制&lt;/strong&gt;脉冲波形”，此处使用&lt;strong&gt;整合&lt;/strong&gt;一词只是为了方便理解，并区别于&lt;strong&gt;载波调制&lt;/strong&gt;过程。&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;在数字通信中常常用时间间隔相同的符号来表示一个二进制数字，这样的时间间隔内的信号称为（二进制）&lt;strong&gt;码元&lt;/strong&gt;，时间间隔长度则被称为&lt;strong&gt;码元宽度&lt;/strong&gt;。&amp;#160;&lt;a href=&#34;#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:3&#34;&gt;
+&lt;p&gt;&lt;strong&gt;传码率&lt;/strong&gt;指单位时间内传输的&lt;strong&gt;码元数&lt;/strong&gt;；&lt;strong&gt;传信率&lt;/strong&gt;指单位时间内传输的&lt;strong&gt;比特数&lt;/strong&gt;。&amp;#160;&lt;a href=&#34;#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&amp;#160;&lt;a href=&#34;#fnref1:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:4&#34;&gt;
+&lt;p&gt;对信号 $n(t)$ ，其&lt;strong&gt;平均功率&lt;/strong&gt;定义为： $\displaystyle P=\lim\limits_{T\to+\infty}\frac{1}{T}\int_{-T/2}^{T/2}n^2(t)\mathrm{d}t$，若记 $n_T(t)$ 为 $n(t)$ 在 $[-T/2,~T/2]$ 内的表达式（其余区域内取值为0），对应的Fourier变换为 $N_T(\omega)$ ，则平均功率亦可记作 $\displaystyle P=\int_{-\infty}^{+\infty}\lim\limits_{T\to+\infty}\frac{n_T^2(t)}{T}\mathrm{d}t$ ，利用&lt;strong&gt;Parseval定理&lt;/strong&gt;，可得 $P=\displaystyle \int_{-\infty}^{+\infty}\lim\limits_{T\to+\infty}\frac{|N_T(\omega)|^2}{2\pi T}\mathrm{d}\omega$，则我们一般称 $P_s(\omega)=\displaystyle\lim\limits_{T\to+\infty}\frac{|N_T(\omega)|^2}{2\pi T}$ 为信号 $n(t)$ 对应的&lt;strong&gt;功率密度函数/功率谱&lt;/strong&gt;。同理，我们也可以定义 $n(t)$ 的&lt;strong&gt;能量密度函数/能量谱&lt;/strong&gt;为 $E_s(\omega)=\displaystyle \lim\limits_{T\to+\infty}\frac{|N_T(\omega)|^2}{2\pi}$。&amp;#160;&lt;a href=&#34;#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:5&#34;&gt;
+&lt;p&gt;此处的&lt;strong&gt;平均功率&lt;/strong&gt;，指的是噪声信号 $n(t)$ 在某一时刻&lt;strong&gt;瞬时功率的数学期望&lt;/strong&gt;，而先前定义&lt;strong&gt;功率谱&lt;/strong&gt;时的平均功率，指的是噪声信号 $n(t)$ 在整个时域上功率的平均值。基于此，我们也可对AWGN噪声模型有一个更清晰的理解： $n(t)$ 在每个时刻的取值都服从正态分布，而所有时刻的 $n(t)$ 取值构成的噪声信号又要使得其对应的功率谱为一常数。&amp;#160;&lt;a href=&#34;#fnref:5&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:6&#34;&gt;
+&lt;p&gt;其实，更一般地，对第 $k$ 个码元 $s_k(t)$ ，我们仅需认为其在 $[0,~kT_s]$ 上非0即可。↩&amp;#160;&lt;a href=&#34;#fnref:6&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:7&#34;&gt;
+&lt;p&gt;此处为方便讨论，不妨设 $s(t)$ 的能量是1。&amp;#160;&lt;a href=&#34;#fnref:7&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:8&#34;&gt;
+&lt;p&gt;此处可以简单解释下为何可以不妨令 $\hat{s}(t)=\delta(t)$ ，注意到 $s(t)=\displaystyle\sum\limits_{n=-\infty}^{+\infty}a_n\cdot\hat{s}(t-nT_s)=\hat{s}(t)*\left(\displaystyle\sum\limits_{n=-\infty}^{+\infty}a_n\cdot\delta(t-nT_s)\right)$ ，因此我们可以将输入信号视为 $\displaystyle\sum\limits_{n=-\infty}^{+\infty}a_n\cdot \delta(t-nT_s)$ ，再在子系统 $\mathscr{H}$ 首端级联一个单位脉冲响应为$\hat{s}(t)$ 的系统以得到 $s(t)$ 。当然，当我们设 $\hat{s}(t)=\delta(t)$ 时，子系统 $\mathscr{H}$ 的单位脉冲响应也要加入 $\hat{s}(t)$ 。&amp;#160;&lt;a href=&#34;#fnref:8&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
         <title>通信系统简介</title>
         <link>https://posvirus.github.io/p/dic-005/</link>
         <pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate>
