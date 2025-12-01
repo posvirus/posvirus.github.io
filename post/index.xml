@@ -7,7 +7,209 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Chen Wenyao</copyright>
-        <lastBuildDate>Sat, 29 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://posvirus.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>迭代边界</title>
+        <link>https://posvirus.github.io/p/dic-007/</link>
+        <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://posvirus.github.io/p/dic-007/</guid>
+        <description>&lt;img src="https://posvirus.github.io/p/dic-007/cicc.png" alt="Featured image of post 迭代边界" /&gt;&lt;blockquote&gt;
+&lt;p&gt;本文是我在几年前学习《VLSI数字信号处理系统设计》这门课程时所做的笔记，此处进行简单整理，以供复习。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;dsp算法及其表示方法&#34;&gt;DSP算法及其表示方法
+&lt;/h2&gt;&lt;h3 id=&#34;dsp算法的基本概念&#34;&gt;DSP算法的基本概念
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;DSP算法&lt;/strong&gt;实际上是一个非常简单的概念，即用于 &lt;strong&gt;数字信号处理（Digital Signal Processing, DSP）&lt;/strong&gt; 的算法。从数学角度，即设计一个用于处理数字信号的系统 $\mathscr{H}$ ，使得 $y[n]=\mathscr{H}\{x[n]\}$ 。&lt;/p&gt;
+&lt;p&gt;通常，DSP算法可分为&lt;strong&gt;递归DSP算法&lt;/strong&gt;与&lt;strong&gt;非递归DSP算法&lt;/strong&gt;。这两者可通俗理解为&lt;strong&gt;存在反馈的DSP算法&lt;/strong&gt;与&lt;strong&gt;无反馈的DSP算法&lt;/strong&gt;。从&lt;strong&gt;信号流图&lt;/strong&gt;上看，若将信号流图抽象为&lt;strong&gt;有向图&lt;/strong&gt;，则&lt;strong&gt;递归DSP算法&lt;/strong&gt;存在&lt;strong&gt;环路&lt;/strong&gt;，&lt;strong&gt;非递归DSP算法&lt;/strong&gt;不存在环路。&lt;/p&gt;
+&lt;p&gt;如果从数学上严格定义，则&lt;strong&gt;递归DSP算法&lt;/strong&gt;指这样一种系统设计 $y[n]=\mathscr{H}\{x[n]\}$ ：系统 $n$ 时刻的输出 $y[n]$ 会受到&lt;strong&gt;过去输出&lt;/strong&gt;的影响，比如： $y[n]=y[n-1]+x[n]$ 。反之，则为&lt;strong&gt;非递归DSP算法&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;dsp算法的表示方法&#34;&gt;DSP算法的表示方法
+&lt;/h3&gt;&lt;p&gt;在数字信号处理课程中我们已经知道，可以使用&lt;strong&gt;系统框图&lt;/strong&gt;或&lt;strong&gt;信号流图&lt;/strong&gt;来对一个&lt;strong&gt;DSP算法&lt;/strong&gt;进行描述。而在此，我们将介绍一种新的DSP算法可视化方法： &lt;strong&gt;数据流图（Data-Flow Graph, DFG）&lt;/strong&gt; 。&lt;/p&gt;
+&lt;p&gt;DSP算法对应的数据流图可简要理解为DSP算法对应的系统框图&lt;strong&gt;删去输入/输出&lt;/strong&gt;所得的图形&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;。进一步，我们可以从数学上对DFG进行严格定义：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;DFG的严格定义：&lt;strong&gt;对任一DSP算法，其DFG被定义为一&lt;/strong&gt;加权有向图&lt;/strong&gt;  $G(V,E)$ ，其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;$\forall u\in G.V$ ，结点 $u$ 均代表算法中的某一操作（加法、乘法，FFT等）&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt; ，其权重 $w(u)$ 代表进行该操作的延时，为&lt;strong&gt;某一基本时钟单位&lt;/strong&gt; $T_0$ 的倍数（即实际延时为 $w(u)\cdot T_0$ ）。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\forall \langle u,v\rangle\in G.E$ ，&lt;strong&gt;有向边&lt;/strong&gt; $\langle u,v\rangle$ 均代表不同操作间的顺序关系，其权重 $w(u,v)$ 代表该路径上是否存在&lt;strong&gt;延迟模块&lt;/strong&gt;（ $w(u,v)\in \mathbb{N}$ ）：若无延迟模块，则 $w(u,v)=0$ ，若有延迟模块&lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;，则说明该路径输入为 $x[n]$ 时，会以 $x[n-w(u,v)]$ 输出， $w(u,v)$ 也为基本时钟单位 $T_0$ 的倍数。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://posvirus.github.io/p/dic-007/Lec3-1.png&#34;
+	width=&#34;1733&#34;
+	height=&#34;666&#34;
+	srcset=&#34;https://posvirus.github.io/p/dic-007/Lec3-1_hu_fc86fb3cfb264939.png 480w, https://posvirus.github.io/p/dic-007/Lec3-1_hu_35f2f0625e2115fc.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;DFG的相关概念&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;260&#34;
+		data-flex-basis=&#34;624px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h2 id=&#34;迭代边界的基本概念&#34;&gt;迭代边界的基本概念
+&lt;/h2&gt;&lt;h3 id=&#34;基于dfg的相关概念&#34;&gt;基于DFG的相关概念
+&lt;/h3&gt;&lt;p&gt;以下，为引出迭代边界，我们先介绍一些基于DFG的基本概念，设某DSP算法对应的DFG为 $G(V,E)$：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;关键路径（Critical Path）：&lt;/strong&gt; 指图 $G$ 中的一条&lt;strong&gt;路径&lt;/strong&gt; $l$ ，满足：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;$\forall \langle u,v\rangle\in l.E,~w(u,v)=0$ ，即路径上&lt;strong&gt;不存在&lt;/strong&gt;延时模块。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对所有不存在延时模块的路径， $l$ 的&lt;strong&gt;结点权重和&lt;/strong&gt;最大。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;关键路径延时（Critical Path Delay）：&lt;/strong&gt; 设图 $G$ 的关键路径为 $l$ ，则其延时 $\displaystyle t_p(l)=\sum\limits_{u\in l.V}w(u)$ 。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;环路周期：&lt;/strong&gt; 设图 $G$ 中存在某环路 $G_0$ ，则其环路周期 $T(G_0)$ 定义为&lt;strong&gt;环路中的关键路径延时&lt;/strong&gt;&lt;sup id=&#34;fnref:4&#34;&gt;&lt;a href=&#34;#fn:4&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;4&lt;/a&gt;&lt;/sup&gt; （ $T(G_0)$ 也是相对于基本时钟单位的&lt;strong&gt;无量纲量&lt;/strong&gt;）。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以下，我们将基于上述定义，给出一个重要概念：&lt;strong&gt;环路边界&lt;/strong&gt;的定义。首先，在图 $G$ 中取一环路 $G_0$ ，设使其正常运行的最小时钟周期，即&lt;strong&gt;环路周期&lt;/strong&gt;为 $T(G_0)$ ，我们以下的问题是：对一个相同的功能，该如何设计&lt;sup id=&#34;fnref:5&#34;&gt;&lt;a href=&#34;#fn:5&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;5&lt;/a&gt;&lt;/sup&gt;环路 $G_0$ ，才能使 $T(G_0)$ 达到最小？&lt;/p&gt;
+&lt;p&gt;为此，我们不妨来考虑 $T(G_0)$ 的理论最小值，首先，我们设环路 $G_0$ 的&lt;strong&gt;延迟模块对应的总延迟&lt;/strong&gt;为：
+&lt;/p&gt;
+$$
+t_p(G_0)=\sum\limits_{\langle u,v\rangle\in G_0.E}w(u,v)
+$$&lt;p&gt;
+$t_p(G_0)$ 在所有 $G_0$ 设计中应为&lt;strong&gt;常量&lt;/strong&gt;。同时，设环路 $G_0$ 所有&lt;strong&gt;操作对应的总延迟&lt;/strong&gt;为：
+&lt;/p&gt;
+$$
+\tau_p(G_0)=\sum\limits_{u\in G_0.V}w(u)
+$$&lt;p&gt;
+$\tau_p(G_0)$ 在所有 $G_0$ 设计中也应为&lt;strong&gt;常量&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;因此，我们不妨设某个 $G_0$ 设计共有 $n$ 个结点 $u_1,~u_2,\cdots,~u_n$ （并不妨假定 $u_1,~u_2,\cdots,~u_n$ 顺次排列），则不难发现如下事实：若对 $\langle u,v\rangle\in G_0.E,~w(u,v)=0$，则我们可将 $u,~v$ 等效为一个新结点 $x$ ，并满足 $w(x)=w(u)+w(v)$ 。&lt;/p&gt;
+&lt;p&gt;由于 $G_0$ 各边的权重均为&lt;strong&gt;自然数&lt;/strong&gt;，故我们总可在有限步调整后，使 $G_0$ 具有如下性质： $G_0$ 共有 $n&amp;rsquo;(\leqslant n)$ 个结点 $x_1,~x_2,\cdots,~x_{n&amp;rsquo;}$ ，且满足 $\forall \langle x,y\rangle\in G_0.E,~w(x,y)\ne 0$ 。此时我们显然有：
+&lt;/p&gt;
+$$
+T(G_0)=\max\limits_{x\in G_0.V}\{w(x)\}
+$$&lt;p&gt;
+而进一步即有：
+&lt;/p&gt;
+$$
+T(G_0)=\max\limits_{x\in G_0.V}\{w(x)\}\geqslant\frac{\displaystyle \sum\limits_{x\in G_0.V}w(x)}{n&#39;}=\frac{\tau_p(G_0)}{n&#39;}
+$$&lt;p&gt;
+注意到此时 $G_0$ 各边的权重均为&lt;strong&gt;正整数&lt;/strong&gt;，则有 $\displaystyle n&amp;rsquo;\leqslant \sum\limits_{\langle x,y\rangle\in G_0.E}w(x,y)=t_p(G_0)$ ，因此有：
+&lt;/p&gt;
+$$
+T(G_0)\geqslant \frac{\tau_p(G_0)}{n&#39;}\geqslant \frac{\tau_p(G_0)}{t_p(G_0)}
+$$&lt;p&gt;
+综上，由于 $\displaystyle \frac{\tau_p(G_0)}{t_p(G_0)}$ 是与设计无关的常量，因此我们得出了环路周期 $T(G_0)$ 的理论最小值，记为 $T_l(G_0)=\displaystyle \frac{\tau_p(G_0)}{t_p(G_0)}$ ，称为该环路的&lt;strong&gt;环路边界&lt;/strong&gt;。而在后面的章节中，我们可以进一步说明，如果仅对单环路 $G_0$ 考查，环路边界 $T_l(G_0)$ 一般总可以通过合理的设计取到。&lt;/p&gt;
+&lt;p&gt;一般地，在图 $G$ 中，我们记具有&lt;strong&gt;最大环路边界&lt;/strong&gt;的环路 $G_0$ 为&lt;strong&gt;关键环路&lt;/strong&gt;，关键环路决定了图 $G$ 对应的DSP算法的&lt;strong&gt;速度优化上限&lt;/strong&gt;&lt;sup id=&#34;fnref:6&#34;&gt;&lt;a href=&#34;#fn:6&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;6&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;迭代边界的概念&#34;&gt;迭代边界的概念
+&lt;/h3&gt;&lt;p&gt;基于上述概念，以下我们可以给出 &lt;strong&gt;迭代边界（Iteration Bound）&lt;/strong&gt; 的定义：一般地，考查某 DSP算法，其对应的DFG为图 $G$ ，则该DSP算法的迭代边界 $T_\infty(G)$ 定义为图 $G$ 中&lt;strong&gt;关键环路的环路边界&lt;/strong&gt;。特别地，若图 $G$ 为&lt;strong&gt;无环图&lt;/strong&gt;（对应DSP算法为&lt;strong&gt;非递归DSP算法&lt;/strong&gt;），则该DSP算法的迭代边界补充定义为&lt;strong&gt;0&lt;/strong&gt;。使用数学语言描述：
+&lt;/p&gt;
+$$
+T_\infty(G)=\left\{\begin{array}{lcl}
+0&amp;&amp;G~\text{is an acyclic graph}\\
+\\
+\max\{T_l(G_0)|G_0\subset G,~G_0~\text{is a loop}\}&amp;&amp;\text{else}\\
+\end{array}
+\right.
+$$&lt;h3 id=&#34;迭代边界的计算&#34;&gt;迭代边界的计算
+&lt;/h3&gt;&lt;p&gt;本节，我们将考查迭代边界的计算，此处我们将介绍一种被称为 &lt;strong&gt;最长路径矩阵法（Longest Path Matrix Algorithm, LPM）&lt;/strong&gt; &lt;sup id=&#34;fnref:7&#34;&gt;&lt;a href=&#34;#fn:7&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;7&lt;/a&gt;&lt;/sup&gt;的算法。需要指出，该算法并不适用于任意图 $G$ 的迭代边界计算，具体而言，图 $G$ 至少需要满足如下条件：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;图 $G$ 至少存在一个环（当然，无环图的迭代边界是平凡的）。&lt;/li&gt;
+&lt;li&gt;$\forall \langle u,v\rangle\in G.E,~w(u,v)\leqslant 1$ ，即图 $G$ 中的单个延迟模块能且仅能提供&lt;strong&gt;单位延迟&lt;/strong&gt;&lt;sup id=&#34;fnref:8&#34;&gt;&lt;a href=&#34;#fn:8&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;8&lt;/a&gt;&lt;/sup&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以下，我们不妨设图 $G$ 有 $n$ 个结点 $u_1,~u_2,\cdots,~u_n$ ，且在边 $e_1,\cdots,~e_m$ 上分别存在 $m$ 个单位延迟模块 $D_1,~D_2,\cdots,~D_m$ （$D_i$代表一个单位延时模块）。&lt;/p&gt;
+&lt;p&gt;同时，我们定义参数 $L^{(s)}_{ij}$ 表示由单位延迟模块 $D_i$ 至 $D_j$ 的路径中，满足经过 $s-1$ 个延迟模块的所有路径的延时的&lt;strong&gt;最大值&lt;/strong&gt;&lt;sup id=&#34;fnref:9&#34;&gt;&lt;a href=&#34;#fn:9&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;9&lt;/a&gt;&lt;/sup&gt;  。如果不存在上述路径，则定义：
+&lt;/p&gt;
+$$
+L_{ij}^{(s)}=-\infty
+$$&lt;p&gt;
+这里的 $-\infty$ 只是一个标识符，用于代表路径的不存在，在实际算法实现中也常用 $-1$ 代替。&lt;/p&gt;
+&lt;p&gt;以下，我们确定 $L^{(s)}_{ij}$ 所成立的递归关系，不妨记 $s\geqslant 2$ ，若要计算由单位延迟模块 $D_i$ 至 $D_j$ 的路径中，满足经过 $s-1$ 个延迟模块的所有路径的延时的&lt;strong&gt;最大值&lt;/strong&gt;，我们仅需遍历所有满足经过 $s-1$ 个延时模块的路径，分别计算各自的延时，并取最大者即可。而对一条由 $D_i$ 至 $D_j$ ，经 $s-1$ 个延时模块的路径而言，我们可取一个中间模块 $D_k$ ，将其视作由 $D_i$ 至 $D_k$ ，不经过延时模块的路径与由 $D_k$ 至 $D_j$ ，经 $s-2$ 个延时模块的路径之和即可。进而，我们仅需对中间模块 $D_k$ 进行遍历即可，因此，我们有：
+&lt;/p&gt;
+$$
+L^{(s)}_{ij}=\max\limits_{1\leqslant k\leqslant m}\{L^{(1)}_{ik}+L^{(s-1)}_{kj}\}
+$$&lt;p&gt;
+观察该式，有两点需要注意：第一，中间模块 $D_k$ 也可能是 $D_i,~D_j$ 中的一者；第二，对那些不存在的路径，其参数值为 $-\infty$ ，最终的求和结果也必为 $-\infty$ ，代表经过该中间模块的路径不存在。&lt;/p&gt;
+&lt;p&gt;为此，我们可直接定义矩阵 $L^{(s)}=(L^{(s)}_{ij})$ ，则上述递归关系也可被表示为一种十分类似于矩阵乘法的形式：&lt;/p&gt;
+$$
+L^{(s)}=L^{(1)}\oplus L^{(s-1)}
+$$&lt;p&gt;算符 $\oplus$ 的含义即为：
+&lt;/p&gt;
+$$
+L^{(s)}_{ij}=\max\limits_{1\leqslant k\leqslant m}\{L^{(1)}_{ik}+L^{(s-1)}_{kj}\} 
+$$&lt;p&gt;
+以下，我们不难注意到， $L^{(s)}_{ii}$ 描述了由 $D_i$ 回到 $D_i$ 的环路 $G_i$ ，且该环路满足：&lt;/p&gt;
+$$
+t_p(G_i)=s,~\tau_p(G_i)=L^{(s)}_{ii}
+$$&lt;p&gt;其中，$t_p(G_i)=s$ 是因为该环路经过了 $s-1$ 个单位延时模块，再加上 $D_i$ 自身，共 $s$ 个单位延时模块，进而遍历所有环路，我们可知图 $G$ 的&lt;strong&gt;迭代边界&lt;/strong&gt; $T_\infty(G)$ 可表示为：
+&lt;/p&gt;
+$$
+T_\infty(G)=\max\limits_{s\in \mathbb{N}_+}\left\{\left.\frac{L^{(s)}_{ii}}{s}\right| 1\leqslant i\leqslant m\right\}
+$$&lt;p&gt;
+观察上式，不难发现，其虽然给出了迭代边界 $T_\infty(G)$ 的表达式，但却不能实际用于计算，因为表达式中的 $s$ 需要遍历&lt;strong&gt;所有正整数&lt;/strong&gt;。以下，我们将证明：
+&lt;/p&gt;
+$$
+T_\infty(G)=\max\limits_{s\in \mathbb{N}_+}\left\{\left.\frac{L^{(s)}_{ii}}{s}\right| 1\leqslant i\leqslant m\right\}=\max\limits_{1\leqslant s\leqslant m}\left\{\left.\frac{L^{(s)}_{ii}}{s}\right| 1\leqslant i\leqslant m\right\}
+$$&lt;p&gt;
+即我们仅需考查延迟模块数不超过 $m$ 的环路对应的环路边界即可。&lt;/p&gt;
+&lt;p&gt;首先，考查延迟模块数为 $t$ 的环路 $G_0$ ，并设 $t&amp;gt;m$ ，则若记沿环路方向，遍历延时模块的顺序为：
+&lt;/p&gt;
+$$
+\cdots\rightarrow D_{x_1}\rightarrow D_{x_2}\rightarrow\cdots\rightarrow D_{x_t}\rightarrow\cdots
+$$&lt;p&gt;
+由于 $t&amp;gt;m$ ，则必存在 $D_{x_i},~D_{x_j}$ （不妨设 $i&amp;lt;j$ ），满足 $x_i=x_j=p$ 。此时，以 $D_p$ 为交点，该环路 $G_0$ 其实是由两个均包含 $D_p$ 的更小环路构成的，我们不妨设两个更小环路的延迟模块数为 $t_1,~t_2$ ，且满足 $t_1+t_2=t$ ，于是有：
+&lt;/p&gt;
+$$
+T(G_0)=\frac{L^{(t)}_{pp}}{t}\leqslant\frac{L_{pp}^{(t_1)}+L^{(t_2)}_{pp}}{t}=\frac{L_{pp}^{(t_1)}+L^{(t_2)}_{pp}}{t_1+t_2}
+$$&lt;p&gt;
+而易于证明以下不等式成立：
+&lt;/p&gt;
+$$
+\frac{L^{(t_1)}_{pp}+L_{pp}^{(t_2)}}{t_1+t_2}\leqslant \max\left\{\frac{L^{(t_1)}_{pp}}{t_1},~\frac{L^{(t_2)}_{pp}}{t_2}\right\}
+$$&lt;p&gt;
+因此有：
+&lt;/p&gt;
+$$
+\max\left\{\frac{L^{(t_1)}_{pp}}{t_1},~\frac{L^{(t_2)}_{pp}}{t_2}\right\}\geqslant T(G_0)
+$$&lt;p&gt;
+此即说明环路 $G_0$ 不可能是&lt;strong&gt;关键环路&lt;/strong&gt;，而对包含 $t_1,~t_2$ 个延时模块的环路，若 $t_1,~t_2$ 仍大于 $m$ ，则我们可继续对其进行拆分，直至环路包含的延迟个数不超过 $m$ ，进而便证明了延迟模块数超过 $m$ 的环路不可能是关键环路。&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;之所以要删去输入/输出，是因为DFG仅关心数据在系统内部的流动，用于描述DSP算法一轮运算（或称为&lt;strong&gt;迭代&lt;/strong&gt;）的过程。&amp;#160;&lt;a href=&#34;#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;根据结点对操作的抽象程度，结点可分为&lt;strong&gt;粗粒度（结点为子任务以上层次的复杂功能块，如滤波、 FFT等）&lt;strong&gt;与&lt;/strong&gt;细粒度（结点简单到基本运算单元，如乘法、加法等）&lt;/strong&gt;。&amp;#160;&lt;a href=&#34;#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:3&#34;&gt;
+&lt;p&gt;延时模块的硬件实现即为我们熟知的&lt;strong&gt;寄存器（Register）&lt;/strong&gt;，具体原理即：在某一时钟周期将信号 $x[n]$ 放入寄存器，等待 $k$ 个时钟周期后再取出，则此时的输出信号即为 $x[n-k]$ 。&amp;#160;&lt;a href=&#34;#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:4&#34;&gt;
+&lt;p&gt;此处的定义看似有些奇怪，因为我们似乎希望环路周期是数据在环路完整运行一周对应的时间，但事实上，此处定义的环路周期的意义是：&lt;strong&gt;该环路正常运行所需的最小时钟周期&lt;/strong&gt;，即 $T(G_0)$ （相对于基本时钟单位的无量纲量）。这是因为，与该环路对应的关键路径 $l$ 相邻的有向边上一定存在延时模块（寄存器） $D_1,~D_2$ （否则我们可以将相邻有向边加入 $l$ 构成更长的路径（由于是环路，方向肯定没问题），与 $l$ 为关键路径矛盾！），而每一个时钟周期内，数据必须完成在 $D_1,~D_2$ 间的传递，否则电路运行就会出错（可以理解为环路中的数据是以时钟周期为单位&lt;strong&gt;同步&lt;/strong&gt;流动的，有一处在时钟周期内没有完成流动，将会导致其余部分模块输出的错误），因此该环路的时钟周期必然不能小于 $T(G_0)$ 。&amp;#160;&lt;a href=&#34;#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:5&#34;&gt;
+&lt;p&gt;此处的设计指合理分配环路中的延时模块与操作模块，具体的设计方法称为&lt;strong&gt;重定时（Retiming）&lt;/strong&gt;，我们将在后面的章节中予以介绍。&amp;#160;&lt;a href=&#34;#fnref:5&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:6&#34;&gt;
+&lt;p&gt;当然，关键环路决定DSP算法速度优化上限的前提是DSP算法对应DFG中&lt;strong&gt;存在环路&lt;/strong&gt;，即DSP算法为&lt;strong&gt;递归DSP算法&lt;/strong&gt;。这从一个侧面反应了，对&lt;strong&gt;非递归DSP算法&lt;/strong&gt;而言，对其速度的优化是没有上限的（理论上限，不考虑硬件的性能）。比如 $y[n]=3\cdot x[n]+4$ ，如果我们使用 $m$ 条并行通路对该DSP算法进行实现，该算法的性能便被优化 $m$ 倍，又由于该算法仅存在由输入至输出的单向通路，因此 $m$ 可以趋向 $\infty$ 。&amp;#160;&lt;a href=&#34;#fnref:6&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:7&#34;&gt;
+&lt;p&gt;Gerez S H, De Groot S M H, Herrmann O E. A polynomial time algorithm for the computation of the iteration-period bound in recursive data flow graphs[J]. IEEE Transactions on Circuits and Systems I: Fundamental Theory and Applications, 1992, 39(1): 49-52.&amp;#160;&lt;a href=&#34;#fnref:7&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:8&#34;&gt;
+&lt;p&gt;当然，对延迟数超过1的边，我们完全可以将延迟模块拆分为若干单位延迟模块的并联，并将各单位延时模块间插入权重为&lt;strong&gt;0&lt;/strong&gt;的结点进行等效。&amp;#160;&lt;a href=&#34;#fnref:8&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:9&#34;&gt;
+&lt;p&gt;明确两个概念：第一， $D_i$ 至 $D_j$ 的路径指的是一条路径 $l$ ，其起点与终点分别为边 $e_i$ 与 $e_j$ 的某端点；第二，路径 $l$ 对应的延时指路径上所有结点的权重和。&amp;#160;&lt;a href=&#34;#fnref:9&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        </item>
+        <item>
         <title>基带信号的调制与解调</title>
         <link>https://posvirus.github.io/p/dic-006/</link>
         <pubDate>Sat, 29 Nov 2025 00:00:00 +0000</pubDate>
