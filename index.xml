@@ -96,7 +96,12 @@ $$&lt;p&gt;
 $$
 T(G_0)=\max\limits_{x\in G_0.V}\{w(x)\}\geqslant\frac{\displaystyle \sum\limits_{x\in G_0.V}w(x)}{n&#39;}=\frac{\tau_p(G_0)}{n&#39;}
 $$&lt;p&gt;
-注意到此时 $G_0$ 各边的权重均为&lt;strong&gt;正整数&lt;/strong&gt;，则有 $\displaystyle n&amp;rsquo;\leqslant \sum\limits_{\langle x,y\rangle\in G_0.E}w(x,y)=t_p(G_0)$ ，因此有：
+注意到此时 $G_0$ 各边的权重均为&lt;strong&gt;正整数&lt;/strong&gt;，则有
+&lt;/p&gt;
+$$
+n&#39;\leqslant \sum\limits_{\langle x,y\rangle\in G_0.E}w(x,y)=t_p(G_0)
+$$&lt;p&gt;
+因此有：
 &lt;/p&gt;
 $$
 T(G_0)\geqslant \frac{\tau_p(G_0)}{n&#39;}\geqslant \frac{\tau_p(G_0)}{t_p(G_0)}
