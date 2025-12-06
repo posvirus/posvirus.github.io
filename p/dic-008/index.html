@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-008：仲裁器">
+<title>仲裁器</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/dic-008/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="仲裁器">
+<meta property='og:description' content="DIC-008：仲裁器">
+<meta property='og:url' content='https://posvirus.github.io/p/dic-008/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Function Module' /><meta property='article:published_time' content='2025-12-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-12-06T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-008/cicc.png' />
+<meta name="twitter:title" content="仲裁器">
+<meta name="twitter:description" content="DIC-008：仲裁器"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/dic-008/cicc.png' />
+    <link rel="shortcut icon" href="/favicon.jpeg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤗</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">如无必要，勿增实体</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#固定优先级仲裁">固定优先级仲裁</a></li>
+    <li><a href="#轮询仲裁">轮询仲裁</a>
+      <ol>
+        <li><a href="#轮询仲裁算法的公平性">轮询仲裁算法的公平性</a></li>
+        <li><a href="#轮询仲裁算法的实现">轮询仲裁算法的实现</a></li>
+        <li><a href="#加权轮询仲裁算法">加权轮询仲裁算法</a></li>
+      </ol>
+    </li>
+    <li><a href="#现代仲裁器设计">现代仲裁器设计</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/dic-008/">
+                <img src="/p/dic-008/cicc_hu_d52f18f9a902f256.png"
+                        srcset="/p/dic-008/cicc_hu_d52f18f9a902f256.png 800w, /p/dic-008/cicc_hu_c62d00be19035290.png 1600w"
+                        width="800" 
+                        height="270" 
+                        loading="lazy"
+                        alt="Featured image of post 仲裁器" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/dic/" >
+                DIC
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/dic-008/">仲裁器</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            DIC-008：仲裁器
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Dec 06, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 17 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>本文主要讨论DIC中的 <strong>仲裁器（Arbiter）</strong> 电路设计，这种电路通常出现在有两个或两个以上的模块<strong>需要占用同一个资源</strong>的场景中，我们需要通过仲裁器来决定哪一个模块来占有这个资源。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"> IN1      IN2      IN3      IN4  ......  INn 
+</span></span><span class="line"><span class="cl">  |        |        |        |            |  
+</span></span><span class="line"><span class="cl">+-v--------v--------v--------v------------v-+
+</span></span><span class="line"><span class="cl">|                                           |
+</span></span><span class="line"><span class="cl">|                  Arbiter                  |
+</span></span><span class="line"><span class="cl">|                                           |
+</span></span><span class="line"><span class="cl">+---------------------+---------------------+
+</span></span><span class="line"><span class="cl">                      |                      
+</span></span><span class="line"><span class="cl">                      v                      
+</span></span><span class="line"><span class="cl">                     OUT   
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>与其它类型的功能模块相同，我们首先应当对仲裁器进行建模，给出其统一的输入/输出接口。但对于仲裁器这一模块而言，其本身的功能描述较为抽象。如上图所示，我们给出了一个宏观的仲裁器功能框图，其本质的功能就是<strong>对若干个输入进行仲裁，按某种规则选中某个有效输入传输至输出端</strong>。但是，这里输入的形式（亦即上文提到的<strong>资源</strong>）是与具体应用场景相关的（可能是<strong>总线接口</strong>，也可能就是简单的<strong>原生数据接口</strong>），所以我们无法从电路实现的角度进行统一的抽象，进而，我们需要进一步泛化仲裁器的功能。</p>
+<p>我们首先观察上面的仲裁器功能框图，该模块的结构其实非常类似于一个 <strong>多路选择器（MUX）</strong> ，但MUX通常使用简单的组合逻辑就可以实现，这里为什么要引入<strong>仲裁</strong>的概念呢？这就涉及到仲裁器设计中一个隐藏的但非常重要的假设：</p>
+<blockquote>
+<p>仲裁器的各输入不是<strong>始终有效的</strong>。</p>
+</blockquote>
+<p>因为各输入不是始终有效的，所以<strong>仲裁</strong>其实是从<strong>当前时刻有效的部分输入</strong>中选中某个输入传输至输出端，而因各个时刻的有效输入组合不同，我们无法通过简单的MUX实现对有效输入的选择，这才使得仲裁器的存在成为必要。同时，通过上述分析，仲裁器的功能其实就体现在两个方面：<strong>提取有效输入</strong>与<strong>按规则仲裁输出</strong>，我们可以基于这一理解细化上面的功能框图：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                                              Valid           
+</span></span><span class="line"><span class="cl">  +--------+--------+--------+------------+--------------+    
+</span></span><span class="line"><span class="cl">  |        |        |        |            |              |    
+</span></span><span class="line"><span class="cl"> IN1      IN2      IN3      IN4  ......  INn             |    
+</span></span><span class="line"><span class="cl">  |        |        |        |            |              |    
+</span></span><span class="line"><span class="cl">+-v--------v--------v--------v------------v-+        +---v---+
+</span></span><span class="line"><span class="cl">|                                           | Select |       |
+</span></span><span class="line"><span class="cl">|                    MUX                    &lt;--------+Arbiter|
+</span></span><span class="line"><span class="cl">|                                           |        |       |
+</span></span><span class="line"><span class="cl">+---------------------+---------------------+        +-------+
+</span></span><span class="line"><span class="cl">                      |                                       
+</span></span><span class="line"><span class="cl">                      v                                       
+</span></span><span class="line"><span class="cl">                     OUT                                                                  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在细化后的功能框图中，仲裁器更类似于一个<strong>控制单元</strong>，对输入至输出的数据路径复用本身通过一个MUX实现，而仲裁器接收各输入的<strong>有效信号</strong>（这可以统一为<strong>若干个单比特信号构成的向量</strong>），将当前时刻的仲裁结果以<strong>对MUX的选择信号</strong>的形式输出<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。</p>
+<blockquote>
+<p>这里对仲裁器功能框图的进一步细化体现了DIC中的一个重要设计思路，即 <strong>“数据-控制解耦”</strong> 。</p>
+</blockquote>
+<p>因此，仲裁器模块端口声明通常如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arbiter</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">PORT_NUM</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">clk</span><span class="p">,</span>     <span class="c1">// input clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rst_n</span><span class="p">,</span>   <span class="c1">// reset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">request</span><span class="p">,</span> <span class="c1">// input request
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">grant</span>    <span class="c1">// port sel
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* internal logic */</span>
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意，我们通常认为输出许可是采用 <strong>独热码（One-Hot Code）</strong> 编码的，因此其位宽与输入请求相同。以下，仲裁器设计的核心即在于<strong>如何硬化特定的仲裁规则</strong>，此处我们选取两类仲裁器进行具体说明。</p>
+<p>同时，我们不妨直接在此处给出用于仲裁器测试的Testbench，以供参考：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">test</span> <span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// input clock generate
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="n">clk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">#</span><span class="mh">1</span> <span class="n">clk</span> <span class="o">=</span> <span class="o">~</span><span class="n">clk</span><span class="p">;</span> <span class="c1">// T = 2ns
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// paramter setting
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">localparam</span> <span class="n">PORT_NUM</span> <span class="o">=</span> <span class="mh">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">localparam</span> <span class="n">TEST_VEC_SCALE</span> <span class="o">=</span> <span class="mh">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// module instantiate
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="n">rst_n</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">reg</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">arbiter</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">PORT_NUM</span> <span class="p">(</span><span class="n">PORT_NUM</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="n">u_arbiter</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">clk</span>     <span class="p">(</span><span class="n">clk</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">rst_n</span>   <span class="p">(</span><span class="n">rst_n</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">request</span> <span class="p">(</span><span class="n">request</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">grant</span>   <span class="p">(</span><span class="n">grant</span>    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// stimulus
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">clk</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">request</span> <span class="o">=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#</span><span class="mh">10</span><span class="p">;</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">repeat</span> <span class="p">(</span><span class="n">TEST_VEC_SCALE</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">request</span> <span class="o">=</span> <span class="nb">$random</span> <span class="o">%</span> <span class="p">(</span><span class="mh">2</span> <span class="o">**</span> <span class="n">PORT_NUM</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">            <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$stop</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// waveform
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">initial</span> <span class="k">begin</span>            
+</span></span><span class="line"><span class="cl">        <span class="n">$dumpfile</span><span class="p">(</span><span class="s">&#34;wave.vcd&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">$dumpvars</span><span class="p">(</span><span class="mh">0</span><span class="p">,</span> <span class="n">test</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="固定优先级仲裁">固定优先级仲裁
+</h2><p><strong>固定优先级仲裁（Fixed-Priority Arbiter）</strong> ，顾名思义，即各个输入请求具有固定的优先级。此处我们不妨假设输入请求<code>request</code>中，从<strong>最低位</strong>至<strong>最高位</strong>，请求优先级<strong>从高到低</strong>（这总是可以通过合理安排外部输入与仲裁器输入请求接口的映射关系实现）。此时，固定优先级仲裁的算法可使用伪代码描述如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">for i = 0 to PORT_NUM-1
+</span></span><span class="line"><span class="cl">    if request[i] == 1
+</span></span><span class="line"><span class="cl">        output data[i]; // find the first non-zero bit
+</span></span><span class="line"><span class="cl">    else
+</span></span><span class="line"><span class="cl">        continue;
+</span></span><span class="line"><span class="cl">    endif
+</span></span><span class="line"><span class="cl">endfor
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>换言之，我们只需要从输入请求的<strong>最低位</strong>开始，找到第一个非0位，并在独热码编码的输出许可中将该位置为1即可。</p>
+<p>以下，我们可以思考如何使用RTL代码描述这一算法，一个朴素的想法是直接使用<code>if-else</code>语句块<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">grand</span> <span class="o">=</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">grand</span> <span class="o">=</span> <span class="mb">&#39;b10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">grand</span> <span class="o">=</span> <span class="mb">&#39;b100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* ...... */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">grand</span> <span class="o">=</span> <span class="p">{</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">,</span> <span class="p">{(</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}}};</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>但是，这种实现方法存在非常明显的缺点，一方面是很难参数化，另一方面则是在电路综合时，这种<code>if-else</code>语句块会生成超长的组合逻辑链（组合逻辑深度正比于<code>if-else</code>语句块的级数），从而严重影响电路的性能。因此，我们需要对这一电路进行优化。以下，我们设输入请求的各位分别为$R_0,R_1,\cdots,R_{n-1}$，输出许可的各位分别为$G_0,G_1,\cdots,G_{n-1}$，则首先不难有：
+</p>
+$$
+G_k=R_k\cdot\prod_{i=0}^{k-1}\overline{R_i},~1\leqslant k\leqslant n-1,~G_0=R_0
+$$<p>
+上式是对固定优先级仲裁算法的直接描述。这里主要需要解决的问题是$\displaystyle \prod_{i=0}^{k-1}\overline{R_i}$应当如何描述。观察其形式不难发现，这种<strong>多个连续位进行与运算的形式</strong>类似于加法器设计中的<strong>进位传播信号</strong>。因此，我们记$R$为<strong>输入请求向量构成的二进制数</strong>：
+</p>
+$$
+R=(R_{n-1}\cdots R_1R_0)_2=\sum_{k=0}^{n-1}2^k\cdot R_k
+$$<p>
+则对其<strong>各位取反加1</strong>，得到二进制数$S$，有：
+</p>
+$$
+S=(S_{n-1}\cdots S_1S_0)_2=\sum_{k=0}^{n-1}2^k\cdot\overline{R_k}+1
+$$<p>
+分析这个二进制数，利用 <strong>香农展开定理（Shannon Decomposition）</strong> ，不难发现其成立：
+</p>
+$$
+S_k=\overline{R_k}\cdot(\text{certain logic})+R_k\cdot \prod_{i=0}^{k-1}\overline{R_i},~~1\leqslant k\leqslant n-1,~S_0=R_0
+$$<p>
+这是因为当$\overline{R_k}=0$时，只有$\overline{R_0},\overline{R_1},\cdots,\overline{R_{k-1}}$均为1，加1的进位才能传递至$\overline{R_k}$。此时，我们已经在$S_k$中凑配出了$\displaystyle \prod_{i=0}^{k-1}\overline{R_i}$，进而就有：
+</p>
+$$
+G_k=R_k\cdot S_k,~0\leqslant k\leqslant n-1
+$$<p>非常好！上述结果代表我们其实可以使用以下代码非常简洁地实现固定优先级仲裁算法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">grant</span> <span class="o">=</span> <span class="n">request</span> <span class="o">&amp;</span> <span class="p">((</span><span class="o">~</span><span class="n">request</span><span class="p">)</span> <span class="o">+</span> <span class="mb">&#39;b1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在电路综合时，这种实现方案对应的组合逻辑深度与<strong>综合使用的加法器组合逻辑深度</strong>相关，而对后者，我们有非常多的优化手段。</p>
+<blockquote>
+<p><strong>时钟与复位：</strong> 观察上述实现，我们发现仲裁器模块端口声明中的时钟与复位信号并没有被使用，这主要是因为<strong>当前周期输入请求对应的输出许可</strong>必须在同周期被输出，这意味着仲裁器必须是<strong>纯组合逻辑</strong>。当然，对于一些较复杂的仲裁算法，我们也可以在设计中插入<strong>流水级</strong>以提升其性能，但此时也需要对输入进行相应的缓存。</p>
+</blockquote>
+<p>固定优先级仲裁通常有如下应用场景：</p>
+<ul>
+<li><strong>高实时性系统：</strong> 某些通路存在高实时性需求，需要分配固定的高优先级。</li>
+<li><strong>资源受限系统：</strong> 电路资源受限，需要采用尽可能简单的仲裁器设计。</li>
+</ul>
+<h2 id="轮询仲裁">轮询仲裁
+</h2><p><strong>轮询仲裁（Round-Robin Arbiter）</strong> 与固定优先级仲裁不同，是一种保证各个输入请求公平得到仲裁的算法，其通过动态调整各个输入请求的优先级来实现这一点。具体而言，轮询仲裁的算法可描述如下：</p>
+<ol>
+<li>在初始条件下，输入请求的<strong>最低位</strong>有着最高的优先级，且<strong>向最高位优先级依次递减</strong>。</li>
+<li>若在一次仲裁中，某位代表的输入请求被选中，则下次仲裁，其<strong>高相邻位</strong>优先级变为最高，并<strong>向最高位优先级依次递减</strong>，递减至最高位后，会循环从最低位继续向最高位递减至上次被选中的输入请求位。</li>
+</ol>
+<p>比如，初始条件下的优先级序列为：
+</p>
+$$
+N-1,~N-2,~\cdots,~i+1,~i,~\cdots,~2,~1,~0
+$$<p>
+假设在一次仲裁中选择$i$代表的输入请求，则下次仲裁的优先级序列为：
+</p>
+$$
+N-i-2,~N-i-3,~\cdots,~0,~N-1,~\cdots,~N-i+1,~N-i,~N-i-1
+$$<h3 id="轮询仲裁算法的公平性">轮询仲裁算法的公平性
+</h3><p>以下，我们简单论证轮询仲裁算法的公平性，假设设共有$N$个请求者，编号为$0,1,\cdots,N-1$，每个请求者在每个时钟周期有请求的概率为$p$，且请求间是相互独立的。</p>
+<p>同时，我们定义状态$S_i$代表当前的优先级排序为：
+</p>
+$$
+i,~i+1,~i+2,~\cdots,~i+N-1~(\text{mod}~n)
+$$<p>
+即编号为$i$的请求者优先级最高。而利用<strong>马尔可夫链</strong>进行建模，我们可以证明当系统稳定时，满足：
+</p>
+$$
+P(S_0)=P(S_1)=\cdots=P(S_{N-1})=\frac{1}{N}
+$$<p>
+因此，如果我们记事件$G_i$为请求者$i$被选中，事件$G_{i,k}$为请求者$i$在状态$S_k$下被选中，则有：
+</p>
+$$
+E[G_i]=\sum\limits_{k=0}^{N-1}P(G_{i,k})\cdot P(S_k)=\frac{1}{N}\cdot\sum\limits_{k=0}^{N-1}P(G_{i,k})
+$$<p>
+而利用对称性，我们记$P_i$为某请求者位于第$i$优先级时，获得请求的概率，则：
+</p>
+$$
+P_k=p\cdot(1-p)^{k-1},~0\leqslant k\leqslant N-1
+$$<p>
+且有：
+</p>
+$$
+\sum\limits_{k=0}^{N-1}P(G_{i,k})=\sum\limits_{k=0}^{N-1}P_k,~0\leqslant i\leqslant N-1
+$$<p>
+因此就有：
+</p>
+$$
+E[G_0]=E[G_1]=E[G_2]=\cdots=E[G_{N-1}]
+$$<h3 id="轮询仲裁算法的实现">轮询仲裁算法的实现
+</h3><p>为说明轮询仲裁算法的实现，我们需要重新回顾固定优先级仲裁的原理，记<strong>输出许可向量构成的二进制数</strong>为$G$，则：
+</p>
+$$
+G=R\cdot (\overline{R}+1)
+$$<p>
+其中$\overline{R}$代表对$R$的二进制表示中各位取反，这也可以记作：
+</p>
+$$
+G=R\cdot (\overline{R-1})
+$$<p>
+结合上文不难发现，固定优先级仲裁的核心其实在于定位从输入请求的<strong>最低位</strong>开始的第一个非0位，而这是通过$R-1$的操作实现的，因为<strong>从最低位开始，只要是0位，就会发生借位，直到第一个非0位打断借位传播</strong>。</p>
+<p>而这会给我们实现轮询仲裁带来什么启示呢？我们不妨将轮询仲裁拆分成两个阶段来看，第一个阶段是<strong>基于当前的优先级序列进行仲裁</strong>，第二个阶段是<strong>基于当前的仲裁结果调整下次仲裁的优先级序列</strong>。算法实现的核心在第一个阶段，而我们回顾轮询仲裁算法的表述，不难发现它其实在做这样一件事<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>：</p>
+<blockquote>
+<p>定位从输入请求的<strong>特定位</strong>开始的第一个非0位。</p>
+</blockquote>
+<p>这与固定优先级仲裁只有非常小的差别！映射至算法实现上，我们只需要将其原理改为：
+</p>
+$$
+G=R\cdot (\overline{R-2^k}),~k\in \mathbb{N}
+$$<p>
+此时，当$k$取某个自然数时，我们其实就是从$R$的第$k+1$位开始，沿最低位到最高位的方向，定位第一个出现的非0位。</p>
+<p>但是，我们会发现，这其实只扫描了从$R$的第$k+1$位开始到最高位范围内的请求，而对于原本的算法，如果这一范围内都没有有效请求，我们需要返回最低位，继续沿最低位到最高位的方向，定位第一个出现的非0位。但这不是一个严重的问题，我们仅需使用一些位拼接的技巧，将等式右侧改为：
+</p>
+$$
+[R,~R]\cdot(\overline{[R,~R]-2^k}),~k\in \mathbb{N}
+$$<p>
+这里$[R,~R]$代表将两个$R$拼接为一个新的二进制数，则我们完成从$R$的第$k+1$位开始到$R$的最高位的扫描后，会继续向拼接后二进制数的更高位扫描，在效果上即等价与返回$R$的最低位，继续沿最低位到最高位的方向扫描。</p>
+<p>而此时，假设$R$的位宽为$n$，右侧运算结果（假设为$T$）的位宽其实是$2n$，其中包含$n$个有效位与$n$个无效位，具体分布如下：
+</p>
+$$
+\underbrace{T_{2n-1},~\cdots,~T_{n+k}}_{\text{useless}}~,~\underbrace{T_{n+k-1},~\cdots,~T_{n}}_{\text{valid}}~,~\underbrace{T_{n-1},~\cdots,~T_{k}}_{\text{valid}}~,~\underbrace{T_{k-1},~\cdots,~T_{0}}_\text{useless}
+$$<p>而我们实际需要的运算结果是：
+</p>
+$$
+[T_{n-1},~\cdots,~T_{k}],~[T_{n+k-1},~\cdots,~T_{n}]
+$$<p>
+我们分析原始运算结果中的$n$个无效位，对于$[T_{k-1},~\cdots,~T_{0}]$，其一定全是0，因为$[R,~R]$的前$k$位没有被减法借位，因此其进行的运算是<strong>直接取反并与原位进行与运算</strong>，这一结果当然是0。</p>
+<p>对于$[T_{2n-1},~\cdots,~T_{n+k}]$，它一定也全是0，可以分情况讨论：如果$n$个有效位中有非0值时，代表在$[R,~R]$的第$n+k$位前已发生<strong>借位中断</strong>，因此后续各位不会发生借位，进而运算结果为0；如果$n$个有效位中没有非0值时，则说明$[R,~R]$的第$k$位至第$n$位全是0，不会发生借位中断，进而其第$n+k$位至第$2n$位也全是0，自然也不会发生借位中断，故运算结果为0。</p>
+<p>因此，我们可以通过以下运算，获取运算结果：
+</p>
+$$
+G=[T_{2n-1},~\cdots,~T_{n}]+[T_{n-1},~\cdots,~T_0]
+$$<p>
+此处的$+$代表<strong>按位或运算</strong>。进而，考虑轮询仲裁的两个阶段，我们可以给出其RTL代码实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arbiter</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">PORT_NUM</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">clk</span><span class="p">,</span>     <span class="c1">// input clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rst_n</span><span class="p">,</span>   <span class="c1">// reset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">request</span><span class="p">,</span> <span class="c1">// input request
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">grant</span>    <span class="c1">// port sel
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// priority update
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">priority_base</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">priority_base</span> <span class="o">&lt;=</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">grant</span> <span class="o">==</span> <span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">priority_base</span> <span class="o">&lt;=</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">priority_base</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">grant</span><span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">grant</span><span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="p">]};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// arbitration
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">wire</span> <span class="p">[</span><span class="mh">2</span><span class="o">*</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">comb_request</span><span class="p">,</span> <span class="n">temp_grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">comb_request</span> <span class="o">=</span> <span class="p">{</span><span class="n">request</span><span class="p">,</span> <span class="n">request</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">temp_grant</span> <span class="o">=</span> <span class="n">comb_request</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">comb_request</span> <span class="o">-</span> <span class="p">{{(</span><span class="n">PORT_NUM</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">}},</span> <span class="n">priority_base</span><span class="p">}));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">grant</span> <span class="o">=</span> <span class="n">temp_grant</span><span class="p">[</span><span class="mh">2</span><span class="o">*</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">-:</span><span class="n">PORT_NUM</span><span class="p">]</span> <span class="o">|</span> <span class="n">temp_grant</span><span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>注意，在生成<code>priority_base</code>时，我们需要对输出许可<code>grant</code>进行<strong>循环左移</strong>而非仅仅<strong>逻辑左移</strong>。</p>
+</blockquote>
+<p>以上，我们基于固定优先级仲裁的原理实现了轮询仲裁算法，但上述实现还存在一些缺点：</p>
+<ul>
+<li>相对于固定优先级仲裁，轮询仲裁在仲裁时引入了额外的组合逻辑级，从而会降低其性能。</li>
+<li>对仲裁算法的描述较为底层，有时不便于理解。</li>
+</ul>
+<p>尽管如此，从上述实现中，我们可以得到的一个事实是：轮询仲裁算法与固定优先级仲裁算法的关系十分紧密。以下，我们需要思考，能否从更高的层次寻找这两种仲裁算法的相关性呢？答案是肯定的。</p>
+<p>在前文已经提到过，轮询仲裁算法在仲裁时是定位从输入请求的<strong>特定位</strong>开始的第一个非0位，我们不妨设输入请求的位宽为$n$，在某次仲裁时，这个特定位为第$k$位，那么我们将输入请求分为两种互斥的情形：</p>
+<ul>
+<li><strong>第$k$位至第$n$位输入请求都无效时：</strong> 此时不难得到，使用固定优先级仲裁与轮询仲裁的结果是<strong>相同的</strong>！这是因为对轮询仲裁，如果其在输入请求的第$k$位至第$n$位未发生借位中断，其会循环从输入请求最低位开始扫描。而对固定优先级仲裁，由于输入的第$k$位至第$n$位肯定不会发生借位中断，所以扫描的先/后次序没有任何影响。</li>
+<li><strong>第$k$位至第$n$位输入请求有效时：</strong> 此时我们发现，使用固定优先级仲裁与轮询仲裁的结果会存在差异，而差异出现的根源是固定优先级仲裁会先对前$k-1$位进行扫描，这时可能先发生借位中断。但是，如果我们人为对前$k-1$位请求进行<strong>屏蔽</strong>的话，对于固定优先级仲裁，就等效于从第$k$位开始扫描，且对两种仲裁而言，借位中断一定会在第$k$位至第$n$位输入请求中出现，故仲裁的结果又一次相同了！</li>
+</ul>
+<p>通过上述分析，我们得到了以下事实：<strong>我们可以通过分类讨论，将轮询仲裁在行为上等效为固定优先级仲裁</strong>，进而可使用如下的电路框图实现轮询仲裁算法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                                            +------+                               
+</span></span><span class="line"><span class="cl">                              +-------------+  =0  +---------------------+         
+</span></span><span class="line"><span class="cl">                              |             +------+                     |         
+</span></span><span class="line"><span class="cl">                              |                                          |         
+</span></span><span class="line"><span class="cl">                              |                                          |         
+</span></span><span class="line"><span class="cl">   +-------------+   +-----+  |  +-------------------------+          +--v--+      
+</span></span><span class="line"><span class="cl">+--&gt; Mask Update +---&gt;     |  |  |                         |   Mask   |     |      
+</span></span><span class="line"><span class="cl">|  +-------------+   | AND +--+--&gt;   Fixed-Order Arbiter   +----------&gt; 0   |      
+</span></span><span class="line"><span class="cl">|        Request--+--&gt;     |     |                         |          |     |      
+</span></span><span class="line"><span class="cl">|                 |  +-----+     +-------------------------+          |     |Grant 
+</span></span><span class="line"><span class="cl">|                 |                                                   | MUX +--+--&gt;
+</span></span><span class="line"><span class="cl">|                 |              +-------------------------+          |     |  |   
+</span></span><span class="line"><span class="cl">|                 |              |                         |  UnMask  |     |  |   
+</span></span><span class="line"><span class="cl">|                 +--------------&gt;   Fixed-Order Arbiter   +----------&gt; 1   |  |   
+</span></span><span class="line"><span class="cl">|                                |                         |          |     |  |   
+</span></span><span class="line"><span class="cl">|                                +-------------------------+          +-----+  |   
+</span></span><span class="line"><span class="cl">|                                                                              |   
+</span></span><span class="line"><span class="cl">+------------------------------------------------------------------------------+   
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上图中，我们使用两个固定优先级仲裁器，分别用于实现<strong>屏蔽低位/不屏蔽低位输入请求</strong>的仲裁。同时，通过检测<strong>屏蔽低位的输入请求</strong>是否全部无效（等价于检测原始输入请求的高位是否无效），选择两个仲裁器的输出作为最终仲裁输出（即对两种互斥情况的判定）。</p>
+<p>而对低位的屏蔽是通过<strong>位掩码（Bit Mask）<strong>与原始输入请求进行</strong>按位与运算</strong>实现的，位掩码其实类似于<strong>指向当前最高优先级的指针</strong>，我们规定如果当前第$k$位输入请求优先级最高，则位掩码的前$k-1$位为0，其余位为1。同时，为实现轮询仲裁算法中优先级序列的动态更新，位掩码也需要依据当前周期的仲裁结果进行动态更新。</p>
+<p>综上，我们给出优化后的RTL代码实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arbiter</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">PORT_NUM</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">clk</span><span class="p">,</span>     <span class="c1">// input clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rst_n</span><span class="p">,</span>   <span class="c1">// reset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">request</span><span class="p">,</span> <span class="c1">// input request
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">grant</span>    <span class="c1">// port sel
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// mask generation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mask</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">PORT_NUM</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">grant</span> <span class="o">==</span> <span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mask</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">PORT_NUM</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mask</span> <span class="o">&lt;=</span> <span class="o">~</span><span class="p">({</span><span class="n">grant</span><span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">grant</span><span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="p">]}</span> <span class="o">-</span> <span class="mb">&#39;b1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// request mask
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">masked_request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">masked_request</span> <span class="o">=</span> <span class="n">request</span> <span class="o">&amp;</span> <span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// fixed-order arbiter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">masked_grant</span><span class="p">,</span> <span class="n">unmasked_grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">masked_grant</span> <span class="o">=</span> <span class="n">masked_request</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">masked_request</span> <span class="o">-</span> <span class="mb">&#39;b1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">unmasked_grant</span> <span class="o">=</span> <span class="n">request</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">request</span> <span class="o">-</span> <span class="mb">&#39;b1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// grant MUX
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">masked_request</span> <span class="o">==</span> <span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">grant</span> <span class="o">=</span> <span class="n">unmasked_grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">grant</span> <span class="o">=</span> <span class="n">masked_grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以上便是基本的轮询仲裁算法的实现。在实际应用中，有时我们会修改轮询仲裁算法的优先级序列更新策略，比如将其更新为<strong>当前仲裁的最高优先级请求被设置为前一次仲裁的次高优先级请求</strong>，对于这种策略最直接的实现方式是<strong>串联两个轮询仲裁器</strong>。其中第一个仲裁器根据当前的优先级序列对输入请求进行仲裁并得到仲裁结果。之后，将原始请求屏蔽仲裁结果构造出第二级请求，将其送入第二个仲裁器从而得到次高优先级请求并用来更新优先级序列<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>。</p>
+<p>轮询仲裁通常有如下应用场景：</p>
+<ul>
+<li>**负载均衡系统：**需要实现公平的资源、带宽分配，从而需要动态调整各请求的优先级。</li>
+</ul>
+<h3 id="加权轮询仲裁算法">加权轮询仲裁算法
+</h3><p>我们已经知道，轮询仲裁算法可以保证各个输入请求公平得到仲裁，但在某些应用场景下，我们并不希望绝对公平地对各输入请求进行仲裁，而是希望对为各输入请求分配一个权重，有侧重地实现仲裁，这就需要引入 <strong>加权轮询仲裁算法（Weighted Round Robin, WRR）</strong> 。</p>
+<p><img src="/p/dic-008/wrr.png"
+	width="2560"
+	height="1274"
+	srcset="/p/dic-008/wrr_hu_b01bb3eb6ed22d44.png 480w, /p/dic-008/wrr_hu_b58e5ca877a4a7f7.png 1024w"
+	loading="lazy"
+	
+		alt="常见的两种加权轮询仲裁算法"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="200"
+		data-flex-basis="482px"
+	
+></p>
+<p>通常而言，加权轮询仲裁算法可以分为两类<sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup>，分别为 <strong>经典加权轮询（Classic WRR, CWRR）</strong> 与 <strong>交替加权轮询（Interleaved WRR, IWRR）</strong> ，这两种算法分别适用于不同的输入请求模式，在RTL代码实现被映射为两类不同的硬件架构。</p>
+<p>对CWRR，其算法可使用伪代码描述如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">Constant</span> <span class="ow">and</span> <span class="n">variables</span><span class="p">:</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="n">N</span>             <span class="o">//</span> <span class="n">Nb</span> <span class="n">of</span> <span class="n">queues</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="n">weight</span><span class="p">[</span><span class="mf">1.</span><span class="o">.</span><span class="n">N</span><span class="p">]</span>  <span class="o">//</span> <span class="n">weight</span> <span class="n">of</span> <span class="n">each</span> <span class="n">queue</span>
+</span></span><span class="line"><span class="cl">    <span class="n">queues</span><span class="p">[</span><span class="mf">1.</span><span class="o">.</span><span class="n">N</span><span class="p">]</span>        <span class="o">//</span> <span class="n">queues</span>
+</span></span><span class="line"><span class="cl">    <span class="n">i</span>                   <span class="o">//</span> <span class="n">queue</span> <span class="n">index</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span>                   <span class="o">//</span> <span class="n">packet</span> <span class="n">counter</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="n">Instructions</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="bp">true</span> <span class="k">do</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">N</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="p">(</span><span class="ow">not</span> <span class="n">queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">c</span><span class="o">&lt;</span><span class="n">weight</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">            <span class="n">send</span><span class="p">(</span><span class="n">queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">            <span class="n">queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="p">:</span><span class="o">=</span> <span class="n">c</span><span class="o">+</span><span class="mi">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>简而言之，CWRR的流程如下：</p>
+<ul>
+<li>首先，仲裁器会为各输入请求分别分配初始权重，随后采用传统的<strong>轮询仲裁算法</strong>实现仲裁；</li>
+<li>其次，当某个输入请求被许可时，其对应权重会<strong>递减1</strong>；</li>
+<li>在优先级序列更新时，当且仅当当前被许可请求的<strong>权重递减至0</strong>或<strong>其在下一周期无效</strong>时，才进行更新；</li>
+<li>最后，<strong>权重为0的请求</strong>会直接被屏蔽，同时如果所有请求的权重均为0，则各输入请求的权重会<strong>复位为初始权重</strong>。</li>
+</ul>
+<p>CWRR适配的数据流模式需求较为严苛。具体而言，其仅适用于<strong>各输入请求会在多个周期连续有效的情况</strong>，对于其它的数据流模式，其效率不高，且可能造成仲裁器的阻塞，通常不推荐使用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                                            +------+                               
+</span></span><span class="line"><span class="cl"> Weight---+                   +-------------+  =0  +---------------------+         
+</span></span><span class="line"><span class="cl">          |                   |             +------+                     |         
+</span></span><span class="line"><span class="cl">          |                   |                                          |         
+</span></span><span class="line"><span class="cl">   +------v------+   +-----+  |                                          |         
+</span></span><span class="line"><span class="cl">+--&gt; Mask Update +---&gt;     |  |  +-------------------------+          +--v--+      
+</span></span><span class="line"><span class="cl">|  +------+------+   |     |  |  |                         |   Mask   |     |      
+</span></span><span class="line"><span class="cl">|         |          | AND +--+--&gt;   Fixed-Order Arbiter   +----------&gt;     |      
+</span></span><span class="line"><span class="cl">|  +------v------+   |     |     |                         |          |     |      
+</span></span><span class="line"><span class="cl">|  |  Req Mask   +-+-&gt;     |     +-------------------------+          |     |Grant 
+</span></span><span class="line"><span class="cl">|  +-------------+ | +-----+                                          | MUX +--+--&gt;
+</span></span><span class="line"><span class="cl">|                  |             +-------------------------+          |     |  |   
+</span></span><span class="line"><span class="cl">|                  |             |                         |  UnMask  |     |  |   
+</span></span><span class="line"><span class="cl">|                  +-------------&gt;   Fixed-Order Arbiter   +----------&gt;     |  |   
+</span></span><span class="line"><span class="cl">|                                |                         |          |     |  |   
+</span></span><span class="line"><span class="cl">|                                +-------------------------+          +-----+  |   
+</span></span><span class="line"><span class="cl">|                                                                              |   
+</span></span><span class="line"><span class="cl">+------------------------------------------------------------------------------+   
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>硬件实现上，CWRR实际上就是在轮询仲裁器的<strong>位掩码更新</strong>逻辑中引入权重的控制，同时，我们也需要通过权重控制对输入请求的屏蔽。</p>
+<p>对IWRR，其算法可使用伪代码描述如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">Constant</span> <span class="ow">and</span> <span class="n">variables</span><span class="p">:</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="n">N</span>             <span class="o">//</span> <span class="n">Nb</span> <span class="n">of</span> <span class="n">queues</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="n">weight</span><span class="p">[</span><span class="mf">1.</span><span class="o">.</span><span class="n">N</span><span class="p">]</span>  <span class="o">//</span> <span class="n">weight</span> <span class="n">of</span> <span class="n">each</span> <span class="n">queue</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="n">w_max</span>
+</span></span><span class="line"><span class="cl">    <span class="n">queues</span><span class="p">[</span><span class="mf">1.</span><span class="o">.</span><span class="n">N</span><span class="p">]</span>        <span class="o">//</span> <span class="n">queues</span>
+</span></span><span class="line"><span class="cl">    <span class="n">i</span>                   <span class="o">//</span> <span class="n">queue</span> <span class="n">index</span>
+</span></span><span class="line"><span class="cl">    <span class="n">r</span>                   <span class="o">//</span> <span class="nb">round</span> <span class="n">counter</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="n">Instructions</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="bp">true</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">w_max</span> <span class="k">do</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">..</span> <span class="n">N</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">weight</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">)</span> <span class="n">then</span>
+</span></span><span class="line"><span class="cl">                <span class="n">send</span><span class="p">(</span><span class="n">queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">                <span class="n">queue</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dequeue</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>简而言之，IWRR的流程如下：</p>
+<ul>
+<li>首先，仲裁器会为各输入请求分别分配初始权重，随后采用传统的<strong>轮询仲裁算法</strong>实现<strong>仲裁</strong>与<strong>优先级序列更新</strong>；</li>
+<li>其次，当某个输入请求被许可时，其对应权重会<strong>递减1</strong>；</li>
+<li>最后，<strong>权重为0的请求</strong>会直接被屏蔽，同时如果所有请求的权重均为0，则各输入请求的权重会<strong>复位为初始权重</strong>。</li>
+</ul>
+<p>对比CWRR，可知IWRR省略了权重对优先级序列更新的控制，这使得IWRR实现较为简单，也可适用于<strong>各输入请求分布较离散</strong>的情形，目前主流的IP也均偏向于使用IWRR<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                                            +------+                               
+</span></span><span class="line"><span class="cl">                              +-------------+  =0  +---------------------+         
+</span></span><span class="line"><span class="cl">                              |             +------+                     |         
+</span></span><span class="line"><span class="cl">                              |                                          |         
+</span></span><span class="line"><span class="cl">   +-------------+   +-----+  |                                          |         
+</span></span><span class="line"><span class="cl">+--&gt; Mask Update +---&gt;     |  |  +-------------------------+          +--v--+      
+</span></span><span class="line"><span class="cl">|  +-------------+   |     |  |  |                         |   Mask   |     |      
+</span></span><span class="line"><span class="cl">|                    | AND +--+--&gt;   Fixed-Order Arbiter   +----------&gt;     |      
+</span></span><span class="line"><span class="cl">|  +-------------+   |     |     |                         |          |     |      
+</span></span><span class="line"><span class="cl">|  |  Req Mask   +-+-&gt;     |     +-------------------------+          |     |Grant 
+</span></span><span class="line"><span class="cl">|  +------^------+ | +-----+                                          | MUX +--+--&gt;
+</span></span><span class="line"><span class="cl">|         |        |             +-------------------------+          |     |  |   
+</span></span><span class="line"><span class="cl">|         |        |             |                         |  UnMask  |     |  |   
+</span></span><span class="line"><span class="cl">| Weight--+        +-------------&gt;   Fixed-Order Arbiter   +----------&gt;     |  |   
+</span></span><span class="line"><span class="cl">|                                |                         |          |     |  |   
+</span></span><span class="line"><span class="cl">|                                +-------------------------+          +-----+  |   
+</span></span><span class="line"><span class="cl">|                                                                              |   
+</span></span><span class="line"><span class="cl">+------------------------------------------------------------------------------+   
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>硬件实现上，CWRR仅需在轮询仲裁器中利用权重控制输入请求的屏蔽，我们也可给出其RTL代码实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arbiter</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">PORT_NUM</span>     <span class="o">=</span> <span class="mh">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">WEIGHT_WIDTH</span> <span class="o">=</span> <span class="mh">10</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                             <span class="n">clk</span><span class="p">,</span>     <span class="c1">// input clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span>                             <span class="n">rst_n</span><span class="p">,</span>   <span class="c1">// reset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">request</span><span class="p">,</span> <span class="c1">// input request    
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>              <span class="n">grant</span><span class="p">,</span>   <span class="c1">// port sel
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">*</span><span class="n">WEIGHT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">weight</span>   <span class="c1">// input weight
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// weight-control mask generation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">w_mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">reg</span> <span class="p">[</span><span class="n">WEIGHT_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">weight_arr</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">genvar</span> <span class="n">w_cnt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">generate</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">w_cnt</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">w_cnt</span> <span class="o">&lt;</span> <span class="n">PORT_NUM</span><span class="p">;</span> <span class="n">w_cnt</span> <span class="o">=</span> <span class="n">w_cnt</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span><span class="o">:</span> <span class="n">WEIGHT_CONTROL</span>
+</span></span><span class="line"><span class="cl">            <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">weight_arr</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">weight</span><span class="p">[</span><span class="n">WEIGHT_WIDTH</span><span class="o">*</span><span class="p">(</span><span class="n">w_cnt</span><span class="o">+</span><span class="mh">1</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">-:</span><span class="n">WEIGHT_WIDTH</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">w_mask</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">grant</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">]</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">weight_arr</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">weight_arr</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">]</span> <span class="o">-</span> <span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="o">|</span><span class="n">w_mask</span><span class="p">)</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">weight_arr</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">weight</span><span class="p">[</span><span class="n">WEIGHT_WIDTH</span><span class="o">*</span><span class="p">(</span><span class="n">w_cnt</span><span class="o">+</span><span class="mh">1</span><span class="p">)</span><span class="o">-</span><span class="mh">1</span><span class="o">-:</span><span class="n">WEIGHT_WIDTH</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">assign</span> <span class="n">w_mask</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="o">|</span><span class="n">weight_arr</span><span class="p">[</span><span class="n">w_cnt</span><span class="p">])</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">endgenerate</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// weight-control request mask
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">w_request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">w_request</span> <span class="o">=</span> <span class="n">w_mask</span> <span class="o">&amp;</span> <span class="n">request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// mask generation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">reg</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mask</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">PORT_NUM</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">grant</span> <span class="o">==</span> <span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mask</span> <span class="o">&lt;=</span> <span class="p">{(</span><span class="n">PORT_NUM</span><span class="p">){</span><span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">}};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">mask</span> <span class="o">&lt;=</span> <span class="o">~</span><span class="p">({</span><span class="n">grant</span><span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">grant</span><span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="p">]}</span> <span class="o">-</span> <span class="mb">&#39;b1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// request mask
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">masked_request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">masked_request</span> <span class="o">=</span> <span class="n">w_request</span> <span class="o">&amp;</span> <span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// fixed-order arbiter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">wire</span> <span class="p">[</span><span class="n">PORT_NUM</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">masked_grant</span><span class="p">,</span> <span class="n">unmasked_grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">masked_grant</span> <span class="o">=</span> <span class="n">masked_request</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">masked_request</span> <span class="o">-</span> <span class="mb">&#39;b1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assign</span> <span class="n">unmasked_grant</span> <span class="o">=</span> <span class="n">w_request</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">w_request</span> <span class="o">-</span> <span class="mb">&#39;b1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// grant MUX
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">always</span> <span class="p">@(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">masked_request</span> <span class="o">==</span> <span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">grant</span> <span class="o">=</span> <span class="n">unmasked_grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">grant</span> <span class="o">=</span> <span class="n">masked_grant</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对其进行大规模（100000次）随机请求仿真，并统计各请求被许可的频率，假设共有5个请求，为各请求分配的权重分别为4，8，12，16，20，对应的仿真可视化结果如下：</p>
+<p><img src="/p/dic-008/sim.png"
+	width="1120"
+	height="603"
+	srcset="/p/dic-008/sim_hu_fbeca9a643758053.png 480w, /p/dic-008/sim_hu_15495a5bfd29a8e7.png 1024w"
+	loading="lazy"
+	
+		alt="IWRR的大规模随机请求仿真结果"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="185"
+		data-flex-basis="445px"
+	
+></p>
+<p>读图可知，在请求次数足够多时，各输入请求被许可的频率按权重保持稳定，验证了RTL代码实现的正确性。</p>
+<h2 id="现代仲裁器设计">现代仲裁器设计
+</h2><p>目前，在一些现代的仲裁器设计中，我们会 <strong>将控制通路和数据通路耦合起来，不再将仲裁器当成一个单独的模块，而是将仲裁器和MUX的结构融合在一起，使数据在仲裁的同时进行MUX传输，</strong> 从而缩短传输总延时<sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup><sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup>。</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>在仲裁器设计中，输入的有效信号通常有一个更常用的名字，即 <strong>输入请求（Input Request）</strong> ；输出的选择信号也有一个更常用的名字，即 <strong>输出许可（Output Grant）</strong> 。&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>或者也可以使用<code>case</code>语句块，但由于Verilog中的<code>case</code>语句块不具有<strong>fall-through</strong>的特性，因此其与<code>if-else</code>语句块本质上是等价的。&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p>这里的特定位其实就是<strong>前一次仲裁完成后，被设置为最高优先级的那一位</strong>。&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/1979328814665466115"  target="_blank" rel="noopener"
+    >https://zhuanlan.zhihu.com/p/1979328814665466115</a>&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5">
+<p><a class="link" href="https://en.wikipedia.org/wiki/Weighted_round_robin"  target="_blank" rel="noopener"
+    >https://en.wikipedia.org/wiki/Weighted_round_robin</a>&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6">
+<p><a class="link" href="https://docs.amd.com/r/en-US/pg288-axi-mcdma/Weighted-Round-Robin-WRR"  target="_blank" rel="noopener"
+    >https://docs.amd.com/r/en-US/pg288-axi-mcdma/Weighted-Round-Robin-WRR</a>&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7">
+<p>Dimitrakopoulos, Giorgos, Emmanouil  Kalligeros, and Kostas Galanopoulos. &ldquo;Merged switch allocation and  traversal in network-on-chip switches.&rdquo; <em>IEEE Transactions on Computers</em> 62.10 (2012): 2001-2012.&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8">
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/640893388"  target="_blank" rel="noopener"
+    >https://zhuanlan.zhihu.com/p/640893388</a>&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/function-module/">Function Module</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Dec 06, 2025 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/dic-004/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-004/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 时钟分频"
+                        data-key="dic-004" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">时钟分频</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-003/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-003/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 序列检测"
+                        data-key="dic-003" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">序列检测</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-007/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-007/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 迭代边界"
+                        data-key="dic-007" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">迭代边界</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-006/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-006/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 基带信号的调制与解调"
+                        data-key="dic-006" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">基带信号的调制与解调</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-005/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-005/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 通信系统简介"
+                        data-key="dic-005" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">通信系统简介</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
