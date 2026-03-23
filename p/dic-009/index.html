@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="YSYX学习笔记：浅析Verilator的wrapper文件写法">
-<title>浅析Verilator的wrapper文件写法</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-009：并行处理与流水线">
+<title>并行处理与流水线</title>
 
-<link rel='canonical' href='https://posvirus.github.io/p/verilator/'>
+<link rel='canonical' href='https://posvirus.github.io/p/dic-009/'>
 
-<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="浅析Verilator的wrapper文件写法">
-<meta property='og:description' content="YSYX学习笔记：浅析Verilator的wrapper文件写法">
-<meta property='og:url' content='https://posvirus.github.io/p/verilator/'>
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="并行处理与流水线">
+<meta property='og:description' content="DIC-009：并行处理与流水线">
+<meta property='og:url' content='https://posvirus.github.io/p/dic-009/'>
 <meta property='og:site_name' content='Posvirus的博客'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Verilator' /><meta property='article:tag' content='C&#43;&#43;' /><meta property='article:published_time' content='2025-07-22T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-07-22T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/verilator/ysyx.png' />
-<meta name="twitter:title" content="浅析Verilator的wrapper文件写法">
-<meta name="twitter:description" content="YSYX学习笔记：浅析Verilator的wrapper文件写法"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://posvirus.github.io/p/verilator/ysyx.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='VLSI' /><meta property='article:published_time' content='2025-12-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-12-06T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-009/cicc.png' />
+<meta name="twitter:title" content="并行处理与流水线">
+<meta name="twitter:description" content="DIC-009：并行处理与流水线"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/dic-009/cicc.png' />
     <link rel="shortcut icon" href="/favicon.jpeg" />
 
     </head>
@@ -207,19 +207,54 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#并行处理技术">并行处理技术</a>
+      <ol>
+        <li><a href="#并行处理技术的基本模型">并行处理技术的基本模型</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/p/verilator/">
-                <img src="/p/verilator/ysyx_hu_d316aaa241761636.png"
-                        srcset="/p/verilator/ysyx_hu_d316aaa241761636.png 800w, /p/verilator/ysyx_hu_c4d8a8547b521d7d.png 1600w"
+            <a href="/p/dic-009/">
+                <img src="/p/dic-009/cicc_hu_d52f18f9a902f256.png"
+                        srcset="/p/dic-009/cicc_hu_d52f18f9a902f256.png 800w, /p/dic-009/cicc_hu_c62d00be19035290.png 1600w"
                         width="800" 
-                        height="234" 
+                        height="270" 
                         loading="lazy"
-                        alt="Featured image of post 浅析Verilator的wrapper文件写法" />
+                        alt="Featured image of post 并行处理与流水线" />
                 
             </a>
         </div>
@@ -229,8 +264,8 @@
     
     <header class="article-category">
         
-            <a href="/categories/ysyx/" >
-                YSYX
+            <a href="/categories/dic/" >
+                DIC
             </a>
         
     </header>
@@ -238,12 +273,12 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/verilator/">浅析Verilator的wrapper文件写法</a>
+            <a href="/p/dic-009/">并行处理与流水线</a>
         </h2>
     
         
         <h3 class="article-subtitle">
-            YSYX学习笔记：浅析Verilator的wrapper文件写法
+            DIC-009：并行处理与流水线
         </h3>
         
     </div>
@@ -264,7 +299,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published">Jul 22, 2025</time>
+                <time class="article-time--published">Dec 06, 2025</time>
             </div>
         
 
@@ -294,62 +329,96 @@
     <section class="article-content">
     
     
-    <p>在使用Verilator对RTL代码进行仿真时，其仿真原理与普通RTL代码编写的Testbench存在差异，具体而言，在Verilator中，仿真步长这一概念是需要通过wrapper文件自行控制的，我们需要明确仿真在哪些时间点需要采样并<code>eval()</code>，而在传统RTL代码编写的Testbench中，仿真步长通常是通过<code>timescale</code>声明的，EDA会识别并自动设置仿真步长。</p>
-<p>这种原理上的差异会造成Verilator与传统EDA在仿真时存在两方面的区别：</p>
+    <blockquote>
+<p>本文是我在几年前学习《VLSI数字信号处理系统设计》这门课程时所做的笔记，此处进行简单整理，以供复习。</p>
+</blockquote>
+<h2 id="并行处理技术">并行处理技术
+</h2><h3 id="并行处理技术的基本模型">并行处理技术的基本模型
+</h3><p>在前面的章节中，我们已经说明过，借助<strong>并行处理技术</strong>，可以通过<strong>牺牲硬件开销</strong>来加速DSP算法，提升硬件性能。以下，我们将对并行处理技术进行定量分析：</p>
+<p>首先，我们考查某DSP算法对应的系统为 $\mathscr{H}$ ，且满足：
+</p>
+$$
+y[n]=\mathscr{H}\{x[n]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[n-k]
+$$<p>
+换言之，我们所讨论的系统 $\mathscr{H}$ 至少应满足如下条件：</p>
 <ul>
-<li><strong>性能上的差异：</strong> Verilator的仿真原理其实可概括为“当用户需要时，才对某个时间点采样与<code>eval()</code>”，而传统EDA的仿真原理则可简单理解为“定步长对每个时间点都进行采样与<code>eval()</code>“。因此，Verilator相对而言可以较敏捷地完成仿真，因为在仿真过程中，其实并没有对所有时间点均进行采样与<code>eval()</code>。</li>
-<li><strong>波形质量上的差异：</strong> 传统EDA的定步长仿真使得其仿真获得的波形具有相当高的可信度，基本可以与实测波形等同。但Verilator的波形质量高度依赖于wrapper文件的写法，一个低质量或写法错误的wrapper文件完全有可能生成与实际情况完全不同的波形，举一个简单的例子，假设我们一直仅对模块进行激励而不调用<code>eval()</code>，那么波形不会有任何有效信息，更具体一些，如果我们改变某个端口的激励值而未及时进行<code>eval()</code>，可能导致某个信号值在波形中被错误地延迟一个或多个时钟周期。</li>
+<li>$\mathscr{H}$ 为<strong>因果线性时不变（LTI）系统</strong>。</li>
+<li>$\mathscr{H}$ 对应的DSP算法为<strong>非递归DSP算法</strong>，即系统的输出与<strong>历史输出无关</strong>，我们将在后文说明为什么假设系统 $\mathscr{H}$ 满足这一条件。</li>
+<li>$\mathscr{H}$ 为<strong>SISO系统</strong><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。</li>
 </ul>
-<p>因此，有必要探究有效的wrapper文件写法，因为当我们需要通过波形对模块进行debug时，我们自然不希望最后发现是wrapper文件的写法导致生成不符合预期的波形。</p>
-<p>首先，我们需要明确，在wrapper文件中，其主要实现了两类操作，第一是<strong>实现激励信号的变化并重新对被测模块进行<code>eval()</code></strong>，第二则是<strong>实现波形中时间的推移</strong>，为此，我们给出一个模式化的wrapper文件写法：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#define Vtop Vysyx_25070184_top </span><span class="c1">// nickname
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define CLK_NAME clk </span><span class="c1">// clock name
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define CLK_HALF_PERIOD 5 </span><span class="c1">// clock period / 2
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>在文件开头，我们实现了几个宏定义，将被测顶层模块名统一为<code>top</code>，将时钟名称统一为<code>CLK_NAME</code>，并定义仿真时的半时钟周期长度<code>CLK_HALF_PERIOD</code>。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#define EDGE_TRG_EVENT(top, event) do { top-&gt;CLK_NAME = !top-&gt;CLK_NAME; top-&gt;eval(); event; top-&gt;eval(); } while (0)
-</span></span></span><span class="line"><span class="cl"><span class="cp">#define EDGE_TRG(top) EDGE_TRG_EVENT(top, )
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>其次，我们实现了另外两个宏定义，用于实现激励信号的变化，<code>EDGE_TRG_EVENT</code>宏用于实现一个被时钟边沿驱动的事件<code>event</code>，其主要会进行如下两个操作：</p>
+<p>而我们希望由并行处理技术达成的目标，是构造与系统 $\mathscr{H}$ 等效的一个<strong>MIMO系统</strong><sup id="fnref1:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> $\mathscr{H}_0$ ，该系统<strong>每时刻并行输入 $q$ 个输入样本，经处理后并行返回 $s$ 个输出数据</strong>。</p>
+<p>那么，系统 $\mathscr{H}_0$ 并行输出的 $s$ 个数据是什么样的呢？不失一般性，记原系统的输入样本为 $x[n]$ ，输出数据 $y[n]=\mathscr{H}\{x[n]\}$ 。我们当然希望系统 $\mathscr{H}_0$ 是 $y[n]$ 序列中的<strong>连续 $s$ 个取值</strong>，即：
+</p>
+$$
+\vec{y}[n]=\mathscr{H}_0\{\vec{x}[n]\},~\vec{y}[n]=(y[n],y[n+1],\cdots,y[n+s-1])^\text{T}
+$$<p>
+那么，如果我们记录系统 $\mathscr{H}_0$ 每轮迭代的输出向量，是否就分别对应着$\vec{y}[n],\vec{y}[n+1],\cdots,\vec{y}[n+k],\cdots$呢？答案显然是<strong>否定的</strong>，不难注意到： $\vec{y}[n]$ 与 $\vec{y}[n+1]$ 其实只有<strong>1个输出元素</strong>不同<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> ，因此系统的输出实际上仍是<strong>串行</strong>的，不符合我们的需求。进而，若使每轮迭代的输出<strong>互不重叠</strong>，且恰好遍历 $y[n]$ 序列，不难发现，每轮迭代的向量就应当为：
+</p>
+$$
+\vec{y}[n],\vec{y}[n+s],\cdots,\vec{y}[n+ks],\cdots
+$$<p>
+进一步，我们不妨从 $n=0$ 开始考查，则系统 $\mathscr{H}_0$ 重复迭代，对应的输出向量序列为 ${\vec{y}[ks]}$ 。</p>
+<p>那么，取某一次迭代的输出向量序列 $\vec{y}[ps],~p\in\mathbb{N}$ 进行分析，我们应如何生成这一向量序列呢？利用系统 $\mathscr{H}$ ，可得：
+</p>
+$$
+\left\{\begin{array}{l}
+\displaystyle y[ps]=\mathscr{H}\{x[ps]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[ps-k]\\
+\displaystyle y[ps+1]=\mathscr{H}\{x[ps+1]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[ps+1-k]\\
+\cdots\\
+\displaystyle y[ps+t]=\mathscr{H}\{x[ps+t]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[ps+t-k]\\
+\cdots\\
+\displaystyle y[(p+1)s-1]=\mathscr{H}\{x[(p+1)s-1]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[(p+1)s-1-k]
+\end{array}\right.
+$$<p>
+其中，方程组的右侧共涉及 $m+s-1$ 个互异的输入样本，分别为：
+</p>
+$$
+x[(p+1)s-1],~x[(p+1)s-2],\cdots,~x[ps-m+2],~x[ps-m+1]
+$$<p>
+以下，为方便后文的说明，我们简单对系统 $\mathscr{H}_0$ 的迭代过程进行讨论：</p>
+<p>不失一般性，设系统 $\mathscr{H}_0$ 的输入向量为规模为 $q$ 的 $\vec{x}[ps]$ ，输出向量为规模为 $s$ 的 $\vec{y}[ps]$ 。则系统 $\mathscr{H}_0$ 的迭代过程如下：</p>
 <ul>
-<li>翻转当前时钟取值，进行<code>eval()</code>。</li>
-<li>执行事件<code>event</code>，再次进行<code>eval()</code>。</li>
+<li>每一时钟周期 $T_\text{clk}$ ，向系统输入序列 $\vec{x}[ps],~p=0,1,2,\cdots$ ，分别用于求解 $\vec{y}[ps],~p=0,1,2,\cdots$。</li>
+<li>而对系统的输出 $\vec{y}[ps]$ ，其也应当是<strong>连续并行的</strong>，即每一时钟周期 $T_\text{clk}$ ，随 $\vec{x}[ps]$ 的输入同步输出对应的输出向量 $\vec{y}[ps]$ 。</li>
 </ul>
-<p>这个宏定义其实相当于传统RTL实现的Testbench中的<code>@(posedge/negedge clk) event;</code>。</p>
-<p>另外一个宏定义<code>EDGE_TRG</code>则相当于仅对时钟进行翻转并<code>eval()</code>，而不存在其他事件的执行。</p>
-<p>最后，我们定义另外一个函数<code>half_cycle()</code>实现波形时间的推移：</p>
+<p>那么，基于上述事实，我们可得出以下结论：</p>
+<ul>
+<li>$\vec{x}[ps]$ 也应当是 $x[n]$ 序列中的<strong>连续 $q$ 个取值</strong>，而且由于 $\vec{y}[ps]=\mathscr{H}_0\{\vec{x}[ps]\}$ 由 $x[(p+1)s-1:ps-m+1]$ 确定，且系统为<strong>因果系统</strong>，进而 $x[k]$ 仅可通过延时模块生成 $x[k-l]$ ，因此 $\vec{x}[ps]$ 只可能为：</li>
+</ul>
+$$
+x[(p+1)s-1],x[(p+1)s-2],\cdots,x[(p+1)s-q]
+$$<ul>
+<li>若记系统中的延时模块为 $D^k$ ，代表其每个时钟周期 $T_\text{clk}$ 将前第 $k$ 个时钟周期寄存的值输出，则我们考查其所在的路径：</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
-</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">half_cycle</span><span class="p">(</span><span class="n">Vtop</span><span class="o">*</span> <span class="n">top</span><span class="p">,</span> <span class="n">VerilatedContext</span><span class="o">*</span> <span class="n">contextp</span><span class="p">,</span> <span class="n">VerilatedFstC</span> <span class="o">*</span><span class="n">tfp</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="n">top</span><span class="o">-&gt;</span><span class="n">eval</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">  <span class="n">contextp</span><span class="o">-&gt;</span><span class="n">timeInc</span><span class="p">(</span><span class="n">CLK_HALF_PERIOD</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="n">tfp</span><span class="o">-&gt;</span><span class="n">dump</span><span class="p">(</span><span class="n">contextp</span><span class="o">-&gt;</span><span class="n">time</span><span class="p">());</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                -&gt;                    
+</span></span><span class="line"><span class="cl">-&gt;      +-----+ z[ps] +------+   -&gt;   
+</span></span><span class="line"><span class="cl">x[ps]---&gt;  G  +-------&gt;  Dk  +--&gt;o[ps]
+</span></span><span class="line"><span class="cl">        +-----+       +------+        
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>该函数会在波形中产生半时钟周期的时间推移，因为在狭义的同步时序电路中，半时钟周期相当于一个最小的时间步长，在这一时间间隔内不应当有任何信号存在变化。</p>
+</div><p>在 $D^k$ 前，输入向量 $\vec{x}[ps]$ 经过 $\mathscr{H}_0$ 的子系统 $\mathscr{G}$ ，得到输出向量 $\vec{z}[ps]$ ，而 $\vec{z}[ps]$ 经延时模块 $D^k$ 的输出为 $\vec{o}[ps]$ ，由于 $D^k,~\mathscr{G}$ 均为<strong>LTI系统</strong>，因此在 $k$ 个时钟周期后，延时模块的输出为 $\vec{z}[ps]$ ，但 $k$ 个时钟周期后的输入为 $\vec{x}[(p+k)s]$ ，则 $\mathscr{G}\{\vec{x}[(p+k)s]\}=\vec{z}[(p+k)s]$ ，于是可知： $D^k\{\vec{z}[(p+k)s]\}=\vec{z}[ps]$ ，这说明系统 $\mathscr{H}_0$ 中的延时模块为 $D^k$ 所造成的延时为 $ks$ 而非 $k$ 。</p>
+<ul>
+<li>输入规模 $q$ 与输出规模 $s$ 必须满足 $q\geqslant s$ ，否则对输入 $x[(p+1)s-1:(p+1)s-q]$ ，即使单位延迟模块 $D$ 对其的延迟也为 $s$ ，可知 $x[(p+1)s-q-1:ps]$ 是不可能在 $\mathscr{H}_0$ 中被生成的，进而也无法输出 $\vec{y}[ps]$ 。</li>
+</ul>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><strong>SISO系统（Single-input Single-output System）</strong> 指单输入单输出系统， <strong>MIMO系统（Multiple-input Multiple-output System）</strong> 指多输入多输出系统。&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>$\vec{y}[n]$ 包含 $y[n]$ 而 $\vec{y}[n+1]$ 不包含， $\vec{y}[n+1]$ 包含 $y[n+s]$ 而 $\vec{y}[n]$ 不包含。&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
 
 </section>
 
@@ -358,9 +427,7 @@
     
     <section class="article-tags">
         
-            <a href="/tags/verilator/">Verilator</a>
-        
-            <a href="/tags/c&#43;&#43;/">C&#43;&#43;</a>
+            <a href="/tags/vlsi/">VLSI</a>
         
     </section>
 
@@ -387,10 +454,36 @@
 
 
         <span>
-            最后更新于 Jul 22, 2025 00:00 UTC
+            最后更新于 Dec 06, 2025 00:00 UTC
         </span>
     </section></footer>
 
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
 
     
 </article>
@@ -406,23 +499,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/rv32e-npc/">
+    <a href="/p/dic-007/">
         
         
             <div class="article-image">
-                <img src="/p/rv32e-npc/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                <img src="/p/dic-007/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post RV32E单周期CPU的实现说明"
-                        data-key="rv32e-npc" 
-                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                        alt="Featured image of post 迭代边界"
+                        data-key="dic-007" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">RV32E单周期CPU的实现说明</h2>
+            <h2 class="article-title">迭代边界</h2>
         </div>
     </a>
 </article>
@@ -430,23 +523,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/rt-thread/">
+    <a href="/p/dic-006/">
         
         
             <div class="article-image">
-                <img src="/p/rt-thread/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                <img src="/p/dic-006/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post RT-Thread的上下文"
-                        data-key="rt-thread" 
-                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                        alt="Featured image of post 基带信号的调制与解调"
+                        data-key="dic-006" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">RT-Thread的上下文</h2>
+            <h2 class="article-title">基带信号的调制与解调</h2>
         </div>
     </a>
 </article>
@@ -454,23 +547,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/yield/">
+    <a href="/p/dic-005/">
         
         
             <div class="article-image">
-                <img src="/p/yield/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                <img src="/p/dic-005/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post NEMU异常响应机制的实现"
-                        data-key="yield" 
-                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                        alt="Featured image of post 通信系统简介"
+                        data-key="dic-005" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">NEMU异常响应机制的实现</h2>
+            <h2 class="article-title">通信系统简介</h2>
         </div>
     </a>
 </article>
@@ -478,23 +571,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/nemu-run-nemu/">
+    <a href="/p/dic-008/">
         
         
             <div class="article-image">
-                <img src="/p/nemu-run-nemu/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                <img src="/p/dic-008/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 使用RV32E架构的NEMU运行NEMU"
-                        data-key="NEMU-run-NEMU" 
-                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                        alt="Featured image of post 仲裁器"
+                        data-key="dic-008" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">使用RV32E架构的NEMU运行NEMU</h2>
+            <h2 class="article-title">仲裁器</h2>
         </div>
     </a>
 </article>
@@ -502,23 +595,23 @@
             
                 
 <article class="has-image">
-    <a href="/p/rtc-and-sprintf/">
+    <a href="/p/dic-004/">
         
         
             <div class="article-image">
-                <img src="/p/rtc-and-sprintf/ysyx.283470f40b6ba258ba75f2ba4b762580_hu_aff5702355327d08.png" 
+                <img src="/p/dic-004/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
-                        alt="Featured image of post 设备实时时钟与更强大的sprintf()函数"
-                        data-key="rtc-and-sprintf" 
-                        data-hash="md5-KDRw9Atroli6dfK6S3YlgA==">
+                        alt="Featured image of post 时钟分频"
+                        data-key="dic-004" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">设备实时时钟与更强大的sprintf()函数</h2>
+            <h2 class="article-title">时钟分频</h2>
         </div>
     </a>
 </article>
