@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-009：并行处理与流水线">
-<title>并行处理与流水线</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-009：VCS Makefile">
+<title>VCS Makefile</title>
 
 <link rel='canonical' href='https://posvirus.github.io/p/dic-009/'>
 
-<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="并行处理与流水线">
-<meta property='og:description' content="DIC-009：并行处理与流水线">
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="VCS Makefile">
+<meta property='og:description' content="DIC-009：VCS Makefile">
 <meta property='og:url' content='https://posvirus.github.io/p/dic-009/'>
 <meta property='og:site_name' content='Posvirus的博客'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='VLSI' /><meta property='article:published_time' content='2025-12-06T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-12-06T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-009/cicc.png' />
-<meta name="twitter:title" content="并行处理与流水线">
-<meta name="twitter:description" content="DIC-009：并行处理与流水线"><meta name="twitter:card" content="summary_large_image">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Script' /><meta property='article:published_time' content='2026-03-23T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-23T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-009/cicc.png' />
+<meta name="twitter:title" content="VCS Makefile">
+<meta name="twitter:description" content="DIC-009：VCS Makefile"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://posvirus.github.io/p/dic-009/cicc.png' />
     <link rel="shortcut icon" href="/favicon.jpeg" />
 
@@ -229,11 +229,9 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#并行处理技术">并行处理技术</a>
-      <ol>
-        <li><a href="#并行处理技术的基本模型">并行处理技术的基本模型</a></li>
-      </ol>
-    </li>
+    <li><a href="#变量定义">变量定义</a></li>
+    <li><a href="#设计文件解析">设计文件解析</a></li>
+    <li><a href="#构建规则">构建规则</a></li>
   </ol>
 </nav>
         </div>
@@ -254,7 +252,7 @@
                         width="800" 
                         height="270" 
                         loading="lazy"
-                        alt="Featured image of post 并行处理与流水线" />
+                        alt="Featured image of post VCS Makefile" />
                 
             </a>
         </div>
@@ -273,12 +271,12 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/dic-009/">并行处理与流水线</a>
+            <a href="/p/dic-009/">VCS Makefile</a>
         </h2>
     
         
         <h3 class="article-subtitle">
-            DIC-009：并行处理与流水线
+            DIC-009：VCS Makefile
         </h3>
         
     </div>
@@ -299,7 +297,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published">Dec 06, 2025</time>
+                <time class="article-time--published">Mar 23, 2026</time>
             </div>
         
 
@@ -314,7 +312,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 3 分钟
+                    阅读时长: 5 分钟
                 </time>
             </div>
         
@@ -329,67 +327,153 @@
     <section class="article-content">
     
     
-    <blockquote>
-<p>本文是我在几年前学习《VLSI数字信号处理系统设计》这门课程时所做的笔记，此处进行简单整理，以供复习。</p>
-</blockquote>
-<h2 id="并行处理技术">并行处理技术
-</h2><h3 id="并行处理技术的基本模型">并行处理技术的基本模型
-</h3><p>在前面的章节中，我们已经说明过，借助<strong>并行处理技术</strong>，可以通过<strong>牺牲硬件开销</strong>来加速DSP算法，提升硬件性能。以下，我们将对并行处理技术进行定量分析：</p>
-<p>首先，我们考查某DSP算法对应的系统为 $\mathscr{H}$ ，且满足：
-</p>
-$$
-y[n]=\mathscr{H}\{x[n]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[n-k]
-$$<p>
-换言之，我们所讨论的系统 $\mathscr{H}$ 至少应满足如下条件：</p>
+    <p>本文主要给出笔者日常在进行简单功能模块设计&amp;验证时自用的一版VCS Makefile，较为精简，同时具备一定的可复用性：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c">#path settings
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nv">VSRC_PATH</span><span class="o">=</span>vsrc
+</span></span><span class="line"><span class="cl"><span class="nv">DUT_PATH</span><span class="o">=</span>dut
+</span></span><span class="line"><span class="cl"><span class="nv">TOP_MODULE</span><span class="o">=</span>top_module_name
+</span></span><span class="line"><span class="cl"><span class="nv">BUILD_PATH</span><span class="o">=</span>build
+</span></span><span class="line"><span class="cl"><span class="nv">UVM_VERBOSITY</span><span class="o">=</span>MEDIUM
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">#source file
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nv">DUT_FILES</span><span class="o">=</span><span class="k">$(</span>wildcard <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/*.v <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/**/*.v <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/*.sv <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/**/*.sv<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">TOP_FILES</span><span class="o">=</span><span class="k">$(</span>wildcard <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>TOP_MODULE<span class="k">)</span>.v <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/**/<span class="k">$(</span>TOP_MODULE<span class="k">)</span>.v <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>TOP_MODULE<span class="k">)</span>.sv <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/**/<span class="k">$(</span>TOP_MODULE<span class="k">)</span>.sv<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">SOURCE_FILE</span><span class="o">=</span><span class="k">$(</span>DUT_FILES<span class="k">)</span> <span class="k">$(</span>TOP_FILES<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="n">filelist</span> <span class="n">vcs</span> <span class="n">verdi</span> <span class="n">clean</span> <span class="n">all</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">#compile command 
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nv">VCS</span><span class="o">=</span>vcs +v2k -timescale<span class="o">=</span>1ns/1ps <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-sverilog <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-full64	<span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-R <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-ntb_opts uvm <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-f ../<span class="k">$(</span>VSRC_PATH<span class="k">)</span>/filelist.f <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		+mindelays <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-negdelay <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		+neg_tchk <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-l vcs.log <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		+UVM_VERBOSITY<span class="o">=</span><span class="k">$(</span>UVM_VERBOSITY<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">VERDI</span><span class="o">=</span>Verdi-Ultra -ssf <span class="k">$(</span>TOP_MODULE<span class="k">)</span>.fsdb <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-nologo <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		-l verdi.log             
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span> <span class="n">filelist</span> <span class="n">vcs</span> <span class="n">verdi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">#filelist generation
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">filelist</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	@rm -f <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/filelist.f
+</span></span><span class="line"><span class="cl">	@for dir in <span class="k">$(</span>SOURCE_FILE<span class="k">)</span><span class="p">;</span> <span class="k">do</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		realpath -s <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">(dirname &#34;</span><span class="nv">$$</span>dir<span class="s2">&#34;)&#34;</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">done</span> <span class="p">|</span> sort -u <span class="p">|</span> <span class="k">while</span> <span class="nb">read</span> dir<span class="p">;</span> <span class="k">do</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="nb">echo</span> <span class="s2">&#34;+incdir+</span><span class="nv">$$</span><span class="s2">dir&#34;</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">done</span> &gt;&gt; <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/filelist.f
+</span></span><span class="line"><span class="cl">	@for file in <span class="k">$(</span>SOURCE_FILE<span class="k">)</span><span class="p">;</span> <span class="k">do</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>		<span class="nb">echo</span> <span class="nv">$$</span><span class="o">(</span>realpath <span class="s2">&#34;</span><span class="nv">$$</span><span class="s2">file&#34;</span><span class="o">)</span> &gt;&gt; <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/filelist.f<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>	<span class="k">done</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">#start compile and simulate
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">vcs</span><span class="o">:</span> <span class="n">filelist</span>
+</span></span><span class="line"><span class="cl">	@mkdir -p <span class="k">$(</span>BUILD_PATH<span class="k">)</span>
+</span></span><span class="line"><span class="cl">	<span class="o">(</span><span class="nb">cd</span> <span class="k">$(</span>BUILD_PATH<span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="k">$(</span>VCS<span class="k">)</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">#run verdi
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">verdi</span><span class="o">:</span> <span class="n">filelist</span>
+</span></span><span class="line"><span class="cl">	<span class="o">(</span><span class="nb">cd</span> <span class="k">$(</span>BUILD_PATH<span class="k">)</span> <span class="o">&amp;&amp;</span> <span class="k">$(</span>VERDI<span class="k">)</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c">#clean
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">clean</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">	rm -rf  <span class="k">$(</span>BUILD_PATH<span class="k">)</span> <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/filelist.f
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以下，对该Makefile进行简单说明：</p>
+<h2 id="变量定义">变量定义
+</h2><p>首先，我们定义了<code>VSRC_PATH</code>这一变量，用于指定保存所有RTL代码的路径。同时，由于VCS最主要的功能是对设计进行功能仿真验证，所以在<code>VSRC_PATH</code>路径下，通常既会有被测设计（Design Under Test, DUT）的RTL代码，又会有验证环境的RTL代码，那我们是否需要对其进行区分呢？</p>
+<p>答案是肯定的，在现代IC验证方法学（如UVM等）中，会明确划分被测设计与验证环境的边界，一个好的习惯是将被测设计的RTL代码放在独立路径下，且在此路径下不包含任何用于验证设计的代码，故此处我们额外定义<code>DUT_PATH</code>这一变量，用于指定被测设计代码所在的路径，实现被测设计与验证环境的解耦。</p>
+<p>随后，我们定义了<code>TOP_MODULE</code>这一变量，其用于指定整个环境的顶层模块，该模块通常属于验证环境（因为我们会在验证环境中例化被测设计）。此处我们默认该模块名与该模块所在的文件名相同，比如顶层模块名为<code>tb_dut</code>，则其所在的文件名就应为<code>tb_dut.v</code>或<code>tb_dut.sv</code>，具体原因将在后文说明。</p>
+<p>最后，我们定义了<code>BUILD_PATH</code>这一变量，用于为使用VCS时输出的中间文件指定一个独立的保存路径，防止仿真输出污染项目的文件结构。</p>
+<p>另外，我们也可以额外定义一些变量用于配置验证环境（可选），比如此处我们定义了<code>UVM_VERBOSITY</code>这一变量，当使用UVM进行验证时，该变量可以全局指定UVM打印信息的冗余度阈值。</p>
+<h2 id="设计文件解析">设计文件解析
+</h2><p>我们使用Linux Bash中的<code>wildcard</code>实现对设计文件的解析，此处我们分别定义了<code>DUT_FILES</code>与<code>TOP_FILES</code>两个变量，其中<code>DUT_FILES</code>代表被测设计的所有RTL代码文件，故我们可在<code>$(VSRC_PATH)/$(DUT_PATH)</code>路径下使用通配符递归匹配所有<code>.v</code>与<code>.sv</code>文件<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">DUT_FILES</span><span class="o">=</span><span class="k">$(</span>wildcard <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/*.v <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/**/*.v <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/*.sv <span class="k">$(</span>VSRC_PATH<span class="k">)</span>/<span class="k">$(</span>DUT_PATH<span class="k">)</span>/**/*.sv<span class="k">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>TOP_FILES</code>则代表顶层模块所在的文件，我们按与<code>DUT_FILES</code>同样的方法在<code>$(VSRC_PATH)</code>路径下匹配名称为<code>$(TOP_MODULE).v</code>或<code>$(TOP_MODULE).sv</code>的文件，此处即呼应了前文要求顶层模块与其所在文件同名的要求。</p>
+<p>随后，我们定义<code>SOURCE_FILE</code>这一变量包含<code>DUT_FILES</code>与<code>TOP_FILES</code>两个变量，代表所有设计文件。我们之所以要独立定义<code>TOP_FILES</code>这一变量，再将其包含进<code>SOURCE_FILE</code>，是因为我们希望保证<code>TOP_FILES</code>排在<code>SOURCE_FILE</code>文件列表的最后，这样在使用VCS解析设计文件时，顶层模块最后才被解析，这可以一定程度上避免解析时出现模块/类定义的依赖问题。</p>
+<p>但是，此时会存在一个问题，目前<code>SOURCE_FILE</code>中仅包含了被测设计与顶层模块对应的文件，但对一个完整的验证环境而言，通常远不止顶层模块所在的这一个文件，那么剩余用于构建验证环境的文件应当如何被解析呢？此处我们规定：剩余文件通过在<code>TOP_FILES</code>内部调用<code>include</code>宏包含进验证环境中，这么做有两点原因：</p>
 <ul>
-<li>$\mathscr{H}$ 为<strong>因果线性时不变（LTI）系统</strong>。</li>
-<li>$\mathscr{H}$ 对应的DSP算法为<strong>非递归DSP算法</strong>，即系统的输出与<strong>历史输出无关</strong>，我们将在后文说明为什么假设系统 $\mathscr{H}$ 满足这一条件。</li>
-<li>$\mathscr{H}$ 为<strong>SISO系统</strong><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。</li>
+<li>在验证环境中，除<code>TOP_FILES</code>外的其他文件通常是对验证环境的激励、参考模型与计分板等组件的类定义，在使用VCS时，这些文件通常需要指定明确的解析顺序，否则就会产生定义依赖问题，因此，在<code>TOP_FILES</code>中手动通过<code>include</code>宏按顺序包含这些文件，是一个相对稳定的方案。</li>
+<li>对一个成熟的验证环境（如UVM）而言，其结构应当是固定的，因此，我们虽然在<code>TOP_FILES</code>中手动通过<code>include</code>宏包含了剩余文件，但在被测设计更改时，我们并不需要修改验证环境的结构，进而也不必重复修改这些用于构建验证环境的宏定义。</li>
 </ul>
-<p>而我们希望由并行处理技术达成的目标，是构造与系统 $\mathscr{H}$ 等效的一个<strong>MIMO系统</strong><sup id="fnref1:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> $\mathscr{H}_0$ ，该系统<strong>每时刻并行输入 $q$ 个输入样本，经处理后并行返回 $s$ 个输出数据</strong>。</p>
-<p>那么，系统 $\mathscr{H}_0$ 并行输出的 $s$ 个数据是什么样的呢？不失一般性，记原系统的输入样本为 $x[n]$ ，输出数据 $y[n]=\mathscr{H}\{x[n]\}$ 。我们当然希望系统 $\mathscr{H}_0$ 是 $y[n]$ 序列中的<strong>连续 $s$ 个取值</strong>，即：
-</p>
-$$
-\vec{y}[n]=\mathscr{H}_0\{\vec{x}[n]\},~\vec{y}[n]=(y[n],y[n+1],\cdots,y[n+s-1])^\text{T}
-$$<p>
-那么，如果我们记录系统 $\mathscr{H}_0$ 每轮迭代的输出向量，是否就分别对应着$\vec{y}[n],\vec{y}[n+1],\cdots,\vec{y}[n+k],\cdots$呢？答案显然是<strong>否定的</strong>，不难注意到： $\vec{y}[n]$ 与 $\vec{y}[n+1]$ 其实只有<strong>1个输出元素</strong>不同<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> ，因此系统的输出实际上仍是<strong>串行</strong>的，不符合我们的需求。进而，若使每轮迭代的输出<strong>互不重叠</strong>，且恰好遍历 $y[n]$ 序列，不难发现，每轮迭代的向量就应当为：
-</p>
-$$
-\vec{y}[n],\vec{y}[n+s],\cdots,\vec{y}[n+ks],\cdots
-$$<p>
-进一步，我们不妨从 $n=0$ 开始考查，则系统 $\mathscr{H}_0$ 重复迭代，对应的输出向量序列为 ${\vec{y}[ks]}$ 。</p>
-<p>那么，取某一次迭代的输出向量序列 $\vec{y}[ps],~p\in\mathbb{N}$ 进行分析，我们应如何生成这一向量序列呢？利用系统 $\mathscr{H}$ ，可得：
-</p>
-$$
-\left\{\begin{array}{l}
-\displaystyle y[ps]=\mathscr{H}\{x[ps]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[ps-k]\\
-\displaystyle y[ps+1]=\mathscr{H}\{x[ps+1]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[ps+1-k]\\
-\cdots\\
-\displaystyle y[ps+t]=\mathscr{H}\{x[ps+t]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[ps+t-k]\\
-\cdots\\
-\displaystyle y[(p+1)s-1]=\mathscr{H}\{x[(p+1)s-1]\}=\sum\limits_{k=0}^{m-1}a_k\cdot x[(p+1)s-1-k]
-\end{array}\right.
-$$<p>
-其中，方程组的右侧共涉及 $m+s-1$ 个互异的输入样本，分别为：
-</p>
-$$
-x[(p+1)s-1],~x[(p+1)s-2],\cdots,~x[ps-m+2],~x[ps-m+1]
-$$<p>
-以下，为方便后文的说明，我们简单对系统 $\mathscr{H}_0$ 的迭代过程进行讨论：</p>
-<p>不失一般性，设系统 $\mathscr{H}_0$ 的输入向量为规模为 $q$ 的 $\vec{x}[ps]$ ，输出向量为规模为 $s$ 的 $\vec{y}[ps]$ 。则系统 $\mathscr{H}_0$ 的迭代过程如下：</p>
-<ul>
-<li>每一时钟周期 $T_\text{clk}$ ，向系统输入序列 $\vec{x}[ps],~p=0,1,2,\cdots$ ，分别用于求解 $\vec{y}[ps],~p=0,1,2,\cdots$。</li>
-<li>而对系统的输出 $\vec{y}[ps]$ ，其也应当是<strong>连续并行的</strong>，即每一时钟周期 $T_\text{clk}$ ，随 $\vec{x}[ps]$ 的输入同步输出对应的输出向量 $\vec{y}[ps]$ 。</li>
-</ul>
-<p>那么，基于上述事实，我们可得出以下结论：</p>
-<ul>
-<li>$\vec{x}[ps]$ 也应当是 $x[n]$ 序列中的<strong>连续 $q$ 个取值</strong>，而且由于 $\vec{y}[ps]=\mathscr{H}_0\{\vec{x}[ps]\}$ 由 $x[(p+1)s-1:ps-m+1]$ 确定，且系统为<strong>因果系统</strong>，进而 $x[k]$ 仅可通过延时模块生成 $x[k-l]$ ，因此 $\vec{x}[ps]$ 只可能为：</li>
-</ul>
-$$
-x[(p+1)s-1],x[(p+1)s-2],\cdots,x[(p+1)s-q]
-$$<ul>
-<li>若记系统中的延时模块为 $D^k$ ，代表其每个时钟周期 $T_\text{clk}$ 将前第 $k$ 个时钟周期寄存的值输出，则我们考查其所在的路径：</li>
-</ul>
+<h2 id="构建规则">构建规则
+</h2><p>首先，我们分别定义<code>VCS</code>与<code>VERDI</code>两个变量，用于指定在命令行中运行VCS与Verdi时的参数配置：对VCS而言，我们使用<code>filelist.f</code>导入所有设计文件，该文件通过<code>filelist</code>目标构建；对Verdi而言，我们会在启动的同时读入仿真生成的<code>$(TOP_MODULE).fsdb</code>波形文件，因此，如希望使用Verdi，应当在验证环境中加入：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -398,24 +482,34 @@ $$<ul>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                -&gt;                    
-</span></span><span class="line"><span class="cl">-&gt;      +-----+ z[ps] +------+   -&gt;   
-</span></span><span class="line"><span class="cl">x[ps]---&gt;  G  +-------&gt;  Dk  +--&gt;o[ps]
-</span></span><span class="line"><span class="cl">        +-----+       +------+        
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">$dumpfile</span><span class="p">(</span><span class="s">&#34;top_module_name.fsdb&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">$dumpvars</span><span class="p">(</span><span class="mh">0</span><span class="p">,</span> <span class="n">top_module_name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在 $D^k$ 前，输入向量 $\vec{x}[ps]$ 经过 $\mathscr{H}_0$ 的子系统 $\mathscr{G}$ ，得到输出向量 $\vec{z}[ps]$ ，而 $\vec{z}[ps]$ 经延时模块 $D^k$ 的输出为 $\vec{o}[ps]$ ，由于 $D^k,~\mathscr{G}$ 均为<strong>LTI系统</strong>，因此在 $k$ 个时钟周期后，延时模块的输出为 $\vec{z}[ps]$ ，但 $k$ 个时钟周期后的输入为 $\vec{x}[(p+k)s]$ ，则 $\mathscr{G}\{\vec{x}[(p+k)s]\}=\vec{z}[(p+k)s]$ ，于是可知： $D^k\{\vec{z}[(p+k)s]\}=\vec{z}[ps]$ ，这说明系统 $\mathscr{H}_0$ 中的延时模块为 $D^k$ 所造成的延时为 $ks$ 而非 $k$ 。</p>
-<ul>
-<li>输入规模 $q$ 与输出规模 $s$ 必须满足 $q\geqslant s$ ，否则对输入 $x[(p+1)s-1:(p+1)s-q]$ ，即使单位延迟模块 $D$ 对其的延迟也为 $s$ ，可知 $x[(p+1)s-q-1:ps]$ 是不可能在 $\mathscr{H}_0$ 中被生成的，进而也无法输出 $\vec{y}[ps]$ 。</li>
-</ul>
+</div><p>对<code>filelist</code>目标，我们同样使用Linux Bash指令以在<code>VSRC_PATH</code>路径下生成<code>filelist.f</code>，该段指令生成的<code>filelist.f</code>中，首先会使用<code>+incdir+</code>包含<code>SOURCE_FILE</code>中所有文件的上级绝对路径（使用<code>sort -u</code>去重）供VCS搜索，随后包含<code>SOURCE_FILE</code>中所有文件的绝对路径，比如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">+incdir+/home/posvirus/UVM/vsrc
+</span></span><span class="line"><span class="cl">+incdir+/home/posvirus/UVM/vsrc/dut
+</span></span><span class="line"><span class="cl">/home/posvirus/UVM/vsrc/dut/dut.sv
+</span></span><span class="line"><span class="cl">/home/posvirus/UVM/vsrc/top_tb.sv
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对<code>vcs</code>与<code>verdi</code>目标，其会进入<code>BUILD_PATH</code>分别运行VCS与Verdi，用于仿真验证与查看波形。</p>
+<p>对<code>clean</code>目标，其会直接删除<code>BUILD_PATH</code>路径与<code>filelist.f</code>，用于清除所有用于仿真验证的输出文件。</p>
 <div class="footnotes" role="doc-endnotes">
 <hr>
 <ol>
 <li id="fn:1">
-<p><strong>SISO系统（Single-input Single-output System）</strong> 指单输入单输出系统， <strong>MIMO系统（Multiple-input Multiple-output System）</strong> 指多输入多输出系统。&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
-</li>
-<li id="fn:2">
-<p>$\vec{y}[n]$ 包含 $y[n]$ 而 $\vec{y}[n+1]$ 不包含， $\vec{y}[n+1]$ 包含 $y[n+s]$ 而 $\vec{y}[n]$ 不包含。&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>如果RTL代码文件中还包含以<code>.vh</code>与<code>.svh</code>等为后缀的头文件，可增加通配符的匹配规则以包含更多类型的文件，也可直接在RTL代码文件中使用<code>include</code>宏包含这些头文件。&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </div>
@@ -427,7 +521,7 @@ $$<ul>
     
     <section class="article-tags">
         
-            <a href="/tags/vlsi/">VLSI</a>
+            <a href="/tags/script/">Script</a>
         
     </section>
 
@@ -454,7 +548,7 @@ $$<ul>
 
 
         <span>
-            最后更新于 Dec 06, 2025 00:00 UTC
+            最后更新于 Mar 23, 2026 00:00 UTC
         </span>
     </section></footer>
 
@@ -496,6 +590,30 @@ $$<ul>
     <h2 class="section-title">相关文章</h2>
     <div class="related-content">
         <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/dic-008/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-008/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 仲裁器"
+                        data-key="dic-008" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">仲裁器</h2>
+        </div>
+    </a>
+</article>
+
             
                 
 <article class="has-image">
@@ -564,30 +682,6 @@ $$<ul>
 
         <div class="article-details">
             <h2 class="article-title">通信系统简介</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/p/dic-008/">
-        
-        
-            <div class="article-image">
-                <img src="/p/dic-008/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
-                        width="250" 
-                        height="150" 
-                        loading="lazy"
-                        alt="Featured image of post 仲裁器"
-                        data-key="dic-008" 
-                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">仲裁器</h2>
         </div>
     </a>
 </article>
