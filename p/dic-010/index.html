@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-010：跨时钟域与异步FIFO">
+<title>跨时钟域与异步FIFO</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/dic-010/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="跨时钟域与异步FIFO">
+<meta property='og:description' content="DIC-010：跨时钟域与异步FIFO">
+<meta property='og:url' content='https://posvirus.github.io/p/dic-010/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Function Module' /><meta property='article:published_time' content='2026-03-25T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-03-25T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-010/cicc.png' />
+<meta name="twitter:title" content="跨时钟域与异步FIFO">
+<meta name="twitter:description" content="DIC-010：跨时钟域与异步FIFO"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/dic-010/cicc.png' />
+    <link rel="shortcut icon" href="/favicon.jpeg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤗</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">如无必要，勿增实体</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#跨时钟域">跨时钟域</a>
+      <ol>
+        <li><a href="#跨时钟域的风险及其分类">跨时钟域的风险及其分类</a></li>
+        <li><a href="#解决亚稳态的方法">解决亚稳态的方法</a></li>
+        <li><a href="#解决采样随机性的方法">解决采样随机性的方法</a>
+          <ol>
+            <li><a href="#单路信号跨时钟域">单路信号跨时钟域</a></li>
+            <li><a href="#多路信号跨时钟域">多路信号跨时钟域</a></li>
+          </ol>
+        </li>
+        <li><a href="#跨时钟域的时序约束">跨时钟域的时序约束</a></li>
+      </ol>
+    </li>
+    <li><a href="#异步fifo">异步FIFO</a>
+      <ol>
+        <li><a href="#异步fifo的相关问题">异步FIFO的相关问题</a>
+          <ol>
+            <li><a href="#空满信号的判定及所在时钟域">空/满信号的判定及所在时钟域</a></li>
+            <li><a href="#读写指针的编码同步对比与指针-地址编码转换">读/写指针的编码、同步、对比与指针-地址编码转换</a></li>
+            <li><a href="#非2幂次深度的异步fifo设计">非2幂次深度的异步FIFO设计</a></li>
+            <li><a href="#fifo的standard与first-word-fall-through模式">FIFO的Standard与First Word Fall-Through模式</a></li>
+          </ol>
+        </li>
+        <li><a href="#异步fifo的设计与验证">异步FIFO的设计与验证</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/dic-010/">
+                <img src="/p/dic-010/cicc_hu_d52f18f9a902f256.png"
+                        srcset="/p/dic-010/cicc_hu_d52f18f9a902f256.png 800w, /p/dic-010/cicc_hu_c62d00be19035290.png 1600w"
+                        width="800" 
+                        height="270" 
+                        loading="lazy"
+                        alt="Featured image of post 跨时钟域与异步FIFO" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/dic/" >
+                DIC
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/dic-010/">跨时钟域与异步FIFO</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            DIC-010：跨时钟域与异步FIFO
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Mar 25, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 22 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>本文主要讨论数字IC设计中的<strong>跨时钟域（Clock Domain Crossing, CDC）<strong>问题与</strong>异步FIFO（Asynchronous FIFO）<strong>电路设计。跨时钟域问题其通常指在数字系统存在多个独立时钟域时，应当如何安全、稳定且高效地实现不同时钟域间的</strong>信号传输</strong>，而异步FIFO则是解决跨时钟域问题的一种非常成熟且实用的电路模块。</p>
+<p>在网上，已经有非常多的博客对上述两部分内容进行介绍，此处列举内容较为详细且准确性较高的几篇，以供参考：</p>
+<p><strong><a class="link" href="https://zhuanlan.zhihu.com/p/598631863"  target="_blank" rel="noopener"
+    >【高级数字电路】跨时钟域/CDC设计方法总结</a></strong></p>
+<p><strong><a class="link" href="https://zhuanlan.zhihu.com/p/599914121"  target="_blank" rel="noopener"
+    >【高级数字电路】异步FIFO设计原理 &amp; RTL模型</a></strong></p>
+<p>除博客外，对跨时钟域与异步FIFO介绍最为全面的，当属Sunburst Design公司<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>的创始人<strong>Cliff Cummings</strong>在2001-2008年为 <strong>Synopsys Users Group Conference（SUGC）</strong> 撰写的若干篇技术文档，这一点在上述博客中也有提及。笔者认为，学习本专题内容最直接，也是最高效的方式，莫过于直接阅读这几篇技术文档原文，文档链接如下：</p>
+<p><strong>跨时钟域：</strong></p>
+<p><strong><a class="link" href="http://staff.ustc.edu.cn/~wyu0725/FPGA/snug_collection/Clifford%20E.%20Cummings%27%20Paper/01.Verilog/2001-Synthesis%20and%20Scripting%20Techniques%20for%20Designing%20Multi-Asynchronous%20Clock%20Designs.pdf"  target="_blank" rel="noopener"
+    >Cummings, Clifford E. &ldquo;Synthesis and scripting techniques for designing multi-asynchronous clock designs.&rdquo; <em>SNUG 2001 (Synopsys Users Group Conference, San Jose, CA, 2001) User Papers</em>. 2001.</a></strong></p>
+<p><strong><a class="link" href="http://staff.ustc.edu.cn/~wyu0725/FPGA/snug_collection/Clifford%20E.%20Cummings%27%20Paper/04.SystemVerilog/2008-Clock%20Domain%20Crossing%20%28CDC%29%20Design%20&amp;%20Verification%20Techniques%20Using%20SystemVerilog.pdf"  target="_blank" rel="noopener"
+    >Cummings, Clifford E. &ldquo;Clock domain crossing (CDC) design &amp; verification techniques using SystemVerilog.&rdquo; <em>SNUG-2008, Boston</em> (2008).</a></strong></p>
+<p><strong>异步FIFO：</strong></p>
+<p><strong><a class="link" href="https://www.researchgate.net/profile/Clifford-Cummings/publication/252160343_Simulation_and_Synthesis_Techniques_for_Asynchronous_FIFO_Design/links/54bfe9720cf28eae4a66418a/Simulation-and-Synthesis-Techniques-for-Asynchronous-FIFO-Design.pdf"  target="_blank" rel="noopener"
+    >Cummings, Clifford E. &ldquo;Simulation and synthesis techniques for asynchronous FIFO design.&rdquo; <em>SNUG 2002 (Synopsys Users Group Conference, San Jose, CA, 2002) User Papers</em>. Vol. 281. 2002.</a></strong></p>
+<p>综上，本博客仅对技术文档中的若干细节及个人想法进行记录，不再重复文档中的主体内容，笔者自认经验有限，无法写得比文档更好。</p>
+<h2 id="跨时钟域">跨时钟域
+</h2><h3 id="跨时钟域的风险及其分类">跨时钟域的风险及其分类
+</h3><p>当进行跨时钟域信号传输时，可能出现的风险分为<strong>两类</strong>，但引发这两类风险的原因是一致的，即：当使用<strong>目的时钟</strong><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>驱动触发器采样异步信号时，异步信号与采样时钟的 <strong>“时序”</strong> <sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>是随机变化的，这种随机性可能引发电路不确定的行为，包括：</p>
+<ul>
+<li>
+<p><strong>亚稳态（Metastable）：</strong> 若异步信号变化的时刻与目的时钟采样边沿过于靠近，致使采样行为不满足建立/保持时间约束，则触发器的采样输出可能是一个介于<strong>1</strong>与<strong>0</strong>之间的<strong>非稳态电平</strong>，且在后续多个目的时钟周期内都可能无法收敛至稳态电平，这主要是触发器的结构导致的，因为触发器内部通常包含组合逻辑门构成的反馈环路，其除了输出1或0的稳定状态外，一般会存在一个输出中间电平的<strong>亚稳态</strong>，这里“亚”的含义是：当外部无扰动时，触发器可以稳定保持该状态，但若外部发生任何电平波动，触发器会通过反馈环路触发正反馈，在有限时间内使内部状态收敛至某一稳态<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>。</p>
+</li>
+<li>
+<p><strong>采样随机性（Randomness）：</strong> 即使触发器的采样没有诱发亚稳态，电路仍会存在不确定行为，包括两点：</p>
+<ul>
+<li>
+<p>在采样行为不满足建立/保持时间约束时，我们无从确定触发器的输出是1还是0；</p>
+</li>
+<li>
+<p>即使采样行为满足时序约束，采样得到的序列也一定会随异步信号与目的时钟的相对相位变化而变化（比如对一个脉宽仅有1个目的时钟周期的异步信号而言，目的时钟是<strong>有概率</strong>无法采样到该信号有效值的）。</p>
+</li>
+</ul>
+<p>换言之，<strong>采样异步信号存在天然的不确定性</strong>，采样随机性会引申出诸如数据漏采、同步失序等一系列问题，因此这也是跨时钟域信号传输时主要需要解决的问题，在设计数字系统时，我们不希望系统内部行为存在任何不可预测的特征。</p>
+</li>
+</ul>
+<h3 id="解决亚稳态的方法">解决亚稳态的方法
+</h3><p>最常见的方法是使用多个触发器级联构成的 <strong>同步器（Synchronizer）</strong> 实现信号采样。但需要注意，即使使用同步器，也仍然存在非常小的可能诱发亚稳态。工程人员通常使用 <strong>平均无故障工作时间（Mean time between failures, MTBF）</strong> 这一因子评估<strong>单个触发器</strong>诱发亚稳态的可能性，对其的一个直观认识是：其通常反比于采样时钟频率$f_\text{clk}$与异步信号翻转频率$f_\text{data}$的乘积，即：
+</p>
+$$
+f\propto \frac{1}{f_\text{clk}\times f_\text{data}}
+$$<p>
+因此，当多个触发器级联构成同步器时，同步器的MTBF会随级联的触发器个数增加而近似呈<strong>指数衰减</strong><sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup>。</p>
+<p>另外，有关同步器的一个重要认识是：同步器的输出信号一定是被采样异步信号的<strong>历史状态</strong>，这很容易理解，因为同步器在功能上就是将输入信号打了若干拍。这一认识在异步FIFO设计中非常重要，我们将在后文进行说明。</p>
+<h3 id="解决采样随机性的方法">解决采样随机性的方法
+</h3><p><strong>同步器无法消除采样随机性</strong>，因其本质上仍是在通过目的时钟采样一个在时序上完全随机的异步信号。因此，采样随机性的消除必须要引入额外的电路设计。而从之前的分析也可看出，这一额外电路的主要功能即是<strong>对异步信号施加额外的时序约束</strong>，因为只有输入异步信号的行为受到约束，我们才有可能实现确定性的采样。</p>
+<p>当然，实现这一效果的方法是多样的，对应适用的场景也是不同的，我们可以分别进行简单讨论：</p>
+<h4 id="单路信号跨时钟域">单路信号跨时钟域
+</h4><p>单路信号跨时钟域传输的主要风险是采样随机性引发的<strong>数据漏采</strong>，即我们无法保证目的时钟一定能采样到异步信号的有效值。</p>
+<p>当只有单路信号进行跨时钟域传输时，我们可以通过<strong>展宽信号</strong>的方式确保目的时钟<strong>至少能够正确采样1次信号</strong>，从而确保信号的正确传输，该方法需要注意以下事项：</p>
+<ul>
+<li>确保目的时钟正确采样的前提是展宽后的信号脉宽需满足所谓的 <strong>“三边沿”要求</strong> <sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup>，即信号有效的时间范围内至少要包含<strong>3个目的时钟的边沿</strong>，由于我们通常仅会统一选取时钟上升沿/下降沿中的一者进行采样，因此“三边沿”要求可以保证目的时钟<strong>至少能正确采样信号1次</strong>。同时，为保证信号有效的时间范围<strong>完全包含</strong>目的时钟的3个边沿，我们通常要求信号脉宽不小于<strong>1.5倍的目的时钟周期</strong>。</li>
+<li>信号脉宽不小于1.5倍的目的时钟周期是一个粗略约定，如果我们希望确保目的时钟域采样到正确的信号值，可以采用<strong>闭环控制</strong>的方式：目的时钟域将同步后的信号再次发送至发送时钟域，由发送时钟域同步并对比该信号与初始发送信号是否一致，在此过程中，初始发送信号始终保持不变，直到对比完成后才可变化。这一过程类似于两时钟域进行一次简单的握手，安全性高，但实时性不高。</li>
+<li>即使对信号进行展宽后，我们仍无法保证目的时钟域接收到信号的<strong>有效周期数</strong>是固定值，因为展宽信号无法消除异步信号与目的时钟相对相位的随机性，因此我们无法确定展宽后信号被目的时钟采样的次数。换言之，在单路信号跨时钟域传输时，我们只能传输那些<strong>在目的时钟域对有效周期数没有严格要求的信号</strong>，诸如 <strong>“通过跨时钟域传输某信号，使其在目的时钟域被同步为单周期脉冲”</strong> 的需求是不合理的。如果在某些设计中，确实需要满足上述需求，我们可以考虑跨时钟域传递一个多周期的使能信号，随后在目的时钟域利用同步后的使能信号<strong>触发脉冲生成</strong>。这一方法与后文中<strong>逻辑后移</strong>的思路是相同的。</li>
+</ul>
+<h4 id="多路信号跨时钟域">多路信号跨时钟域
+</h4><p>多路信号跨时钟域传输的主要风险是各路信号因采样随机性引发的<strong>数据漏采</strong>，以及各路信号间因采样随机性引发的<strong>同步失序</strong>。其中，同步失序产生的原因可归纳为：<strong>各路信号在跨时钟域传输时均存在独立的采样随机性，那么多路信号同时传输时，我们显然不能认为各路信号随机性的“偏向”是一致的，因此各路信号在采样后的时序可能发生变化。</strong></p>
+<p>消除多路信号跨时钟域的风险的原则是：<strong>将其转化为单路信号跨时钟域的场景，并运用单路信号跨时钟域的电路设计消除风险。</strong></p>
+<h5 id="方法1逻辑后移">方法1：逻辑后移
+</h5><p>逻辑后移其实是笔者自己归纳的一种方法，对应着Cliff Cummings文档中的多个电路解决方案，但笔者认为它们在设计思路上是一致的。</p>
+<p>逻辑后移的定义如下：如果目的时钟域对跨时钟域信号的时序有严格要求，同时在发送时钟域，存在某一子模块用于产生跨时钟域的所有信号，且该子模块仅由发送时钟域的<strong>单一信号</strong>驱动<sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup>，<strong>则可以将该子模块整体迁移至目的时钟域，并将驱动该子模块的信号作为单路跨时钟域信号进行传输。</strong></p>
+<p>比如，若要传输多路完全相同的信号，那么完全可以仅对其中一路信号进行跨时钟域传输，随后在目的时钟域将其复制为多份。</p>
+<p>再比如，若要求传输的信号A与信号B正好差一拍，那么可以仅对信号A进行跨时钟域传输，随后在目前时钟域打一拍生成信号B。</p>
+<p>逻辑后移从本质上看是<strong>从空间上</strong>将多路信号跨时钟域转化为单路信号跨时钟域，即通过改变模块所在时钟域的方式进行转化；对称地，我们也可以<strong>从时间上</strong>转化，即不改变模块所在时钟域，但通过引入额外逻辑，使得<strong>在各个采样时间点观察跨时钟域传输的多路信号，应当有且仅有一路信号可能发生变化</strong>。此时，各采样时间点只会有一路信号存在采样随机性，这便转化为了单路信号跨时钟域的场景，进而避免了同步失序，后续的各种解决方案都或多或少使用了这种思路。</p>
+<p>这里需要明确一点，什么叫做“在某个采样时间点观察多路跨时钟域信号，有且仅有一路信号可能变化”？更为具体的定义是：<strong>在某个采样时间点不满足建立/保持时间约束的时间范围内，应当有且仅有一路信号可能变化</strong>，因为这样才可保证只会有一路信号存在采样随机性。但不难发现，这要求发送时钟周期$T_\text{tran}$，建立时间$T_\text{setup}$与保持时间$T_\text{hold}$满足如下约束：
+</p>
+$$
+T_\text{tran}>T_\text{setup}+T_\text{hold}
+$$<p>
+在较为先进的工艺下，建立/保持时间通常在<strong>10ps</strong>这个量级，而系统时钟周期通常在<strong>1ns</strong>这个量级，因此上述不等式在大多数情况下是平凡成立的。换言之，我们只需要保证<strong>在每个发送时钟周期内，均只有且仅有一路信号可能发生变化即可</strong>。当然，如果发送时钟周期非常小，以至于其小于建立/保持时间之和，那么下述对多路跨时钟域信号的处理方法就都失效了。</p>
+<h5 id="方法2独热码">方法2：独热码
+</h5><p>这种方法的思路是：将$N$路信号视为一个$N$位的二进制数，随后将其编码为$2^N$位的<strong>独热码</strong>（One-Hot Code, $N$位二进制数最多存在$2^N$个取值）进行跨时钟域传输，最后在目的时钟域解码还原为$N$路信号。</p>
+<p>独热码在切换时，每次都有且仅有一位由0变1，有且仅有1位由1变0，此时仍有两路跨时钟域信号发生变化，似乎与前文提及的有且仅有一路信号可能发生变化的要求矛盾。但我们不难发现，对于独热码而言，<strong>只有由0变1的那一路信号决定了独热码切换后的取值</strong>，因此，我们在目的时钟域设计解码模块时，可以忽略从1变0的那一路信号，即：</p>
+<ul>
+<li>将独热码编码的多路数据分别通过同步器同步至目的时钟域，输入解码模块；</li>
+<li>解码模块通过有限状态机（FSM）实现，状态即为当前采样时间点解码的二进制数，随后，在下一采样时间点，如果检测到输入的二进制码的某位由0变1（至多有一位），便根据该路所在位更新至下一状态实现解码。</li>
+</ul>
+<p>这里需要指出，采用独热码编/解码的方法是为了解决同步失序，但各路信号在跨时钟域传输时，不能忘记考虑数据漏采，即各路信号均需展宽，满足 <strong>“三边沿”要求</strong> 。</p>
+<h5 id="方法3dmux同步器">方法3：DMUX同步器
+</h5><p>独热码方法的缺点是，对独热码编码后的各路信号，我们都需要插入触发器构成的同步器进行同步，当跨时钟域的信号位宽较大时，这会引发相当大的资源开销。</p>
+<p>为此，一个可行的方法是使用<strong>DMUX同步器</strong>，这种方法的思路是：</p>
+<ul>
+<li>跨时钟域传输的多路信号不使用同步器，通过发送时钟域直接传输至目的时钟域；</li>
+<li>同时，额外引入一路控制信号，使用同步器进行跨时钟域传输，并在目的时钟域转化为脉冲信号触发对多路信号的采样；</li>
+<li>在目的时钟域对多路信号完成采样前，多路信号不能发生跳变，这需要上层引入额外的控制逻辑环路实现。</li>
+</ul>
+<p><img src="/p/dic-010/DMUX.png"
+	width="1323"
+	height="531"
+	srcset="/p/dic-010/DMUX_hu_9216b6263d7db259.png 480w, /p/dic-010/DMUX_hu_c620b79d0a890489.png 1024w"
+	loading="lazy"
+	
+		alt="一类典型的DMUX同步器设计"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="249"
+		data-flex-basis="597px"
+	
+></p>
+<p>上图展示了Cliff Cummings文档中给出的一类典型的DMUX同步器设计（在文档中，这个电路不叫DMUX同步器，而被称为<strong>MCP formulation toggle-pulse generation</strong>，但在功能上等价于DMUX同步器），Data In为需要跨时钟域传输的多路数据信号，Next Data Pulse则为额外引入的控制信号，该电路的工作原理如下：</p>
+<ul>
+<li>Next Data Pulse信号在每次数据有效时产生一个<strong>单周期脉冲</strong>，该单周期脉冲一方面会在发送时钟域将有效数据载入寄存器中，使得该寄存器输出在下次有效数据产生前保持不变；另一方面会触发控制信号的输出逻辑（XOR门与D触发器构成的反馈结构，功能上相当于一个脉冲触发的分频器），使其发生一次翻转，将脉冲式的有效信号转化为常高/低式的信号输出；</li>
+<li>输出的控制信号经目的时钟域同步器同步后，会再次被转化为<strong>单周期脉冲</strong>（图中同步器与脉冲生成模块被封装为Load Data Pulse Gen模块，脉冲生成模块也可通过XOR门与D触发器实现），用于触发目的时钟域的寄存器采样数据，完成多路信号的跨时钟域传输。</li>
+</ul>
+<p>DMUX同步器的缺点是，为保证在目的时钟域对多路信号完成采样前信号不发生跳变，需要额外的控制逻辑，这会降低信号传输的实时性；同时，闭环的控制逻辑需要发送/目的时钟域的协同设计，这不利于两时钟域的逻辑解耦。</p>
+<h5 id="方法4异步fifo">方法4：异步FIFO
+</h5><p>最成熟、最稳定的方案，我们将在后文进行说明。</p>
+<h3 id="跨时钟域的时序约束">跨时钟域的时序约束
+</h3><p>跨时钟域的时序约束需要注意以下三点：</p>
+<ul>
+<li>为了简化时序约束和分析，在划分电路模块时，要求每个模块<strong>只允许存在一个时钟</strong>；同时，创建独立的同步器模块，用于处理某两个时钟域间的信号传递。此时，除了同步器模块外，其余功能模块为纯粹的同步设计，可独立进行简单的时序分析。</li>
+<li>对于跨时钟域传输的信号，<strong>静态时序分析（STA）的结果是不准确且无意义的</strong>。因为目的时钟与异步信号的相对相位是变化的，理论上需要检查无限多种相位关系，故需要使用<code>set_false_path</code>令综合工具禁用这些路径的时序检查<sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup>。</li>
+<li>对于同步器模块本身，需要对第一级触发器到第二级触发器间的路径进行最小延迟（Min-Time）分析，确保其满足<strong>保持时间约束</strong>。</li>
+</ul>
+<h2 id="异步fifo">异步FIFO
+</h2><h3 id="异步fifo的相关问题">异步FIFO的相关问题
+</h3><h4 id="空满信号的判定及所在时钟域">空/满信号的判定及所在时钟域
+</h4><p>异步FIFO的空信号（empty）在<strong>读时钟域</strong>，通过对比<strong>读指针</strong>与<strong>跨时钟域传输的写指针</strong>生成；异步FIFO的满信号（full）在<strong>写时钟域</strong>，通过对比<strong>写指针</strong>与<strong>跨时钟域传输的读指针</strong>生成。</p>
+<p>空信号处于读时钟域有两方面优点：</p>
+<ul>
+<li><strong>只有对FIFO的读操作才会使用空信号</strong>，故无需额外的跨时钟域操作同步该信号；</li>
+<li>当读指针追上写指针时，FIFO为空，但由于在读时钟域，跨时钟域传输的写指针始终保存的是写指针的<strong>历史状态</strong>（前文提到过！），所以<strong>无论读/写时钟的频率关系如何</strong>，读时钟域判定空信号有效始终是异步FIFO为空的<strong>必要不充分条件</strong>（即当异步FIFO为空时，空信号一定有效，但空信号有效时异步FIFO不一定为空）。这可以确保不会出现<strong>异步FIFO为空，但空信号无效</strong>的风险情形，该情形一旦出现，上层逻辑可能从异步FIFO中读出非法值。</li>
+</ul>
+<p>对称地，满信号处于写时钟域有两方面优点：</p>
+<ul>
+<li><strong>只有对FIFO的写操作才会使用满信号</strong>，故无需额外的跨时钟域操作同步该信号；</li>
+<li>当写指针追上读指针时，FIFO为满，但由于在写时钟域，跨时钟域传输的读指针始终保存的是读指针的<strong>历史状态</strong>，所以无论读/写时钟的频率关系如何，写时钟域判定满信号有效始终是异步FIFO为满的<strong>必要不充分条件</strong>（即当异步FIFO为满时，满信号一定有效，但满信号有效时异步FIFO不一定为满）。这可以确保不会出现<strong>异步FIFO为满，但满信号无效</strong>的风险情形，该情形一旦出现，上层逻辑可能对异步FIFO执行无效的写入操作。</li>
+</ul>
+<h4 id="读写指针的编码同步对比与指针-地址编码转换">读/写指针的编码、同步、对比与指针-地址编码转换
+</h4><p>异步FIFO的读/写指针有两种功能：</p>
+<ul>
+<li><strong>用于判定异步FIFO的空/满状态。</strong></li>
+<li><strong>用于作为地址寻址读/写异步FIFO内部的存储器。</strong></li>
+</ul>
+<p>当读/写指针用于判定异步FIFO的空/满状态时，对指针有两点要求：</p>
+<ul>
+<li>由于判定空/满状态时，写/读指针分别需要进行跨时钟域同步，为避免同步失序，其通常使用<strong>格雷码（Gray Code）<strong>进行编码，由于读/写指针一定是</strong>以1为单位循环递增的</strong>，而相邻格雷码的<strong>码距<sup id="fnref:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup>为1</strong>，因此这同样是一种从时间上将多路信号转化为单路信号跨时钟域的方法。</li>
+<li>由于判定空/满状态需要区分读/写指针的相互追及关系，因此对深度为$2^N$的FIFO，我们需要分别使用$N+1$位信号编码读/写指针，其中MSB为标志位，用于标识指针循环递增周期数的奇偶性，当读/写指针标志位相同时，代表读指针追上写指针，FIFO为空；当读/写标志位不同时，代表写指针追上读指针，FIFO为满。</li>
+</ul>
+<p>综上，对深度为$2^N$的FIFO，我们需要分别使用**$N+1$位格雷码**编码读/写指针，但是，对格雷码而言，我们不能按二进制码的思路，仅仅通过 <strong>“相等”</strong> 判断读/写指针重合，而需结合格雷码具体的性质进行判断：</p>
+<ul>
+<li>$N+1$位格雷码前$2^N$个取值的MSB均为0，后$2^N$个取值的MSB均为1，这与二进制编码相同，因此在通过格雷码区分读/写指针的相互追及关系时，可以直接对MSB使用 <strong>“相等”</strong> / <strong>&ldquo;不等&rdquo;</strong> 进行判定。</li>
+<li>$N+1$位格雷码前$2^N$个取值的低$N$位，与后$2^N$个取值的低$N$位存在如下关系：<strong>低$N-1$位对应相等，第$N$位对应相反</strong>。</li>
+</ul>
+<p>因此，我们判定空/满状态的逻辑应当为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">empty</span> <span class="o">=</span> <span class="p">(</span><span class="n">read_ptr</span> <span class="o">==</span> <span class="n">write_ptr_sync</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">full</span>  <span class="o">=</span> <span class="p">({</span><span class="o">~</span><span class="n">write_ptr</span><span class="p">[</span><span class="n">N</span><span class="o">-:</span><span class="mh">2</span><span class="p">],</span> <span class="n">write_ptr</span><span class="p">[</span><span class="n">N</span><span class="o">-</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]}</span> <span class="o">==</span> <span class="n">read_ptr_sync</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以下，我们还需要额外考虑读/写指针的同步问题，异步FIFO中，我们只是简单使用同步器对读/写指针进行同步，但是没有对其进行信号展宽，这可能导致以下两个后果：</p>
+<ul>
+<li>读/写指针的某些取值可能被漏采；</li>
+<li>当读/写指针的某些取值被漏采时，即使读/写指针使用格雷码编码，也不能保证当前采样时间点的指针与上一采样时间点的指针对应编码码距为1。</li>
+</ul>
+<p>但上述后果<strong>并不会</strong>影响异步FIFO的功能正确性，原因如下：</p>
+<ul>
+<li>即使读/写指针被漏采，被同步至读/写时钟域的写/读指针仍是真实指针的<strong>历史状态</strong>，因此不会产生异步FIFO误判空/满的风险情形。</li>
+<li>读/写指针被漏采时，虽然当前采样时间点的指针与上一采样时间点的指针对应编码码距不一定为1，但是在当前采样时间点观察指针，<strong>仍然只可能有一位发生变化</strong>（可以理解为虽然对比前一采样时间点与当前采样时间点，指针有多位发生变化，但是指针仍是一位一位发生变化的），<strong>而对变化的这一位，无论采样得到其变化前的值还是变化后的值，整体取值都对应着有效的格雷码</strong>。</li>
+</ul>
+<p>最后，读/写指针被编码为格雷码，但是在寻址异步FIFO内部的存储器时我们还是倾向于使用二进制码，因此需要实现指针与地址编码间的相互转换：</p>
+<p><img src="/p/dic-010/CVT.png"
+	width="1928"
+	height="945"
+	srcset="/p/dic-010/CVT_hu_a6c9d19ce0d9b092.png 480w, /p/dic-010/CVT_hu_c33bd92c725505fd.png 1024w"
+	loading="lazy"
+	
+		alt="指针-地址的统一生成模块"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="204"
+		data-flex-basis="489px"
+	
+></p>
+<p>上图展示了一种用于统一生成指针与地址编码的模块设计，其内部使用一个$n$位的二进制循环递增计数器，计数器取值通过二进制码-格雷码转换逻辑被转换为$n$位格雷码指针，同时计数器取值的低$n-1$位被直接作为二进制码地址。</p>
+<h4 id="非2幂次深度的异步fifo设计">非2幂次深度的异步FIFO设计
+</h4><p>前文讨论的异步FIFO的深度为2的幂次，这主要是因为$N$位格雷码对应$2^N$个取值。那么，如果我们希望异步FIFO的深度不是2的幂次，就需要从一般的格雷码序列中找到一个子序列，使其也满足格雷码的性质，并使用该子序列编码读/写指针，这种子序列通常使用<strong>Center-Span</strong>的方式确定，具体方式如下：</p>
+<p>一般地，如果我们要设计一个深度为$N$的异步FIFO，需要$2N$个编码值编码读/写指针（因为需要判定读/写指针的追及关系），则首先需要得到$K=\lceil \log_22N\rceil$位的格雷码序列。其次，我们只需选取该序列中的第$2^{K-1}-N+1$个至第$2^{K-1}+N$个编码值构成的子序列编码读/写指针即可（即从该序列中央向前数$N$个值，再向后数$N$个值），易于验证这一子序列也满足格雷码的所有性质。</p>
+<h4 id="fifo的standard与first-word-fall-through模式">FIFO的Standard与First Word Fall-Through模式
+</h4><p>可参考如下博客：<a class="link" href="https://blog.csdn.net/qq_35318223/article/details/123549329"  target="_blank" rel="noopener"
+    >Standard FIFO和FWFT FIFO的区别</a>，简而言之就是FWFT模式的FIFO读延迟为<strong>0个时钟周期</strong>，而Standard模式的FIFO读延迟为<strong>1个时钟周期</strong>。后文设计的异步FIFO是FWFT模式的。</p>
+<h3 id="异步fifo的设计与验证">异步FIFO的设计与验证
+</h3><p>以下，我们给出一个异步FIFO的完整设计与验证代码，以供参考：</p>
+<p><strong>异步FIFO顶层模块：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">async_fifo</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">DATASIZE</span> <span class="o">=</span> <span class="mh">8</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">ADDRSIZE</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">wclk</span><span class="p">,</span>   <span class="c1">// write clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rclk</span><span class="p">,</span>   <span class="c1">// read clock
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">wrst_n</span><span class="p">,</span> <span class="c1">// write async reset (low-active)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rrst_n</span><span class="p">,</span> <span class="c1">// read async reset (low-active)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">winc</span><span class="p">,</span>   <span class="c1">// write valid
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wdata</span><span class="p">,</span>  <span class="c1">// write data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">wire</span>                <span class="n">wfull</span><span class="p">,</span>  <span class="c1">// FIFO full signal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rinc</span><span class="p">,</span>   <span class="c1">// read valid
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">wire</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rdata</span><span class="p">,</span>  <span class="c1">// read data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">wire</span>                <span class="n">rempty</span>  <span class="c1">// FIFO empty signal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span> <span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">waddr</span><span class="p">,</span> <span class="n">raddr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wptr</span><span class="p">,</span> <span class="n">rptr</span><span class="p">,</span> <span class="n">wq2_rptr</span><span class="p">,</span> <span class="n">rq2_wptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">fifomem</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">DATASIZE</span>  <span class="p">(</span><span class="n">DATASIZE</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">ADDRSIZE</span>  <span class="p">(</span><span class="n">ADDRSIZE</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_fifomem</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wclk</span>    <span class="p">(</span><span class="n">wclk</span>   <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wclken</span>  <span class="p">(</span><span class="n">winc</span>   <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wfull</span>   <span class="p">(</span><span class="n">wfull</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wdata</span>   <span class="p">(</span><span class="n">wdata</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">waddr</span>   <span class="p">(</span><span class="n">waddr</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">raddr</span>   <span class="p">(</span><span class="n">raddr</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rdata</span>   <span class="p">(</span><span class="n">rdata</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sync_r2w</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">ADDRSIZE</span>  <span class="p">(</span><span class="n">ADDRSIZE</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_sync_r2w</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wclk</span>      <span class="p">(</span><span class="n">wclk</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wrst_n</span>    <span class="p">(</span><span class="n">wrst_n</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rptr</span>      <span class="p">(</span><span class="n">rptr</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wq2_rptr</span>  <span class="p">(</span><span class="n">wq2_rptr</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sync_w2r</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">ADDRSIZE</span>  <span class="p">(</span><span class="n">ADDRSIZE</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_sync_w2r</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rclk</span>      <span class="p">(</span><span class="n">rclk</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rrst_n</span>    <span class="p">(</span><span class="n">rrst_n</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wptr</span>      <span class="p">(</span><span class="n">wptr</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rq2_wptr</span>  <span class="p">(</span><span class="n">rq2_wptr</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">rptr_empty</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">ADDRSIZE</span> 	<span class="p">(</span><span class="n">ADDRSIZE</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_rptr_empty</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rclk</span>      <span class="p">(</span><span class="n">rclk</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rrst_n</span>    <span class="p">(</span><span class="n">rrst_n</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rinc</span>      <span class="p">(</span><span class="n">rinc</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rq2_wptr</span>  <span class="p">(</span><span class="n">rq2_wptr</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rempty</span>    <span class="p">(</span><span class="n">rempty</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">raddr</span>     <span class="p">(</span><span class="n">raddr</span>     <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rptr</span>      <span class="p">(</span><span class="n">rptr</span>      <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">wptr_full</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">ADDRSIZE</span> 	<span class="p">(</span><span class="n">ADDRSIZE</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_wptr_full</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wclk</span>      <span class="p">(</span><span class="n">wclk</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wrst_n</span>    <span class="p">(</span><span class="n">wrst_n</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">winc</span>      <span class="p">(</span><span class="n">winc</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wq2_rptr</span>  <span class="p">(</span><span class="n">wq2_rptr</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wfull</span>     <span class="p">(</span><span class="n">wfull</span>     <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">waddr</span>     <span class="p">(</span><span class="n">waddr</span>     <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wptr</span>      <span class="p">(</span><span class="n">wptr</span>      <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>伪双口RAM模块：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">fifomem</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">DATASIZE</span> <span class="o">=</span> <span class="mh">8</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">ADDRSIZE</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">wclk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">wclken</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">wfull</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wdata</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">waddr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">raddr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">wire</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rdata</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">localparam</span> <span class="n">DEPTH</span> <span class="o">=</span> <span class="mh">1</span> <span class="o">&lt;&lt;</span> <span class="n">ADDRSIZE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* FIFO memory instantiate */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">mem</span> <span class="p">[</span><span class="n">DEPTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* FIFO write logic */</span>
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">wclk</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">((</span><span class="n">wclken</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">!</span><span class="n">wfull</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">mem</span><span class="p">[</span><span class="n">waddr</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">wdata</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* FIFO read logic */</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">rdata</span> <span class="o">=</span> <span class="n">mem</span><span class="p">[</span><span class="n">raddr</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>读指针&amp;空信号生成模块：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">rptr_empty</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">ADDRSIZE</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rclk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rrst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">rinc</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">rq2_wptr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>                 <span class="n">rempty</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">wire</span> <span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">raddr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">rptr</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Binary address counter*/</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rbin</span><span class="p">;</span> <span class="c1">// use ADDRSIZE counter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">rclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rbin</span> <span class="o">&lt;=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rbin</span> <span class="o">&lt;=</span> <span class="n">rbin</span> <span class="o">+</span> <span class="p">((</span><span class="o">!</span><span class="n">rempty</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">rinc</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">raddr</span> <span class="o">=</span> <span class="n">rbin</span><span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Gray-coded read pointer -use rptr */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">next_rptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">next_rptr</span> <span class="o">=</span> <span class="p">(</span><span class="n">rbin</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">rbin</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">rclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rptr</span> <span class="o">&lt;=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rptr</span> <span class="o">&lt;=</span> <span class="n">next_rptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Empty detection */</span>
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">rclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rempty</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rempty</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">next_rptr</span> <span class="o">==</span> <span class="n">rq2_wptr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>写指针&amp;满信号生成模块：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">wptr_full</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">ADDRSIZE</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">wclk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">wrst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>                <span class="n">winc</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">wq2_rptr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>                 <span class="n">wfull</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">wire</span> <span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">waddr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">wptr</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Binary address counter*/</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wbin</span><span class="p">;</span> <span class="c1">// use ADDRSIZE counter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">wclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wbin</span> <span class="o">&lt;=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wbin</span> <span class="o">&lt;=</span> <span class="n">wbin</span> <span class="o">+</span> <span class="p">((</span><span class="o">!</span><span class="n">wfull</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">winc</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">waddr</span> <span class="o">=</span> <span class="n">wbin</span><span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Gray-coded write pointer -use wptr */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">next_wptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">next_wptr</span> <span class="o">=</span> <span class="p">(</span><span class="n">wbin</span> <span class="o">&gt;&gt;</span> <span class="mh">1</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">wbin</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">wclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wptr</span> <span class="o">&lt;=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wptr</span> <span class="o">&lt;=</span> <span class="n">next_wptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Full detection */</span>
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">wclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wfull</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wfull</span> <span class="o">&lt;=</span> <span class="p">({</span><span class="o">~</span><span class="n">next_wptr</span><span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-:</span><span class="mh">2</span><span class="p">],</span> <span class="n">next_wptr</span><span class="p">[</span><span class="n">ADDRSIZE</span><span class="o">-</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">]}</span> <span class="o">==</span> <span class="n">wq2_rptr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>读-写时钟域同步模块：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">sync_r2w</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">ADDRSIZE</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>              <span class="n">wclk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>              <span class="n">wrst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rptr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wq2_rptr</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 2-level synchronization
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sync_reg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">wclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">wrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="n">wq2_rptr</span><span class="p">,</span> <span class="n">sync_reg</span><span class="p">}</span> <span class="o">&lt;=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="n">wq2_rptr</span><span class="p">,</span> <span class="n">sync_reg</span><span class="p">}</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">sync_reg</span><span class="p">,</span> <span class="n">rptr</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">sync_w2r</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">ADDRSIZE</span> <span class="o">=</span> <span class="mh">4</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>              <span class="n">rclk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>              <span class="n">rrst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wptr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rq2_wptr</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 2-level synchronization
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span> <span class="p">[</span><span class="nl">ADDRSIZE:</span><span class="mh">0</span><span class="p">]</span> <span class="n">sync_reg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">rclk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rrst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="n">rq2_wptr</span><span class="p">,</span> <span class="n">sync_reg</span><span class="p">}</span> <span class="o">&lt;=</span> <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="n">rq2_wptr</span><span class="p">,</span> <span class="n">sync_reg</span><span class="p">}</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">sync_reg</span><span class="p">,</span> <span class="n">wptr</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>异步FIFO功能验证Testbench：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span><span class="lnt">144
+</span><span class="lnt">145
+</span><span class="lnt">146
+</span><span class="lnt">147
+</span><span class="lnt">148
+</span><span class="lnt">149
+</span><span class="lnt">150
+</span><span class="lnt">151
+</span><span class="lnt">152
+</span><span class="lnt">153
+</span><span class="lnt">154
+</span><span class="lnt">155
+</span><span class="lnt">156
+</span><span class="lnt">157
+</span><span class="lnt">158
+</span><span class="lnt">159
+</span><span class="lnt">160
+</span><span class="lnt">161
+</span><span class="lnt">162
+</span><span class="lnt">163
+</span><span class="lnt">164
+</span><span class="lnt">165
+</span><span class="lnt">166
+</span><span class="lnt">167
+</span><span class="lnt">168
+</span><span class="lnt">169
+</span><span class="lnt">170
+</span><span class="lnt">171
+</span><span class="lnt">172
+</span><span class="lnt">173
+</span><span class="lnt">174
+</span><span class="lnt">175
+</span><span class="lnt">176
+</span><span class="lnt">177
+</span><span class="lnt">178
+</span><span class="lnt">179
+</span><span class="lnt">180
+</span><span class="lnt">181
+</span><span class="lnt">182
+</span><span class="lnt">183
+</span><span class="lnt">184
+</span><span class="lnt">185
+</span><span class="lnt">186
+</span><span class="lnt">187
+</span><span class="lnt">188
+</span><span class="lnt">189
+</span><span class="lnt">190
+</span><span class="lnt">191
+</span><span class="lnt">192
+</span><span class="lnt">193
+</span><span class="lnt">194
+</span><span class="lnt">195
+</span><span class="lnt">196
+</span><span class="lnt">197
+</span><span class="lnt">198
+</span><span class="lnt">199
+</span><span class="lnt">200
+</span><span class="lnt">201
+</span><span class="lnt">202
+</span><span class="lnt">203
+</span><span class="lnt">204
+</span><span class="lnt">205
+</span><span class="lnt">206
+</span><span class="lnt">207
+</span><span class="lnt">208
+</span><span class="lnt">209
+</span><span class="lnt">210
+</span><span class="lnt">211
+</span><span class="lnt">212
+</span><span class="lnt">213
+</span><span class="lnt">214
+</span><span class="lnt">215
+</span><span class="lnt">216
+</span><span class="lnt">217
+</span><span class="lnt">218
+</span><span class="lnt">219
+</span><span class="lnt">220
+</span><span class="lnt">221
+</span><span class="lnt">222
+</span><span class="lnt">223
+</span><span class="lnt">224
+</span><span class="lnt">225
+</span><span class="lnt">226
+</span><span class="lnt">227
+</span><span class="lnt">228
+</span><span class="lnt">229
+</span><span class="lnt">230
+</span><span class="lnt">231
+</span><span class="lnt">232
+</span><span class="lnt">233
+</span><span class="lnt">234
+</span><span class="lnt">235
+</span><span class="lnt">236
+</span><span class="lnt">237
+</span><span class="lnt">238
+</span><span class="lnt">239
+</span><span class="lnt">240
+</span><span class="lnt">241
+</span><span class="lnt">242
+</span><span class="lnt">243
+</span><span class="lnt">244
+</span><span class="lnt">245
+</span><span class="lnt">246
+</span><span class="lnt">247
+</span><span class="lnt">248
+</span><span class="lnt">249
+</span><span class="lnt">250
+</span><span class="lnt">251
+</span><span class="lnt">252
+</span><span class="lnt">253
+</span><span class="lnt">254
+</span><span class="lnt">255
+</span><span class="lnt">256
+</span><span class="lnt">257
+</span><span class="lnt">258
+</span><span class="lnt">259
+</span><span class="lnt">260
+</span><span class="lnt">261
+</span><span class="lnt">262
+</span><span class="lnt">263
+</span><span class="lnt">264
+</span><span class="lnt">265
+</span><span class="lnt">266
+</span><span class="lnt">267
+</span><span class="lnt">268
+</span><span class="lnt">269
+</span><span class="lnt">270
+</span><span class="lnt">271
+</span><span class="lnt">272
+</span><span class="lnt">273
+</span><span class="lnt">274
+</span><span class="lnt">275
+</span><span class="lnt">276
+</span><span class="lnt">277
+</span><span class="lnt">278
+</span><span class="lnt">279
+</span><span class="lnt">280
+</span><span class="lnt">281
+</span><span class="lnt">282
+</span><span class="lnt">283
+</span><span class="lnt">284
+</span><span class="lnt">285
+</span><span class="lnt">286
+</span><span class="lnt">287
+</span><span class="lnt">288
+</span><span class="lnt">289
+</span><span class="lnt">290
+</span><span class="lnt">291
+</span><span class="lnt">292
+</span><span class="lnt">293
+</span><span class="lnt">294
+</span><span class="lnt">295
+</span><span class="lnt">296
+</span><span class="lnt">297
+</span><span class="lnt">298
+</span><span class="lnt">299
+</span><span class="lnt">300
+</span><span class="lnt">301
+</span><span class="lnt">302
+</span><span class="lnt">303
+</span><span class="lnt">304
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="no">`timescale</span> <span class="mh">1</span><span class="n">ns</span><span class="o">/</span><span class="mh">1</span><span class="n">ps</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">module</span> <span class="n">tb_async_fifo</span> <span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Parameters setting */</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// FIFO property config
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span> <span class="n">DATASIZE</span> <span class="o">=</span> <span class="mh">8</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">parameter</span> <span class="n">ADDRSIZE</span> <span class="o">=</span> <span class="mh">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">parameter</span> <span class="n">FIFO_DEPTH</span> <span class="o">=</span> <span class="mh">1</span> <span class="o">&lt;&lt;</span> <span class="n">ADDRSIZE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// R&amp;W clock period config
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span> <span class="n">WCLK_PERIOD</span> <span class="o">=</span> <span class="mh">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">parameter</span> <span class="n">RCLK_PERIOD</span> <span class="o">=</span> <span class="mh">13</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Variables setting */</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Test summation variables 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">integer</span> <span class="n">write_count</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">integer</span> <span class="n">read_count</span>  <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">integer</span> <span class="n">error_count</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// FIFO port variables
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>                 <span class="n">wclk</span><span class="p">,</span> <span class="n">rclk</span><span class="p">,</span> <span class="n">wrst_n</span><span class="p">,</span> <span class="n">rrst_n</span><span class="p">,</span> <span class="n">winc</span><span class="p">,</span> <span class="n">rinc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>  <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">wdata</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span>                <span class="n">wfull</span><span class="p">,</span> <span class="n">rempty</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rdata</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// test sequence
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>  <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data_queue</span> <span class="p">[</span><span class="n">FIFO_DEPTH</span><span class="o">*</span><span class="mh">2</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span> <span class="c1">// REF
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">integer</span>             <span class="n">queue_head</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">integer</span>             <span class="n">queue_tail</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// temp value
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>  <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">read_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>  <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">expected_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Module instantiate */</span>
+</span></span><span class="line"><span class="cl"><span class="n">async_fifo</span> <span class="p">#(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">DATASIZE</span>  <span class="p">(</span><span class="n">DATASIZE</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">ADDRSIZE</span>  <span class="p">(</span><span class="n">ADDRSIZE</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="n">u_async_fifo</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wclk</span>    <span class="p">(</span><span class="n">wclk</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rclk</span>    <span class="p">(</span><span class="n">rclk</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wrst_n</span>  <span class="p">(</span><span class="n">wrst_n</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rrst_n</span>  <span class="p">(</span><span class="n">rrst_n</span>  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">winc</span>    <span class="p">(</span><span class="n">winc</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wdata</span>   <span class="p">(</span><span class="n">wdata</span>   <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">wfull</span>   <span class="p">(</span><span class="n">wfull</span>   <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rinc</span>    <span class="p">(</span><span class="n">rinc</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rdata</span>   <span class="p">(</span><span class="n">rdata</span>   <span class="p">),</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">rempty</span>  <span class="p">(</span><span class="n">rempty</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Clock generation */</span>
+</span></span><span class="line"><span class="cl"><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wclk</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">forever</span> <span class="p">#(</span><span class="n">WCLK_PERIOD</span> <span class="o">/</span> <span class="mh">2</span><span class="p">)</span> <span class="n">wclk</span> <span class="o">=</span> <span class="o">~</span><span class="n">wclk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rclk</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">forever</span> <span class="p">#(</span><span class="n">RCLK_PERIOD</span> <span class="o">/</span> <span class="mh">2</span><span class="p">)</span> <span class="n">rclk</span> <span class="o">=</span> <span class="o">~</span><span class="n">rclk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Test task definition */</span>
+</span></span><span class="line"><span class="cl"><span class="k">task</span> <span class="k">automatic</span> <span class="n">write_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="p">@(</span><span class="k">posedge</span> <span class="n">wclk</span><span class="p">);</span> <span class="n">winc</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wdata</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">@(</span><span class="k">posedge</span> <span class="n">wclk</span><span class="p">);</span> <span class="n">winc</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">write_count</span> <span class="o">=</span> <span class="n">write_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;[%0t] WRITE: data = 0x%02h, count = %0d&#34;</span><span class="p">,</span> <span class="nb">$time</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">write_count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">endtask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">task</span> <span class="k">automatic</span> <span class="n">read_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="n">rdata</span><span class="p">;</span> <span class="c1">// this FIFO is Frist-Word Fall-Through FIFO
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">@(</span><span class="k">posedge</span> <span class="n">rclk</span><span class="p">);</span> <span class="n">rinc</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">@(</span><span class="k">posedge</span> <span class="n">rclk</span><span class="p">);</span> <span class="n">rinc</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">read_count</span> <span class="o">=</span> <span class="n">read_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;[%0t] READ:  data = 0x%02h, count = %0d&#34;</span><span class="p">,</span> <span class="nb">$time</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">read_count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">endtask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">task</span> <span class="k">automatic</span> <span class="n">push_queue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data_queue</span><span class="p">[</span><span class="n">queue_tail</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">queue_tail</span> <span class="o">=</span> <span class="n">queue_tail</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">endtask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">task</span> <span class="k">automatic</span> <span class="n">pop_queue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                 <span class="n">check_empty</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">check_empty</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">queue_head</span> <span class="o">&gt;=</span> <span class="n">queue_tail</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;[%0t] ERROR: Queue empty but read attempted!&#34;</span><span class="p">,</span> <span class="nb">$time</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">data_queue</span><span class="p">[</span><span class="n">queue_head</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">queue_head</span> <span class="o">=</span> <span class="n">queue_head</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">endtask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">task</span> <span class="k">automatic</span> <span class="n">verify_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">expected</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="p">[</span><span class="n">DATASIZE</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">actual</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">expected</span> <span class="o">!=</span> <span class="n">actual</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;[%0t] ERROR: Data mismatch! Expected = 0x%02h, Got = 0x%02h&#34;</span><span class="p">,</span> <span class="nb">$time</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;[%0t] PASS: Data verified 0x%02h&#34;</span><span class="p">,</span> <span class="nb">$time</span><span class="p">,</span> <span class="n">actual</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">endtask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Main test flow */</span>
+</span></span><span class="line"><span class="cl"><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;         Async FIFO Testbench Start          &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;FIFO Depth = %0d, Data Width = %0d bits&#34;</span><span class="p">,</span> <span class="n">FIFO_DEPTH</span><span class="p">,</span> <span class="n">DATASIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;WCLK Period = %0dns, RCLK Period = %0dns&#34;</span><span class="p">,</span> <span class="n">WCLK_PERIOD</span><span class="p">,</span> <span class="n">RCLK_PERIOD</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Reset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">wrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">winc</span>   <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wdata</span>  <span class="o">=</span>  <span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rinc</span>   <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">#</span><span class="mh">1000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">[TEST 1] Reset Test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;------------------------------&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span> <span class="p">#</span><span class="mh">50</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">rrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span> <span class="p">#</span><span class="mh">50</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Check reset status
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">rempty</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: rempty should be 1 after reset!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: rempty = 1 after reset&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">wfull</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: wfull should be 0 after reset!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: wfull = 0 after reset&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">[TEST 2] Empty Flag Test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;------------------------------&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">rempty</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: FIFO should be empty after reset!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: FIFO is empty after reset&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">[TEST 3] Basic Read/Write Test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;------------------------------&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Write 5 data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="k">integer</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">5</span><span class="p">;</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">write_data</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">push_queue</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#(</span><span class="n">WCLK_PERIOD</span> <span class="o">*</span> <span class="mh">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Check empty signal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">#(</span><span class="n">RCLK_PERIOD</span> <span class="o">*</span> <span class="mh">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">rempty</span> <span class="o">!==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: FIFO should not be empty after writing!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: FIFO is not empty after writing&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Read &amp; verify 5 data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="k">integer</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">5</span><span class="p">;</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pop_queue</span><span class="p">(</span><span class="n">expected_val</span><span class="p">,</span> <span class="mh">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">read_data</span><span class="p">(</span><span class="n">read_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">verify_data</span><span class="p">(</span><span class="n">expected_val</span><span class="p">,</span> <span class="n">read_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#(</span><span class="n">RCLK_PERIOD</span> <span class="o">*</span> <span class="mh">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Check empty signal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">#(</span><span class="n">RCLK_PERIOD</span> <span class="o">*</span> <span class="mh">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">rempty</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: FIFO should be empty after reading all data!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: FIFO is empty after reading all data&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">[TEST 4] Full Flag Test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;------------------------------&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Write until full
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="k">integer</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">FIFO_DEPTH</span><span class="p">;</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">write_data</span><span class="p">(</span><span class="mh">8&#39;hA0</span> <span class="o">+</span> <span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">push_queue</span><span class="p">(</span><span class="mh">8&#39;hA0</span> <span class="o">+</span> <span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#(</span><span class="n">WCLK_PERIOD</span> <span class="o">*</span> <span class="mh">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Check full signal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">#(</span><span class="n">WCLK_PERIOD</span> <span class="o">*</span> <span class="mh">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">wfull</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: wfull should be 1 when FIFO is full!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: wfull = 1 when FIFO is full&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Write when FIFO is full (should be ignored)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">write_data</span><span class="p">(</span><span class="mh">8&#39;hFF</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">#(</span><span class="n">WCLK_PERIOD</span> <span class="o">*</span> <span class="mh">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">[TEST 5] Concurrent Read/Write Test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;------------------------------&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Read half data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="k">integer</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">FIFO_DEPTH</span> <span class="o">/</span> <span class="mh">2</span><span class="p">;</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pop_queue</span><span class="p">(</span><span class="n">expected_val</span><span class="p">,</span> <span class="mh">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">read_data</span><span class="p">(</span><span class="n">read_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">verify_data</span><span class="p">(</span><span class="n">expected_val</span><span class="p">,</span> <span class="n">read_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#(</span><span class="n">RCLK_PERIOD</span> <span class="o">*</span> <span class="mh">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Check full signal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">#(</span><span class="n">WCLK_PERIOD</span> <span class="o">*</span> <span class="mh">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">wfull</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: wfull should be 0 after reading from full FIFO!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: wfull = 0 after reading from full FIFO&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">[TEST 6] Reset During Operation Test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;------------------------------&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Reset working FIFO
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">wrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">#</span><span class="mh">50</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">rrst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">#</span><span class="mh">50</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Check reset status
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">rempty</span> <span class="o">!=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: rempty should be 1 after reset during operation!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">error_count</span> <span class="o">=</span> <span class="n">error_count</span> <span class="o">+</span> <span class="mh">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;PASS: rempty = 1 after reset during operation&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">#</span><span class="mh">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;                Test Summary                 &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;Total Write Operations: %0d&#34;</span><span class="p">,</span> <span class="n">write_count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;Total Read Operations:  %0d&#34;</span><span class="p">,</span> <span class="n">read_count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;Total Errors:           %0d&#34;</span><span class="p">,</span> <span class="n">error_count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">error_count</span> <span class="o">==</span> <span class="mh">0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;               ALL TESTS PASSED!             &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;   TESTS FAILED! Please check errors above   &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;=============================================&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nb">$finish</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Waveform generation */</span>
+</span></span><span class="line"><span class="cl"><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">$dumpfile</span><span class="p">(</span><span class="s">&#34;tb_async_fifo.fsdb&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">$dumpvars</span><span class="p">(</span><span class="mh">0</span><span class="p">,</span> <span class="n">tb_async_fifo</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Timeout */</span>
+</span></span><span class="line"><span class="cl"><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="p">#</span><span class="mh">1000000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;ERROR: Simulation timeout!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$finish</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Sunburst Design是美国一家专门做芯片培训的公司，它发表的许多技术文档都非常值得一看，公司网站：<a class="link" href="http://mail.sunburst-design.com"  target="_blank" rel="noopener"
+    >mail.sunburst-design.com</a>。&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>此处，我们将发送信号的时钟域称为发送时钟域，接收信号的时钟域称为目的时钟域。&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p>信号间的&quot;时序&quot;具体指什么？这里笔者认为可以将时序理解为<strong>信号间的相对相位关系</strong>。&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p>这通常也被称之为电路的再生性（Regenerative Property）。&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5">
+<p>这只是近似分析，事实上，有关同步器MTBF的量化表达式，业界仍在进行不断的探索，较为经典的结果可参考：<a class="link" href="https://ieeexplore.ieee.org/abstract/document/4070065"  target="_blank" rel="noopener"
+    >Kleeman, Lindsay, and Antonio Cantoni. &ldquo;Metastable behavior in digital systems.&rdquo; <em>IEEE Design &amp; Test of Computers</em> 4.6 (2007): 4-19.</a>&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6">
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/1972384642972746507"  target="_blank" rel="noopener"
+    >【芯片设计】再理解脉冲跨时钟域的同步三边沿要求</a>&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7">
+<p>这一断言实际上认为多路跨时钟域信号的时序在逻辑上是依赖于该用于驱动的信号的。&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8">
+<p>或者也可使用<code>set_clock_groups -asynchronous</code>直接声明两个时钟是异步关系，从而禁用两时钟间所有跨时钟域路径的时序检查，具体可参考<a class="link" href="https://docs.amd.com/r/zh-CN/ug949-vivado-design-methodology/%E5%AE%9A%E4%B9%89%E6%97%B6%E9%92%9F%E7%BB%84%E5%92%8C-CDC-%E7%BA%A6%E6%9D%9F"  target="_blank" rel="noopener"
+    >【AMD】定义时钟组和 CDC 约束</a>。&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:9">
+<p>码距是指两个等长码字之间对应位不同的位数。&#160;<a href="#fnref:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/function-module/">Function Module</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Mar 25, 2026 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/dic-008/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-008/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 仲裁器"
+                        data-key="dic-008" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">仲裁器</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-004/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-004/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 时钟分频"
+                        data-key="dic-004" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">时钟分频</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-003/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-003/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 序列检测"
+                        data-key="dic-003" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">序列检测</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-009/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-009/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post VCS Makefile"
+                        data-key="dic-009" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">VCS Makefile</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-007/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-007/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 迭代边界"
+                        data-key="dic-007" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">迭代边界</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
