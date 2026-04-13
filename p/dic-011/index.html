@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="DIC-011：并行PRBS码的生成">
+<title>并行PRBS码的生成</title>
+
+<link rel='canonical' href='https://posvirus.github.io/p/dic-011/'>
+
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="并行PRBS码的生成">
+<meta property='og:description' content="DIC-011：并行PRBS码的生成">
+<meta property='og:url' content='https://posvirus.github.io/p/dic-011/'>
+<meta property='og:site_name' content='Posvirus的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='Function Module' /><meta property='article:published_time' content='2026-04-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-04-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://posvirus.github.io/p/dic-011/cicc.png' />
+<meta name="twitter:title" content="并行PRBS码的生成">
+<meta name="twitter:description" content="DIC-011：并行PRBS码的生成"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://posvirus.github.io/p/dic-011/cicc.png' />
+    <link rel="shortcut icon" href="/favicon.jpeg" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a44d8196b0d157c0.jpeg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤗</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Posvirus的博客</a></h1>
+            <h2 class="site-description">如无必要，勿增实体</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/posvirus'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#并行prbs码的生成原理">并行PRBS码的生成原理</a></li>
+    <li><a href="#并行prbs码的电路实现">并行PRBS码的电路实现</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/dic-011/">
+                <img src="/p/dic-011/cicc_hu_d52f18f9a902f256.png"
+                        srcset="/p/dic-011/cicc_hu_d52f18f9a902f256.png 800w, /p/dic-011/cicc_hu_c62d00be19035290.png 1600w"
+                        width="800" 
+                        height="270" 
+                        loading="lazy"
+                        alt="Featured image of post 并行PRBS码的生成" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/dic/" >
+                DIC
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/dic-011/">并行PRBS码的生成</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            DIC-011：并行PRBS码的生成
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Apr 10, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 7 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p><strong>PRBS码（伪随机二进制序列，Pseudo-Random Binary Sequence）</strong> 是一类常用的伪随机码，其常用于高速串行接口的眼图测试、误码率和抖动容限测试等。其概念及基本生成原理可参考以下链接：</p>
+<p><strong><a class="link" href="https://en.wikipedia.org/wiki/Pseudorandom_binary_sequence"  target="_blank" rel="noopener"
+    >[Wikipedia]Pseudorandom binary sequence</a></strong></p>
+<p>通常而言，PRBS码在硬件中通过 <strong>线性反馈移位寄存器（Linear Feedback Shift Register， LFSR）<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></strong> 实现。该电路的不足之处在于： <strong>单个时钟周期仅能输出单比特的PRBS码。</strong> 但在某些场景下，我们可能希望在单个时钟周期并行输出多比特的PRBS码，比如测试高速串行接口时，虽然物理信道上传输的是串行比特流，但我们往往需要生成多比特的并行随机数据，再通过串化器实现并-串转换，才能验证接口电路本身的功能。</p>
+<p>综上，本文将简要讨论并行PRBS码的生成原理及电路设计。</p>
+<h2 id="并行prbs码的生成原理">并行PRBS码的生成原理
+</h2><p>此处，我们以常见的<strong>PRBS7码</strong>为例，讨论其并行生成的原理。已知PRBS7码的生成函数$G(x)$：
+</p>
+$$
+G(x)=x^7+x^6+1
+$$<p>
+我们假设生成的PRBS7码序列为：
+</p>
+$$
+p_0,~p_1,~p_2,~\cdots,~p_n,~\cdots
+$$<p>
+其中， $p_0,~ p_1, ~ \cdots, ~ p_6$ 即为PRBS7码生成的初始随机种子，则依PRBS7码的生成规则，我们不难有：
+</p>
+$$
+p_{n+7} = p_{n} \oplus p_{n+1},~n\in \mathbb{N}
+$$<p>
+我们不妨将其改写为矩阵形式：
+</p>
+$$
+\left[\begin{array}{c}
+p_{n+1}\\
+p_{n+2}\\
+p_{n+3}\\
+p_{n+4}\\
+p_{n+5}\\
+p_{n+6}\\
+p_{n+7}\\
+\end{array}\right]=\left[\begin{array}{ccccccc}
+0&1&0&0&0&0&0\\
+0&0&1&0&0&0&0\\
+0&0&0&1&0&0&0\\
+0&0&0&0&1&0&0\\
+0&0&0&0&0&1&0\\
+0&0&0&0&0&0&1\\
+1&1&0&0&0&0&0\\
+\end{array}\right]\otimes\left[\begin{array}{c}
+p_{n}\\
+p_{n+1}\\
+p_{n+2}\\
+p_{n+3}\\
+p_{n+4}\\
+p_{n+5}\\
+p_{n+6}\\
+\end{array}\right]
+$$<p>
+此处的$\otimes$代表对矩阵与向量进行 <strong>矩阵-向量乘法（VMM）</strong> 运算，但需要注意，其中的元素加法运算是在<strong>模2意义</strong>下进行的，即<strong>异或运算</strong>。我们若记：
+</p>
+$$
+\boldsymbol{p}_n=[p_n,~p_{n+1},~p_{n+2},~p_{n+3},~p_{n+4},~p_{n+5},~p_{n+6}]^\text{T}
+$$<p>
+$\boldsymbol{p}_n$ 即代表PRSB7码序列中的从$p_n$开始的连续7位，同时记：
+</p>
+$$
+\boldsymbol{J}=\left[\begin{array}{ccccccc}
+0&1&0&0&0&0&0\\
+0&0&1&0&0&0&0\\
+0&0&0&1&0&0&0\\
+0&0&0&0&1&0&0\\
+0&0&0&0&0&1&0\\
+0&0&0&0&0&0&1\\
+1&1&0&0&0&0&0\\
+\end{array}\right]
+$$<p>
+则上式即可化简为：
+</p>
+$$
+\boldsymbol{p}_{n+1}=\boldsymbol{J}\otimes\boldsymbol{p}_n
+$$<p>
+综上，我们找到了从$\boldsymbol{p}_{n}$到$\boldsymbol{p}_{n+1}$的递推式，可基于此进一步推导并行生成PRBS码值的方法。此处，不妨设需要一次并行生成$M$位PRBS7码，这意味着我们需要寻找以下两组序列的递推关系：
+</p>
+$$
+\boldsymbol{X}=[p_n,~p_{n+1},~\cdots,~p_{n+M-1}]^\text{T}\xrightarrow{~~~~~~~?~~~~~~~}[p_{n+M},~p_{n+M+1},~\cdots,~p_{n+2M-1}]^\text{T}=\boldsymbol{Y},~n\equiv 0~(\text{mod}~M)
+$$<p>
+我们先考查$M\geqslant 7$的情形，因为该情形下是一定存在确定的递推关系的。不妨设$M$满足：
+</p>
+$$
+M=7k+m,~k\geqslant 1,~k,m\in\mathbb{N}
+$$<p>
+则序列$\boldsymbol{X}$可被视为如下子序列的拼接：
+</p>
+$$
+\boldsymbol{p}_{n},~\boldsymbol{p}_{n+7},~\boldsymbol{p}_{n+14},~\cdots,~\boldsymbol{p}_{n+7k},~\tilde{\boldsymbol{p}}_{n+7(k+1)}
+$$<p>
+其中，$\tilde{\boldsymbol{p}}_{n+7(k+1)}$代表$\boldsymbol{p}_{n+7(k+1)}$的前$m$项。同理，序列$\boldsymbol{Y}$可被视为可被视为如下子序列的拼接：
+</p>
+$$
+\boldsymbol{p}_{n+M},~\boldsymbol{p}_{n+M+7},~\boldsymbol{p}_{n+M+14},~\cdots,~\boldsymbol{p}_{n+M+7k},~\tilde{\boldsymbol{p}}_{n+M+7(k+1)}
+$$<p>
+其中，$\tilde{\boldsymbol{p}}_{n+M+7(k+1)}$代表$\boldsymbol{p}_{n+M+7(k+1)}$的前$m$项。不难发现，$\boldsymbol{p}_{n+M+7t}$可递归由$\boldsymbol{p}_{n+7t}$表示：
+</p>
+$$
+\boldsymbol{p}_{n+M+7t}=\boldsymbol{J}\otimes\boldsymbol{p}_{n+M+7t-1}=\boldsymbol{J}^2\otimes \boldsymbol{p}_{n+M+7t-2}=\cdots=\boldsymbol{J}^{M}\otimes\boldsymbol{p}_{n+7t},~t\in\mathbb{N}, ~ t\leqslant k
+$$<p>
+此处，$\boldsymbol{J}^M$即代表$\boldsymbol{J}$的$M$次幂，同时，$\boldsymbol{J}^M$中若存在大于1的元素，在与向量进行$\otimes$运算时，代表<strong>与其相乘的元素本身需要进行对应次数的异或运算。</strong></p>
+<p>而$\boldsymbol{p}_{n+7t}$是包含在序列$\boldsymbol{X}$中的（$M&gt;7$），因此$\boldsymbol{p}_{n+M+7t}$可由序列$\boldsymbol{X}$表示。同时，不难发现$\boldsymbol{p}_{n+M+7(k+1)}$也可递归由$\boldsymbol{p}_{n+7k}$表示：
+</p>
+$$
+\boldsymbol{p}_{n+M+7(k+1)}=\boldsymbol{J}\otimes\boldsymbol{p}_{n+M+6+7k}=\boldsymbol{J}^2\otimes \boldsymbol{p}_{n+M+5+7k}=\cdots=\boldsymbol{J}^{M+7}\otimes\boldsymbol{p}_{n+7k}
+$$<p>
+因此，序列$\boldsymbol{Y}$可由序列$\boldsymbol{X}$表示，更严谨一些，序列$\boldsymbol{Y}$可由序列$\boldsymbol{X}$的子序列$\boldsymbol{p}_n, ~ \cdots, ~ \boldsymbol{p}_{n+7k}$唯一确定。</p>
+<p>随后，我们可考查$M&lt; 7$的情形：</p>
+<p>与$M\geqslant7$不同，此时序列$\boldsymbol{Y}$的取值不一定依赖于序列$\boldsymbol{X}$，比如取$M=1$的极端情形，则序列$\boldsymbol{Y}$只有$p_{n+1}$一个元素，序列$\boldsymbol{X}$只有$p_n$一个元素，而$p_{n+1}$显然无法通过$p_n$直接给出。</p>
+<p>但这并不意味着我们无法解决$M&lt; 7$的情形，因为$M=1$从另一个角度看，实现的就是最原始的单个时钟周期输出单比特PRBS码的功能！从LFSR的实现原理中，我们不难看出当$M=1$时，我们保存了整个$\boldsymbol{p}_n$用于生成$p_{n+1}$。</p>
+<p>进而，一般地，我们也可保存$\boldsymbol{p}_n$用于生成序列$\boldsymbol{Y}$，因为序列$\boldsymbol{Y}$一定包含于$\boldsymbol{p}_{n+M}$，而$\boldsymbol{p}_{n+M}$可递归由$\boldsymbol{p}_n$表示：
+</p>
+$$
+\boldsymbol{p}_{n+M}=\boldsymbol{J}\otimes\boldsymbol{p}_{n+M-1}=\boldsymbol{J}^2\otimes \boldsymbol{p}_{n+M-2}=\cdots=\boldsymbol{J}^{M}\otimes\boldsymbol{p}_{n}
+$$<p>
+而同时，序列$\boldsymbol{X}$本身也包含于$\boldsymbol{p}_n$，因此保存了$\boldsymbol{p}_n$就相当于保存了序列$\boldsymbol{X}$，综上即实现了由序列$\boldsymbol{X}$生成序列$\boldsymbol{Y}$。</p>
+<p>在给出上述方法后，我们不难发现$M&lt;7$的情形面临的序列$\boldsymbol{Y}$的生成问题，与$M\geqslant 7$的情形中面临的$\tilde{\boldsymbol{p}}_{n+M+7(k+1)}$的生成问题是统一的，本质上都是当序列长度小于7时，如何生成序列的问题。而解决问题的方法也是类似的，就是通过<strong>寻找长度为7的历史序列进行冗余生成：</strong></p>
+<ul>
+<li>在$M\geqslant 7$的情形中，我们通过$\boldsymbol{p}_{n+7k}$生成$\tilde{\boldsymbol{p}}_{n+M+7(k+1)}$，多生成了$7-m$位；</li>
+<li>在$M&lt;7$的情形中，我们通过$\boldsymbol{p}_{n}$生成序列$\boldsymbol{Y}$，多生成了$7-M$位<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</li>
+</ul>
+<h2 id="并行prbs码的电路实现">并行PRBS码的电路实现
+</h2><p>我们不妨以$M=8$为例，推导并行PRBS7码的生成逻辑，依前文递推关系，我们需要计算$\boldsymbol{J}^8$与$\boldsymbol{J}^{15}$：
+</p>
+$$
+\boldsymbol{J}^8=\left[\begin{array}{ccccccc}
+0&1&1&0&0&0&0\\
+0&0&1&1&0&0&0\\
+0&0&0&1&1&0&0\\
+0&0&0&0&1&1&0\\
+0&0&0&0&0&1&1\\
+1&1&0&0&0&0&1\\
+1&2&1&0&0&0&0\\
+\end{array}\right],~\boldsymbol{J}^{15}=\left[\begin{array}{ccccccc}
+0&1&2&1&0&0&0\\
+0&0&1&2&1&0&0\\
+0&0&0&1&2&1&0\\
+0&0&0&0&1&2&1\\
+1&1&0&0&0&1&2\\
+2&3&1&0&0&0&1\\
+1&3&3&1&0&0&0\\
+\end{array}\right]
+$$<p>
+进而有：
+</p>
+$$
+\left[\begin{array}{c}
+p_{n+8}\\
+p_{n+9}\\
+p_{n+10}\\
+p_{n+11}\\
+p_{n+12}\\
+p_{n+13}\\
+p_{n+14}\\
+\end{array}\right]=\left[\begin{array}{ccccccc}
+0&1&1&0&0&0&0\\
+0&0&1&1&0&0&0\\
+0&0&0&1&1&0&0\\
+0&0&0&0&1&1&0\\
+0&0&0&0&0&1&1\\
+1&1&0&0&0&0&1\\
+1&2&1&0&0&0&0\\
+\end{array}\right]\otimes\left[\begin{array}{c}
+p_{n}\\
+p_{n+1}\\
+p_{n+2}\\
+p_{n+3}\\
+p_{n+4}\\
+p_{n+5}\\
+p_{n+6}\\
+\end{array}\right]
+$$<p>
+以及：
+</p>
+$$
+\left[\begin{array}{c}
+p_{n+15}\\
+p_{n+16}\\
+p_{n+17}\\
+p_{n+18}\\
+p_{n+19}\\
+p_{n+20}\\
+p_{n+21}\\
+\end{array}\right]=\left[\begin{array}{ccccccc}
+0&1&2&1&0&0&0\\
+0&0&1&2&1&0&0\\
+0&0&0&1&2&1&0\\
+0&0&0&0&1&2&1\\
+1&1&0&0&0&1&2\\
+2&3&1&0&0&0&1\\
+1&3&3&1&0&0&0\\
+\end{array}\right]\otimes\left[\begin{array}{c}
+p_{n}\\
+p_{n+1}\\
+p_{n+2}\\
+p_{n+3}\\
+p_{n+4}\\
+p_{n+5}\\
+p_{n+6}\\
+\end{array}\right]
+$$<p>
+其中，$\boldsymbol{J}^8$与$\boldsymbol{J}^{15}$中大于1的元素，代表与其相乘的元素本身需要进行对应次数的异或，比如对$p_{n+15}$的生成，有：
+</p>
+$$
+p_{n+15}=p_{n+1}\oplus p_{n+2}\oplus p_{n+2}\oplus p_{n+3}=p_{n+1}\oplus (p_{n+2}\oplus p_{n+2})\oplus p_{n+3}=p_{n+1}\oplus p_{n+3}
+$$<p>
+综上，即可得到递推关系：
+</p>
+$$
+\begin{align*}
+p_{n+8}&=p_{n+1}\oplus p_{n+2}\\
+p_{n+9}&=p_{n+2}\oplus p_{n+3}\\
+p_{n+10}&=p_{n+3}\oplus p_{n+4}\\
+p_{n+11}&=p_{n+4}\oplus p_{n+5}\\
+p_{n+12}&=p_{n+5}\oplus p_{n+6}\\
+p_{n+13}&=p_{n}\oplus p_{n+1}\oplus p_{n+6}\\
+p_{n+14}&=p_{n}\oplus p_{n+2}\\
+p_{n+15}&=p_{n+1}\oplus p_{n+3}\\
+\end{align*}
+$$<p>
+进而即可编写对应并行PRBS7码生成模块的RTL代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">prbs7_gen</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>       <span class="n">clk</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span>       <span class="n">rst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>  <span class="kt">wire</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">seed</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>  <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">prbs7_o</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// PRBS7 output 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">always</span> <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">~</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// prbs7[6:0] = seed, prbs7[7] = prbs7[0] ^ prbs7[1]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">prbs7_o</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">seed</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">^</span> <span class="n">seed</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span> <span class="n">seed</span><span class="p">};</span>      
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">prbs7_o</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">prbs7_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">^</span> <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">                    <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">^</span> <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">^</span> <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">^</span> <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">6</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">1</span><span class="p">]</span> <span class="o">^</span> <span class="n">prbs7_o</span><span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">2</span><span class="p">]};</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span> 
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以及对应测试的Testbench：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="no">`timescale</span> <span class="mh">1</span><span class="n">ns</span> <span class="o">/</span> <span class="mh">10</span><span class="n">ps</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">module</span> <span class="n">tb_prbs7_gen</span> <span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// parameter setting
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span> <span class="n">SEED</span>     <span class="o">=</span> <span class="mh">7</span><span class="mb">&#39;b1101010</span><span class="p">;</span> <span class="c1">// PRBS7 initial seed
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span> <span class="n">ClockPrd</span> <span class="o">=</span> <span class="mh">20</span><span class="p">;</span>         <span class="c1">// system clock period
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span> <span class="n">SimCycle</span> <span class="o">=</span> <span class="mh">45</span><span class="p">;</span>         <span class="c1">// total simulation cycles
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// module instantiate
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>        <span class="n">clk</span><span class="p">,</span> <span class="n">rst_n</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>  <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">seed</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">prbs7_o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">prbs7_gen</span> <span class="n">u_prbs7_gen</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk</span>     <span class="p">(</span><span class="n">clk</span>      <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">rst_n</span>   <span class="p">(</span><span class="n">rst_n</span>    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">seed</span>    <span class="p">(</span><span class="n">seed</span>     <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">prbs7_o</span> <span class="p">(</span><span class="n">prbs7_o</span>  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// AUX variable
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">bit</span> <span class="n">expected_seq</span> <span class="p">[</span><span class="err">$</span><span class="o">:</span><span class="mh">127</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">temp_seq</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span>       <span class="n">success_cnt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// clock generation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">clk</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">forever</span> <span class="p">#(</span><span class="n">ClockPrd</span> <span class="o">/</span> <span class="mh">2</span><span class="p">)</span> <span class="n">clk</span> <span class="o">=</span> <span class="o">~</span><span class="n">clk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// simulation task
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">task</span> <span class="k">automatic</span> <span class="n">gen_prbs7</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span> <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">init_seed</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">reg</span>   <span class="p">[</span><span class="mh">6</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span>         <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="n">state</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">         <span class="n">state</span><span class="p">[</span><span class="mh">4</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="mh">6</span><span class="p">]}</span> <span class="o">=</span> <span class="n">init_seed</span><span class="p">;</span> <span class="c1">// invert order
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mh">127</span><span class="p">;</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">expected_seq</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="mh">6</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">state</span> <span class="o">=</span> <span class="p">{</span><span class="n">state</span><span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span> <span class="o">^</span> <span class="n">state</span><span class="p">[</span><span class="mh">5</span><span class="p">]};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">endtask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">task</span> <span class="k">automatic</span> <span class="n">reset</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="c1">// generate full PRBS7 sequence
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">gen_prbs7</span><span class="p">(</span><span class="n">SEED</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// set initial seed
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">seed</span> <span class="o">=</span> <span class="n">SEED</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">success_cnt</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">#</span><span class="mh">100</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">);</span> <span class="n">rst_n</span> <span class="o">=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\033</span><span class="s">[1;32m[RESET]</span><span class="se">\033</span><span class="s">[0m simulation reset completed&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">endtask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// main simulation flow
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">reset</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">SimCycle</span><span class="p">;</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mh">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="p">;</span> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mh">1</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">temp_seq</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">expected_seq</span><span class="p">.</span><span class="n">pop_front</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">expected_seq</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">temp_seq</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">temp_seq</span> <span class="o">==</span> <span class="n">prbs7_o</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;  Sub-Seq %02d: </span><span class="se">\033</span><span class="s">[1;32mPASS</span><span class="se">\033</span><span class="s">[0m (DUT=%02h, REF=%02h)&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">prbs7_o</span><span class="p">,</span> <span class="n">temp_seq</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">success_cnt</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;  Sub-Seq %02d: </span><span class="se">\033</span><span class="s">[1;31mFAIL</span><span class="se">\033</span><span class="s">[0m (DUT=%02h, REF=%02h)&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">prbs7_o</span><span class="p">,</span> <span class="n">temp_seq</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="p">@(</span><span class="k">posedge</span> <span class="n">clk</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\033</span><span class="s">[1;36m[RESULT]</span><span class="se">\033</span><span class="s">[0m %0d/%0d seqs passed (%.2f%%)&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">success_cnt</span><span class="p">,</span> <span class="n">SimCycle</span><span class="p">,</span> <span class="p">(</span><span class="n">success_cnt</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">SimCycle</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\033</span><span class="s">[1;32m[FINISH]</span><span class="se">\033</span><span class="s">[0m simulation completed successfully!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$finish</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// waveform generation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">$dumpfile</span><span class="p">(</span><span class="s">&#34;tb_prbs7_gen.fsdb&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">$dumpvars</span><span class="p">(</span><span class="mh">0</span><span class="p">,</span> <span class="n">tb_prbs7_gen</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// timeout
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">initial</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="p">#</span><span class="mh">10000000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$display</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\033</span><span class="s">[1;31m[ERROR]</span><span class="se">\033</span><span class="s">[0m simulation timeout!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">$finish</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a class="link" href="https://en.wikipedia.org/wiki/Linear-feedback_shift_register"  target="_blank" rel="noopener"
+    >https://en.wikipedia.org/wiki/Linear-feedback_shift_register</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>若记$M=7k+m, ~ k,m\in \mathbb{N}$，不难发现$M&lt; 7$等价于$k=0$，此时$M=m$。&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/function-module/">Function Module</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Apr 10, 2026 00:00 UTC
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/dic-010/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-010/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 跨时钟域与异步FIFO"
+                        data-key="dic-010" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">跨时钟域与异步FIFO</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-008/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-008/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 仲裁器"
+                        data-key="dic-008" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">仲裁器</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-004/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-004/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 时钟分频"
+                        data-key="dic-004" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">时钟分频</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-003/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-003/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 序列检测"
+                        data-key="dic-003" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">序列检测</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/dic-009/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dic-009/cicc.f9a5ee4db09f7998fda253133330d61a_hu_817c1a5183b305be.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post VCS Makefile"
+                        data-key="dic-009" 
+                        data-hash="md5-&#43;aXuTbCfeZj9olMTMzDWGg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">VCS Makefile</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "posvirus-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 Chen Wenyao
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.31.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
